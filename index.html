@@ -1293,23 +1293,17 @@ async function generatePlan() {
   const prompt = t.promptTemplate(currentCity, answers);
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/generate', {
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'anthropic-version':'2023-06-01',
       },
-      body: JSON.stringify({
-        model:'claude-opus-4-5',
-        max_tokens:2000,
-        system:'You are a travel concierge. Return ONLY valid JSON, no markdown, no code blocks, no explanations.',
-        messages:[{role:'user',content:prompt}]
-      })
+      body: JSON.stringify({ prompt })
     });
 
     if(!res.ok) {
       const err = await res.json();
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
+      throw new Error(err.error || `HTTP ${res.status}`);
     }
 
     const data = await res.json();
