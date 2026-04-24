@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0e0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TABI">
+<meta name="description" content="AI-powered travel guide for Japan">
+<link rel="manifest" href="manifest.json">
+<title>TABI — AI Travel Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0e0c;
+  --surface: #1a1916;
+  --surface2: #232220;
+  --border: #2e2c28;
+  --gold: #c9a84c;
+  --gold-dim: rgba(201,168,76,0.15);
+  --text: #f0ebe0;
+  --text-dim: #8a8070;
+  --text-mid: #c0b8a8;
+  --accent: #e8734a;
+  --green: #6ab187;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  width:100%; height:100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  overscroll-behavior: none;
+}
+
+/* ── APP SHELL ── */
+#app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  animation: slideUp .35s cubic-bezier(.22,.8,.36,1);
+}
+.screen.active { display: flex; }
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── TYPOGRAPHY ── */
+.display { font-family:'Playfair Display',serif; }
+
+/* ── COMPONENTS ── */
+.btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:16px 24px; border-radius:var(--radius);
+  font-family:inherit; font-size:14px; font-weight:500;
+  cursor:pointer; border:none; transition:all .2s; letter-spacing:.03em;
+}
+.btn-gold {
+  background: linear-gradient(135deg, #c9a84c, #e8c96a);
+  color: #0f0e0c; font-weight:700;
+}
+.btn-gold:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(201,168,76,.3); }
+.btn-gold:disabled { opacity:.4; cursor:default; transform:none; box-shadow:none; }
+.btn-outline {
+  background:transparent; border:1px solid var(--border);
+  color:var(--text-mid);
+}
+.btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+.btn-ghost { background:transparent; color:var(--text-dim); padding:8px; }
+.btn-ghost:hover { color:var(--text); }
+
+.input-field {
+  width:100%; padding:14px 16px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); color:var(--text);
+  font-family:inherit; font-size:15px; outline:none;
+  transition:border-color .2s;
+}
+.input-field:focus { border-color:var(--gold); }
+.input-field::placeholder { color:var(--text-dim); }
+
+.tag {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 10px; border-radius:20px;
+  font-size:11px; font-weight:500; letter-spacing:.06em;
+}
+.tag-gold { background:var(--gold-dim); color:var(--gold); }
+.tag-green { background:rgba(106,177,135,.12); color:var(--green); }
+
+.divider {
+  height:1px; background:var(--border); margin:0;
+}
+
+.chip {
+  padding:8px 14px; border-radius:20px;
+  background:var(--surface2); border:1px solid var(--border);
+  font-size:12px; color:var(--text-mid); cursor:pointer;
+  white-space:nowrap; transition:all .15s;
+}
+.chip:hover, .chip.active {
+  background:var(--gold-dim); border-color:var(--gold); color:var(--gold);
+}
+
+/* ── LANG SWITCHER ── */
+.lang-bar {
+  display:flex; gap:2px; padding:4px;
+  background:var(--surface); border-radius:10px;
+}
+.lang-btn {
+  flex:1; padding:6px 0; border-radius:7px;
+  font-size:12px; font-weight:500; cursor:pointer;
+  border:none; background:transparent; color:var(--text-dim);
+  transition:all .15s;
+}
+.lang-btn.active {
+  background:var(--gold);
+  color:#0f0e0c;
+}
+
+/* ════════════════════════════════
+   SCREEN: SPLASH
+════════════════════════════════ */
+#screen-splash {
+  background: var(--bg);
+  justify-content:center; align-items:center;
+  gap:24px; padding:40px;
+}
+.splash-logo {
+  font-family:'Playfair Display',serif;
+  font-size:72px; font-weight:700;
+  background: linear-gradient(135deg, #c9a84c 0%, #e8c96a 50%, #c9a84c 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing:.1em;
+}
+.splash-tagline {
+  text-align:center; font-size:13px;
+  color:var(--text-dim); line-height:1.8; letter-spacing:.05em;
+}
+.splash-langs {
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+}
+.splash-lang {
+  padding:6px 14px; border-radius:20px;
+  background:var(--surface); border:1px solid var(--border);
+  font-size:12px; color:var(--text-mid);
+}
+.splash-start {
+  width:100%; padding:18px;
+  background: linear-gradient(135deg, #c9a84c, #e8c96a);
+  border:none; border-radius:var(--radius);
+  font-family:inherit; font-size:15px; font-weight:700;
+  color:#0f0e0c; cursor:pointer; letter-spacing:.05em;
+  transition:all .2s;
+}
+.splash-start:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(201,168,76,.3); }
+.splash-divider {
+  display:flex; align-items:center; gap:12px;
+  color:var(--text-dim); font-size:11px; width:100%;
+}
+.splash-divider::before, .splash-divider::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+
+/* ════════════════════════════════
+   SCREEN: HOME
+════════════════════════════════ */
+#screen-home { background:var(--bg); }
+
+.home-header {
+  padding:52px 20px 20px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.home-logo {
+  font-family:'Playfair Display',serif;
+  font-size:28px; letter-spacing:.1em;
+  background:linear-gradient(135deg, #c9a84c, #e8c96a);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.home-actions { display:flex; gap:8px; align-items:center; }
+
+.home-hero {
+  padding:0 20px 24px;
+  border-bottom:1px solid var(--border);
+}
+.home-greeting {
+  font-size:22px; font-weight:300; line-height:1.4;
+  color:var(--text); margin-bottom:4px;
+}
+.home-greeting strong { color:var(--gold); font-weight:700; }
+.home-sub { font-size:12px; color:var(--text-dim); }
+
+.home-search-wrap {
+  padding:20px; display:flex; flex-direction:column; gap:12px;
+}
+.search-row { display:flex; gap:10px; }
+.search-input-wrap { flex:1; position:relative; }
+.search-clear {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  color:var(--text-dim); cursor:pointer; font-size:16px;
+  background:none; border:none;
+}
+.gps-btn {
+  padding:14px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); color:var(--gold); cursor:pointer;
+  font-size:18px; transition:all .2s; flex-shrink:0;
+}
+.gps-btn:hover { background:var(--gold-dim); }
+
+.section-title {
+  font-size:11px; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--text-dim); font-weight:500;
+}
+
+.dest-scroll {
+  display:flex; gap:8px; overflow-x:auto; padding:0 20px;
+  scrollbar-width:none;
+}
+.dest-scroll::-webkit-scrollbar { display:none; }
+
+.dest-card {
+  flex-shrink:0; width:110px; height:130px;
+  border-radius:var(--radius); overflow:hidden; position:relative;
+  cursor:pointer; transition:transform .2s;
+  border:1px solid var(--border);
+}
+.dest-card:hover { transform:scale(1.03); }
+.dest-card-bg {
+  width:100%; height:100%; display:flex;
+  align-items:center; justify-content:center;
+  font-size:40px;
+}
+.dest-card-overlay {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:8px 10px;
+  background:linear-gradient(transparent, rgba(0,0,0,.8));
+}
+.dest-card-name { font-size:13px; font-weight:500; }
+.dest-card-en { font-size:10px; color:rgba(255,255,255,.5); }
+
+.dest-bgs {
+  tokyo: 'linear-gradient(135deg,#1a1f3a,#2d3561)';
+}
+
+.home-next-wrap { padding:20px; margin-top:auto; }
+
+/* ════════════════════════════════
+   SCREEN: QUESTIONS
+════════════════════════════════ */
+#screen-questions { background:var(--bg); }
+
+.q-header {
+  padding:52px 20px 20px;
+  border-bottom:1px solid var(--border);
+}
+.q-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.q-back { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:20px; padding:0; }
+.q-back:hover { color:var(--text); }
+.q-progress-text { font-size:11px; color:var(--text-dim); letter-spacing:.1em; }
+.q-progress-bar { height:2px; background:var(--border); border-radius:1px; }
+.q-progress-fill { height:100%; background:var(--gold); border-radius:1px; transition:width .4s ease; }
+.q-city {
+  font-family:'Playfair Display',serif;
+  font-size:30px; font-weight:400; color:var(--text);
+  margin-top:12px; letter-spacing:.03em;
+}
+.q-city-sub { font-size:12px; color:var(--text-dim); margin-top:2px; }
+
+.q-body { flex:1; padding:24px 20px; overflow-y:auto; display:flex; flex-direction:column; gap:28px; }
+
+.q-block {}
+.q-label {
+  display:flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:500; color:var(--text);
+  margin-bottom:12px;
+}
+.q-emoji { font-size:20px; }
+
+.q-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.q-opt {
+  padding:14px 10px; background:var(--surface); border:1.5px solid var(--border);
+  border-radius:var(--radius-sm); cursor:pointer; text-align:center;
+  transition:all .15s; font-family:inherit;
+}
+.q-opt-icon { font-size:22px; margin-bottom:6px; display:block; }
+.q-opt-label { font-size:12px; color:var(--text-dim); line-height:1.4; }
+.q-opt:hover { border-color:var(--gold); }
+.q-opt.selected { background:var(--gold-dim); border-color:var(--gold); }
+.q-opt.selected .q-opt-label { color:var(--gold); }
+
+.q-footer {
+  padding:16px 20px 32px;
+  border-top:1px solid var(--border);
+}
+
+/* ════════════════════════════════
+   SCREEN: LOADING
+════════════════════════════════ */
+#screen-loading {
+  background:var(--bg);
+  justify-content:center; align-items:center;
+  gap:32px; padding:40px;
+}
+.load-orb {
+  width:100px; height:100px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #e8c96a, #c9a84c 50%, #8a6020);
+  box-shadow:0 0 60px rgba(201,168,76,.4);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform:scale(1); box-shadow:0 0 60px rgba(201,168,76,.4); }
+  50% { transform:scale(1.08); box-shadow:0 0 90px rgba(201,168,76,.6); }
+}
+.load-city {
+  font-family:'Playfair Display',serif;
+  font-size:40px; text-align:center; color:var(--text);
+}
+.load-label {
+  font-size:13px; color:var(--text-dim);
+  letter-spacing:.08em; text-align:center;
+}
+.load-steps { display:flex; flex-direction:column; gap:12px; width:100%; max-width:280px; }
+.load-step {
+  display:flex; align-items:center; gap:12px;
+  font-size:13px; color:var(--border);
+  transition:color .5s, transform .3s;
+}
+.load-step.done { color:var(--text-dim); }
+.load-step.active { color:var(--gold); transform:translateX(4px); }
+.load-step-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:currentColor; flex-shrink:0;
+}
+
+/* ════════════════════════════════
+   SCREEN: RESULT
+════════════════════════════════ */
+#screen-result { background:var(--bg); }
+
+.result-header {
+  padding:52px 20px 20px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.result-top { display:flex; justify-content:space-between; align-items:flex-start; }
+.result-city {
+  font-family:'Playfair Display',serif;
+  font-size:36px; font-weight:700; color:var(--text);
+  letter-spacing:.03em;
+}
+.result-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+
+.result-body { flex:1; overflow-y:auto; padding:0 0 100px; }
+
+.result-section {
+  padding:20px; border-bottom:1px solid var(--border);
+}
+.result-section-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--gold);
+  margin-bottom:14px;
+}
+
+.result-content {
+  font-size:14px; line-height:1.9; color:var(--text-mid);
+  white-space:pre-wrap; word-break:break-word;
+}
+.result-content strong { color:var(--text); font-weight:600; }
+
+/* Timeline */
+.timeline { display:flex; flex-direction:column; gap:0; }
+.tl-item { display:flex; gap:14px; }
+.tl-left { display:flex; flex-direction:column; align-items:center; width:44px; flex-shrink:0; }
+.tl-time { font-size:11px; color:var(--gold); font-weight:700; letter-spacing:.04em; text-align:center; line-height:1.2; }
+.tl-line { flex:1; width:1px; background:var(--border); margin:4px 0; min-height:20px; }
+.tl-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:4px; }
+.tl-right { padding-bottom:20px; flex:1; padding-top:2px; }
+.tl-title { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.tl-desc { font-size:13px; color:var(--text-dim); line-height:1.6; }
+
+/* Restaurant card */
+.rest-card {
+  display:flex; gap:12px; padding:12px;
+  background:var(--surface); border-radius:var(--radius-sm);
+  border:1px solid var(--border); margin-bottom:8px;
+}
+.rest-icon { font-size:28px; width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.rest-info { flex:1; }
+.rest-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.rest-desc { font-size:12px; color:var(--text-dim); line-height:1.5; }
+.rest-price { font-size:11px; color:var(--gold); margin-top:4px; }
+
+/* Hotel card */
+.hotel-card {
+  padding:14px; background:var(--surface);
+  border-radius:var(--radius-sm); border:1px solid var(--border);
+  margin-bottom:8px;
+}
+.hotel-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.hotel-desc { font-size:12px; color:var(--text-dim); line-height:1.5; }
+.hotel-price { font-size:12px; color:var(--gold); margin-top:6px; font-weight:500; }
+
+/* Tips */
+.tip-item {
+  display:flex; gap:10px; padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+.tip-item:last-child { border-bottom:none; }
+.tip-num {
+  width:22px; height:22px; border-radius:50%;
+  background:var(--gold-dim); color:var(--gold);
+  font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:1px;
+}
+.tip-text { font-size:13px; color:var(--text-dim); line-height:1.6; }
+
+/* Result footer */
+.result-footer {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px;
+  padding:12px 20px 28px;
+  background:linear-gradient(transparent, var(--bg) 30%);
+  display:flex; gap:8px;
+}
+
+/* ════════════════════════════════
+   SCREEN: PREMIUM
+════════════════════════════════ */
+#screen-premium { background:var(--bg); }
+.premium-header {
+  padding:52px 20px 0;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.premium-hero {
+  padding:32px 20px;
+  text-align:center;
+}
+.premium-crown { font-size:48px; margin-bottom:12px; }
+.premium-title {
+  font-family:'Playfair Display',serif;
+  font-size:28px; color:var(--text); margin-bottom:8px;
+}
+.premium-sub { font-size:13px; color:var(--text-dim); line-height:1.7; }
+
+.premium-features {
+  padding:0 20px; display:flex; flex-direction:column; gap:10px;
+}
+.pf-item {
+  display:flex; gap:14px; padding:14px;
+  background:var(--surface); border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+}
+.pf-icon { font-size:24px; flex-shrink:0; }
+.pf-text {}
+.pf-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.pf-desc { font-size:12px; color:var(--text-dim); line-height:1.5; }
+
+.premium-plans {
+  padding:24px 20px; display:flex; flex-direction:column; gap:10px;
+}
+.plan-card {
+  padding:16px; border-radius:var(--radius);
+  border:1.5px solid var(--border);
+  cursor:pointer; transition:all .2s; position:relative;
+}
+.plan-card.recommended {
+  border-color:var(--gold);
+  background:var(--gold-dim);
+}
+.plan-badge {
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+  padding:3px 12px; border-radius:10px;
+  background:var(--gold); color:#0f0e0c;
+  font-size:10px; font-weight:700; letter-spacing:.06em;
+  white-space:nowrap;
+}
+.plan-name { font-size:13px; color:var(--text-dim); margin-bottom:4px; }
+.plan-price { font-size:24px; font-weight:700; color:var(--text); }
+.plan-price span { font-size:13px; font-weight:400; color:var(--text-dim); }
+.plan-desc { font-size:12px; color:var(--text-dim); margin-top:4px; }
+
+.premium-footer { padding:0 20px 40px; }
+
+/* ════════════════════════════════
+   TOAST
+════════════════════════════════ */
+#toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:10px 16px;
+  font-size:13px; color:var(--text-mid);
+  opacity:0; transition:all .3s; pointer-events:none;
+  white-space:nowrap; z-index:1000;
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ════════════════════════════════
+   FREE USAGE COUNTER
+════════════════════════════════ */
+.usage-bar-wrap { padding:0 20px 16px; }
+.usage-bar-top { display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:6px; }
+.usage-bar { height:4px; background:var(--surface2); border-radius:2px; }
+.usage-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--green),var(--gold)); transition:width .5s; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ SPLASH ══ -->
+<div id="screen-splash" class="screen active">
+  <div class="splash-logo display">TABI</div>
+  <p class="splash-tagline" id="splash-text">AIがあなただけの旅程を提案<br>飲食店・宿泊先・観光スポットを一括ガイド</p>
+  <div class="splash-langs">
+    <span class="splash-lang">🇯🇵 日本語</span>
+    <span class="splash-lang">🇺🇸 English</span>
+    <span class="splash-lang">🇨🇳 中文</span>
+    <span class="splash-lang">🇰🇷 한국어</span>
+  </div>
+  <div class="lang-bar" style="width:100%">
+    <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+  </div>
+  <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
+  <div class="splash-divider">無料で3回まで利用可能</div>
+  <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7" id="splash-note">
+    プレミアムプランで無制限利用・詳細プランが解放されます
+  </p>
+</div>
+
+<!-- ══ HOME ══ -->
+<div id="screen-home" class="screen">
+  <div class="home-header">
+    <div class="home-logo display">TABI</div>
+    <div class="home-actions">
+      <div class="lang-bar" style="width:auto">
+        <button class="lang-btn active" onclick="setLang('ja')">JP</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('zh')">中</button>
+        <button class="lang-btn" onclick="setLang('ko')">한</button>
+      </div>
+      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
+    </div>
+  </div>
+
+  <div class="home-hero">
+    <div class="home-greeting" id="home-greeting">どこへ行きますか？<br><strong>目的地を入力してください</strong></div>
+    <div class="home-sub" id="home-sub">AIが旅程・グルメ・宿泊先を提案します</div>
+  </div>
+
+  <div class="home-search-wrap">
+    <div class="section-title" id="label-destination" style="margin-bottom:8px">目的地</div>
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <input type="text" class="input-field" id="city-input"
+          placeholder="例：京都、Tokyo、首尔..."
+          autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="search-clear" onclick="clearCity()" id="clear-btn" style="display:none">✕</button>
+      </div>
+      <button class="gps-btn" onclick="useGPS()" title="GPS">📍</button>
+    </div>
+    <div class="section-title" id="label-popular">人気の目的地</div>
+    <div class="dest-scroll" id="dest-chips"></div>
+  </div>
+
+  <div class="usage-bar-wrap">
+    <div class="usage-bar-top">
+      <span id="usage-label">無料残り回数</span>
+      <span id="usage-count">3 / 3</span>
+    </div>
+    <div class="usage-bar">
+      <div class="usage-fill" id="usage-fill" style="width:100%"></div>
+    </div>
+  </div>
+
+  <div class="home-next-wrap">
+    <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
+      <span id="home-next-label">目的地を入力してください</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ QUESTIONS ══ -->
+<div id="screen-questions" class="screen">
+  <div class="q-header">
+    <div class="q-nav">
+      <button class="q-back" onclick="showScreen('screen-home')">←</button>
+      <span class="q-progress-text" id="q-progress-text">0 / 5</span>
+    </div>
+    <div class="q-progress-bar">
+      <div class="q-progress-fill" id="q-progress-fill" style="width:0%"></div>
+    </div>
+    <div class="q-city display" id="q-city-name">京都</div>
+    <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
+  </div>
+
+  <div class="q-body" id="q-body">
+    <!-- Dynamically rendered -->
+  </div>
+
+  <div class="q-footer">
+    <div id="q-error" style="display:none;margin-bottom:12px;padding:10px 14px;background:rgba(220,80,80,.1);border:1px solid rgba(220,80,80,.2);border-radius:8px;font-size:12px;color:#e07070;line-height:1.6"></div>
+    <button class="btn btn-gold" style="width:100%" id="generate-btn" onclick="generatePlan()" disabled>
+      <span id="generate-label">✨ 旅程を生成する</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ LOADING ══ -->
+<div id="screen-loading" class="screen">
+  <div class="load-orb"></div>
+  <div class="load-city display" id="load-city">京都</div>
+  <div class="load-label" id="load-label">AIが最適な旅程を設計しています…</div>
+  <div class="load-steps" id="load-steps"></div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div id="screen-result" class="screen">
+  <div class="result-header">
+    <div class="result-top">
+      <div>
+        <div class="result-city display" id="result-city">京都</div>
+        <div class="result-badges" id="result-badges"></div>
+      </div>
+      <button class="btn btn-ghost" onclick="showScreen('screen-home')" style="font-size:22px;padding:4px">✕</button>
+    </div>
+  </div>
+
+  <div class="result-body" id="result-body">
+    <!-- Dynamically rendered -->
+  </div>
+
+  <div class="result-footer">
+    <button class="btn btn-outline" style="flex:1" onclick="goToQuestions()" id="result-retry-btn">条件を変更</button>
+    <button class="btn btn-gold" style="flex:2" onclick="showScreen('screen-home')" id="result-new-btn">新しい旅を計画</button>
+  </div>
+</div>
+
+<!-- ══ PREMIUM ══ -->
+<div id="screen-premium" class="screen">
+  <div class="premium-header">
+    <button class="btn btn-ghost" onclick="goBack()" style="font-size:20px;padding:4px">←</button>
+    <div class="tag tag-gold">PREMIUM</div>
+    <div style="width:36px"></div>
+  </div>
+
+  <div class="premium-hero">
+    <div class="premium-crown">👑</div>
+    <div class="premium-title display" id="premium-title">TABIプレミアム</div>
+    <p class="premium-sub" id="premium-sub">旅をもっと深く、もっと自由に</p>
+  </div>
+
+  <div class="premium-features">
+    <div class="pf-item">
+      <div class="pf-icon">♾️</div>
+      <div class="pf-text">
+        <div class="pf-name" id="pf1-name">無制限プラン生成</div>
+        <div class="pf-desc" id="pf1-desc">何度でも旅程を作り直せます</div>
+      </div>
+    </div>
+    <div class="pf-item">
+      <div class="pf-icon">🗓️</div>
+      <div class="pf-text">
+        <div class="pf-name" id="pf2-name">複数日程プラン（最大7日間）</div>
+        <div class="pf-desc" id="pf2-desc">長期旅行も詳細にプランニング</div>
+      </div>
+    </div>
+    <div class="pf-item">
+      <div class="pf-icon">💾</div>
+      <div class="pf-text">
+        <div class="pf-name" id="pf3-name">旅程の保存・共有</div>
+        <div class="pf-desc" id="pf3-desc">お気に入りのプランをシェア</div>
+      </div>
+    </div>
+    <div class="pf-item">
+      <div class="pf-icon">🗺️</div>
+      <div class="pf-text">
+        <div class="pf-name" id="pf4-name">マップ連携</div>
+        <div class="pf-desc" id="pf4-desc">Google Mapsで即ナビ開始</div>
+      </div>
+    </div>
+    <div class="pf-item">
+      <div class="pf-icon">🌐</div>
+      <div class="pf-text">
+        <div class="pf-name" id="pf5-name">オフライン対応</div>
+        <div class="pf-desc" id="pf5-desc">電波のない場所でも旅程を確認</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="premium-plans">
+    <div class="plan-card">
+      <div class="plan-name" id="plan1-name">月額プラン</div>
+      <div class="plan-price">¥480 <span id="plan1-per">/ 月</span></div>
+      <div class="plan-desc" id="plan1-desc">いつでもキャンセル可能</div>
+    </div>
+    <div class="plan-card recommended">
+      <div class="plan-badge">おすすめ</div>
+      <div class="plan-name" id="plan2-name">年額プラン</div>
+      <div class="plan-price">¥3,800 <span id="plan2-per">/ 年</span></div>
+      <div class="plan-desc" id="plan2-desc">月額より34%お得 · 月あたり¥317</div>
+    </div>
+  </div>
+
+  <div class="premium-footer">
+    <button class="btn btn-gold" style="width:100%" onclick="showToast('近日公開予定です！')">
+      <span id="premium-cta">プレミアムを始める</span>
+    </button>
+    <p style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:12px" id="premium-note">
+      いつでもキャンセル可能 · 安全なStripe決済
+    </p>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+</div><!-- #app -->
+
+<script>
+// ════════════════════════════════
+// STATE
+// ════════════════════════════════
+let lang = 'ja';
+let currentCity = '';
+let answers = {};
+let freeUsage = 3;
+let prevScreen = 'screen-home';
+
+// ════════════════════════════════
+// I18N
+// ════════════════════════════════
+const T = {
+  ja: {
+    splashText: 'AIがあなただけの旅程を提案\n飲食店・宿泊先・観光スポットを一括ガイド',
+    splashStart: 'はじめる →',
+    splashNote: 'プレミアムプランで無制限利用・詳細プランが解放されます',
+    greeting: 'どこへ行きますか？\n{city}目的地を入力してください',
+    greetingCity: 'どこへ行きますか？\n<strong>{city}</strong>を探索する',
+    homeSub: 'AIが旅程・グルメ・宿泊先を提案します',
+    labelDest: '目的地',
+    labelPop: '人気の目的地',
+    usageLabel: '無料残り回数',
+    nextBtn: '目的地を入力してください',
+    nextBtnReady: '{city}を探索する →',
+    qSub: '旅のスタイルを教えてください',
+    generateBtn: '✨ 旅程を生成する',
+    loadLabel: 'AIが最適な旅程を設計しています…',
+    loadSteps: ['目的地情報を分析中', 'おすすめスポットを選定中', '旅程を組み立て中', '飲食店・宿泊先を調査中', '最終仕上げ中'],
+    retryBtn: '条件を変更',
+    newBtn: '新しい旅を計画',
+    questions: [
+      { key:'style', emoji:'🎯', label:'旅のスタイルは？', opts:[
+        {icon:'🏛️',label:'観光スポット巡り',val:'観光スポット・歴史文化巡り'},
+        {icon:'🍜',label:'グルメ重視',val:'グルメ・食べ歩き重視'},
+        {icon:'🌿',label:'自然・アウトドア',val:'自然・アウトドア体験'},
+        {icon:'🛍️',label:'ショッピング',val:'ショッピング・カフェ巡り'},
+      ]},
+      { key:'budget', emoji:'💰', label:'予算感は？', opts:[
+        {icon:'💴',label:'節約（〜¥5,000/日）',val:'節約重視（1日5,000円以内）'},
+        {icon:'💳',label:'普通（〜¥15,000/日）',val:'普通（1日5,000〜15,000円）'},
+        {icon:'✨',label:'少し贅沢',val:'少し贅沢（1日15,000〜30,000円）'},
+        {icon:'👑',label:'高級志向',val:'贅沢・高級志向（予算制限なし）'},
+      ]},
+      { key:'food', emoji:'🍽️', label:'食事の好みは？', opts:[
+        {icon:'🥢',label:'郷土料理・和食',val:'その土地の郷土料理・和食'},
+        {icon:'☕',label:'カフェ・洋食',val:'おしゃれなカフェ・洋食'},
+        {icon:'🍡',label:'B級グルメ',val:'コスパ重視・B級グルメ'},
+        {icon:'😊',label:'なんでもOK',val:'特にこだわりなし'},
+      ]},
+      { key:'member', emoji:'👥', label:'旅のメンバーは？', opts:[
+        {icon:'🧍',label:'ひとり旅',val:'ひとり旅'},
+        {icon:'💑',label:'カップル',val:'カップル・夫婦旅行'},
+        {icon:'👫',label:'友人グループ',val:'友人グループ旅行'},
+        {icon:'👨‍👩‍👧',label:'家族旅行',val:'子連れ家族旅行'},
+      ]},
+      { key:'days', emoji:'⏱️', label:'旅の日数は？', opts:[
+        {icon:'🌅',label:'日帰り',val:'日帰り（1日）'},
+        {icon:'🌙',label:'1泊2日',val:'1泊2日'},
+        {icon:'🌙🌙',label:'2泊3日',val:'2泊3日'},
+        {icon:'✈️',label:'3泊以上',val:'3泊以上の長旅'},
+      ]},
+    ],
+    destinations: [
+      {name:'京都',en:'Kyoto',icon:'🏯',bg:'#1e1a2e'},
+      {name:'東京',en:'Tokyo',icon:'🗼',bg:'#1a1e2e'},
+      {name:'大阪',en:'Osaka',icon:'🎭',bg:'#2e1a1a'},
+      {name:'沖縄',en:'Okinawa',icon:'🌺',bg:'#1a2e2a'},
+      {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
+      {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
+    ],
+    promptTemplate: (city, a) => `あなたは経験豊富な旅行コンシェルジュです。
+【目的地】${city}
+【旅のスタイル】${a.style}
+【予算】${a.budget}
+【食事の好み】${a.food}
+【旅のメンバー】${a.member}
+【旅の日数】${a.days}
+
+以下のJSON形式で旅程を返してください。他のテキストは一切含めず、JSONのみ返してください：
+
+{
+  "concept": "この旅のコンセプト（2〜3文）",
+  "timeline": [
+    {"time": "08:00", "title": "場所・活動名", "desc": "詳細説明（具体的な場所名・アドバイス含む）"}
+  ],
+  "restaurants": [
+    {"icon": "🍜", "name": "店名", "desc": "特徴・おすすめメニュー", "price": "価格帯"}
+  ],
+  "hotels": [
+    {"name": "宿泊施設名", "desc": "特徴・立地", "price": "価格帯（1泊）"}
+  ],
+  "tips": ["アドバイス1", "アドバイス2", "アドバイス3"]
+}
+
+timelineは${a.days === '日帰り（1日）' ? '6〜8' : '各日4〜6'}件、restaurantsは3〜4件、hotelsは${a.days === '日帰り（1日）' ? '0件（日帰りのため）' : '2〜3件'}、tipsは3件。実在する可能性が高い具体的な施設名を使ってください。`,
+    resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
+  },
+
+  en: {
+    splashText: 'AI-powered travel guide for Japan\nRestaurants · Hotels · Sightseeing all in one',
+    splashStart: 'Get Started →',
+    splashNote: 'Upgrade to Premium for unlimited plans & detailed itineraries',
+    greeting: 'Where are you going?\nEnter your destination',
+    greetingCity: 'Explore\n<strong>{city}</strong>',
+    homeSub: 'AI suggests itineraries, dining & accommodation',
+    labelDest: 'Destination',
+    labelPop: 'Popular Destinations',
+    usageLabel: 'Free uses left',
+    nextBtn: 'Enter a destination',
+    nextBtnReady: 'Explore {city} →',
+    qSub: 'Tell us your travel style',
+    generateBtn: '✨ Generate Itinerary',
+    loadLabel: 'AI is designing your perfect trip…',
+    loadSteps: ['Analyzing destination','Selecting top spots','Building itinerary','Finding restaurants & hotels','Final touches'],
+    retryBtn: 'Change preferences',
+    newBtn: 'Plan another trip',
+    questions: [
+      { key:'style', emoji:'🎯', label:'Travel style?', opts:[
+        {icon:'🏛️',label:'Sightseeing',val:'sightseeing and cultural experiences'},
+        {icon:'🍜',label:'Food-focused',val:'food tours and gourmet dining'},
+        {icon:'🌿',label:'Nature & outdoor',val:'nature and outdoor activities'},
+        {icon:'🛍️',label:'Shopping',val:'shopping and cafe hopping'},
+      ]},
+      { key:'budget', emoji:'💰', label:'Budget range?', opts:[
+        {icon:'💴',label:'Budget (¥5k/day)',val:'budget-friendly (under ¥5,000/day)'},
+        {icon:'💳',label:'Moderate (¥15k)',val:'moderate (¥5,000–¥15,000/day)'},
+        {icon:'✨',label:'Comfortable',val:'comfortable (¥15,000–¥30,000/day)'},
+        {icon:'👑',label:'Luxury',val:'luxury (no budget limit)'},
+      ]},
+      { key:'food', emoji:'🍽️', label:'Food preference?', opts:[
+        {icon:'🥢',label:'Local cuisine',val:'local and traditional Japanese cuisine'},
+        {icon:'☕',label:'Cafes & western',val:'trendy cafes and western food'},
+        {icon:'🍡',label:'Street food',val:'budget street food and local favorites'},
+        {icon:'😊',label:'No preference',val:'no preference, anything goes'},
+      ]},
+      { key:'member', emoji:'👥', label:'Traveling with?', opts:[
+        {icon:'🧍',label:'Solo',val:'solo traveler'},
+        {icon:'💑',label:'Couple',val:'couple or spouse'},
+        {icon:'👫',label:'Friend group',val:'group of friends'},
+        {icon:'👨‍👩‍👧',label:'Family',val:'family with children'},
+      ]},
+      { key:'days', emoji:'⏱️', label:'Trip length?', opts:[
+        {icon:'🌅',label:'Day trip',val:'day trip (1 day)'},
+        {icon:'🌙',label:'1 night',val:'1 night 2 days'},
+        {icon:'🌙🌙',label:'2 nights',val:'2 nights 3 days'},
+        {icon:'✈️',label:'3+ nights',val:'3 or more nights'},
+      ]},
+    ],
+    destinations: [
+      {name:'Kyoto',en:'京都',icon:'🏯',bg:'#1e1a2e'},
+      {name:'Tokyo',en:'東京',icon:'🗼',bg:'#1a1e2e'},
+      {name:'Osaka',en:'大阪',icon:'🎭',bg:'#2e1a1a'},
+      {name:'Okinawa',en:'沖縄',icon:'🌺',bg:'#1a2e2a'},
+      {name:'Hokkaido',en:'北海道',icon:'🦀',bg:'#1a2230'},
+      {name:'Nara',en:'奈良',icon:'🦌',bg:'#1e2a1a'},
+    ],
+    promptTemplate: (city, a) => `You are an expert travel concierge for Japan.
+City: ${city}
+Style: ${a.style}
+Budget: ${a.budget}
+Food: ${a.food}
+Group: ${a.member}
+Duration: ${a.days}
+
+Return ONLY a JSON object, no other text:
+{
+  "concept": "Trip concept (2-3 sentences)",
+  "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
+  "restaurants": [{"icon":"🍜","name":"Restaurant name","desc":"Description and recommendations","price":"Price range"}],
+  "hotels": [{"name":"Hotel name","desc":"Description and location","price":"Price per night"}],
+  "tips": ["Tip 1","Tip 2","Tip 3"]
+}
+Timeline: ${a.days === 'day trip (1 day)' ? '6-8' : '4-6 per day'} items. Restaurants: 3-4. Hotels: ${a.days === 'day trip (1 day)' ? '0 (day trip)' : '2-3'}. Tips: 3. Use realistic venue names.`,
+    resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
+  },
+
+  zh: {
+    splashText: 'AI为您规划专属日本旅程\n餐厅 · 住宿 · 景点一站式导览',
+    splashStart: '开始使用 →',
+    splashNote: '升级至高级版，享受无限次规划和详细行程',
+    greeting: '您想去哪里？\n请输入目的地',
+    greetingCity: '探索\n<strong>{city}</strong>',
+    homeSub: 'AI推荐行程、餐厅和住宿',
+    labelDest: '目的地',
+    labelPop: '热门目的地',
+    usageLabel: '免费剩余次数',
+    nextBtn: '请输入目的地',
+    nextBtnReady: '探索{city} →',
+    qSub: '告诉我们您的旅行风格',
+    generateBtn: '✨ 生成行程',
+    loadLabel: 'AI正在为您设计完美行程…',
+    loadSteps: ['分析目的地','筛选热门景点','制定行程','搜索餐厅和住宿','最终优化'],
+    retryBtn: '修改条件',
+    newBtn: '规划新旅程',
+    questions: [
+      { key:'style', emoji:'🎯', label:'旅行风格？', opts:[
+        {icon:'🏛️',label:'观光游览',val:'观光和文化体验'},
+        {icon:'🍜',label:'美食探索',val:'美食之旅和餐厅探索'},
+        {icon:'🌿',label:'自然户外',val:'自然和户外活动'},
+        {icon:'🛍️',label:'购物休闲',val:'购物和咖啡馆巡游'},
+      ]},
+      { key:'budget', emoji:'💰', label:'预算范围？', opts:[
+        {icon:'💴',label:'经济（¥5千/天）',val:'经济实惠（每天5000日元以内）'},
+        {icon:'💳',label:'适中（¥1.5万）',val:'适中（每天5000-15000日元）'},
+        {icon:'✨',label:'舒适',val:'舒适（每天15000-30000日元）'},
+        {icon:'👑',label:'豪华',val:'豪华（不限预算）'},
+      ]},
+      { key:'food', emoji:'🍽️', label:'饮食偏好？', opts:[
+        {icon:'🥢',label:'当地料理',val:'当地和传统日本料理'},
+        {icon:'☕',label:'咖啡馆和西餐',val:'时尚咖啡馆和西餐'},
+        {icon:'🍡',label:'街头小吃',val:'平价街头美食'},
+        {icon:'😊',label:'无特别偏好',val:'无特别偏好'},
+      ]},
+      { key:'member', emoji:'👥', label:'出行人员？', opts:[
+        {icon:'🧍',label:'独行',val:'独自旅行'},
+        {icon:'💑',label:'情侣',val:'情侣或夫妻旅行'},
+        {icon:'👫',label:'朋友团',val:'朋友群体旅行'},
+        {icon:'👨‍👩‍👧',label:'家庭出游',val:'带孩子的家庭旅行'},
+      ]},
+      { key:'days', emoji:'⏱️', label:'旅行天数？', opts:[
+        {icon:'🌅',label:'当天往返',val:'当天往返'},
+        {icon:'🌙',label:'1晚2天',val:'1晚2天'},
+        {icon:'🌙🌙',label:'2晚3天',val:'2晚3天'},
+        {icon:'✈️',label:'3晚以上',val:'3晚以上'},
+      ]},
+    ],
+    destinations: [
+      {name:'京都',en:'Kyoto',icon:'🏯',bg:'#1e1a2e'},
+      {name:'东京',en:'Tokyo',icon:'🗼',bg:'#1a1e2e'},
+      {name:'大阪',en:'Osaka',icon:'🎭',bg:'#2e1a1a'},
+      {name:'冲绳',en:'Okinawa',icon:'🌺',bg:'#1a2e2a'},
+      {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
+      {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
+    ],
+    promptTemplate: (city, a) => `你是一位日本旅游专家。
+目的地：${city}
+风格：${a.style}
+预算：${a.budget}
+餐饮：${a.food}
+同行：${a.member}
+天数：${a.days}
+
+仅返回以下JSON格式，不要包含其他文字：
+{
+  "concept": "旅行概念（2-3句话）",
+  "timeline": [{"time":"09:00","title":"地点/活动名称","desc":"详细说明（包含具体地点名称）"}],
+  "restaurants": [{"icon":"🍜","name":"餐厅名称","desc":"描述和推荐菜品","price":"价格范围"}],
+  "hotels": [{"name":"酒店名称","desc":"描述和位置","price":"每晚价格"}],
+  "tips": ["建议1","建议2","建议3"]
+}`,
+    resultLabels: { concept:'✦ 旅行概念', timeline:'🗓 行程安排', restaurants:'🍜 推荐餐厅', hotels:'🏨 推荐住宿', tips:'💡 旅行贴士' },
+  },
+
+  ko: {
+    splashText: 'AI가 당신만의 일본 여행을 계획\n맛집 · 숙소 · 관광지 원스톱 가이드',
+    splashStart: '시작하기 →',
+    splashNote: '프리미엄으로 무제한 사용 및 상세 일정을 이용하세요',
+    greeting: '어디로 가시나요？\n목적지를 입력해 주세요',
+    greetingCity: '<strong>{city}</strong>\n여행 계획하기',
+    homeSub: 'AI가 일정, 맛집, 숙소를 추천합니다',
+    labelDest: '목적지',
+    labelPop: '인기 목적지',
+    usageLabel: '무료 남은 횟수',
+    nextBtn: '목적지를 입력해 주세요',
+    nextBtnReady: '{city} 탐색하기 →',
+    qSub: '여행 스타일을 알려주세요',
+    generateBtn: '✨ 일정 생성하기',
+    loadLabel: 'AI가 최적의 여행 일정을 만들고 있습니다…',
+    loadSteps: ['목적지 정보 분석 중','추천 스팟 선정 중','일정 구성 중','맛집 및 숙소 조사 중','최종 마무리 중'],
+    retryBtn: '조건 변경',
+    newBtn: '새 여행 계획',
+    questions: [
+      { key:'style', emoji:'🎯', label:'여행 스타일은？', opts:[
+        {icon:'🏛️',label:'관광 명소',val:'관광지 및 문화 체험'},
+        {icon:'🍜',label:'맛집 탐방',val:'미식 투어 및 맛집 탐방'},
+        {icon:'🌿',label:'자연 아웃도어',val:'자연 및 아웃도어 체험'},
+        {icon:'🛍️',label:'쇼핑',val:'쇼핑 및 카페 탐방'},
+      ]},
+      { key:'budget', emoji:'💰', label:'예산은？', opts:[
+        {icon:'💴',label:'절약（¥5천/일）',val:'절약 여행 (하루 5,000엔 이내)'},
+        {icon:'💳',label:'보통（¥1.5만）',val:'보통 (하루 5,000~15,000엔)'},
+        {icon:'✨',label:'여유롭게',val:'여유로운 여행 (하루 15,000~30,000엔)'},
+        {icon:'👑',label:'럭셔리',val:'럭셔리 여행 (예산 무제한)'},
+      ]},
+      { key:'food', emoji:'🍽️', label:'음식 선호도는？', opts:[
+        {icon:'🥢',label:'향토 요리',val:'현지 전통 일본 요리'},
+        {icon:'☕',label:'카페 & 양식',val:'트렌디한 카페 및 양식'},
+        {icon:'🍡',label:'B급 맛집',val:'가성비 길거리 음식'},
+        {icon:'😊',label:'상관없음',val:'특별한 선호 없음'},
+      ]},
+      { key:'member', emoji:'👥', label:'함께하는 사람은？', opts:[
+        {icon:'🧍',label:'혼자 여행',val:'혼자 여행'},
+        {icon:'💑',label:'커플',val:'커플 또는 부부 여행'},
+        {icon:'👫',label:'친구 그룹',val:'친구들과 여행'},
+        {icon:'👨‍👩‍👧',label:'가족 여행',val:'아이와 함께하는 가족 여행'},
+      ]},
+      { key:'days', emoji:'⏱️', label:'여행 기간은？', opts:[
+        {icon:'🌅',label:'당일치기',val:'당일치기'},
+        {icon:'🌙',label:'1박 2일',val:'1박 2일'},
+        {icon:'🌙🌙',label:'2박 3일',val:'2박 3일'},
+        {icon:'✈️',label:'3박 이상',val:'3박 이상'},
+      ]},
+    ],
+    destinations: [
+      {name:'교토',en:'Kyoto',icon:'🏯',bg:'#1e1a2e'},
+      {name:'도쿄',en:'Tokyo',icon:'🗼',bg:'#1a1e2e'},
+      {name:'오사카',en:'Osaka',icon:'🎭',bg:'#2e1a1a'},
+      {name:'오키나와',en:'Okinawa',icon:'🌺',bg:'#1a2e2a'},
+      {name:'홋카이도',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
+      {name:'나라',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
+    ],
+    promptTemplate: (city, a) => `당신은 일본 여행 전문 컨시어지입니다.
+목적지: ${city}
+여행 스타일: ${a.style}
+예산: ${a.budget}
+음식: ${a.food}
+동행: ${a.member}
+기간: ${a.days}
+
+다른 텍스트 없이 JSON만 반환해 주세요:
+{
+  "concept": "여행 콘셉트 (2-3문장)",
+  "timeline": [{"time":"09:00","title":"장소/활동명","desc":"구체적인 장소명 포함 상세 설명"}],
+  "restaurants": [{"icon":"🍜","name":"식당명","desc":"설명 및 추천 메뉴","price":"가격대"}],
+  "hotels": [{"name":"숙소명","desc":"설명 및 위치","price":"1박 가격"}],
+  "tips": ["팁1","팁2","팁3"]
+}`,
+    resultLabels: { concept:'✦ 여행 콘셉트', timeline:'🗓 일정', restaurants:'🍜 추천 맛집', hotels:'🏨 추천 숙소', tips:'💡 여행 팁' },
+  },
+};
+
+// ════════════════════════════════
+// LANG
+// ════════════════════════════════
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active',
+      (l==='ja'&&b.textContent.includes('日')) ||
+      (l==='en'&&b.textContent.includes('EN')||b.textContent.includes('English')) ||
+      (l==='zh'&&b.textContent.includes('中')) ||
+      (l==='ko'&&b.textContent.includes('한'))
+    );
+  });
+  const t = T[lang];
+  // splash
+  const st = document.getElementById('splash-text');
+  if(st) st.textContent = t.splashText;
+  const ss = document.getElementById('splash-start-btn');
+  if(ss) ss.textContent = t.splashStart;
+  const sn = document.getElementById('splash-note');
+  if(sn) sn.textContent = t.splashNote;
+  // home
+  updateHomeUI();
+  // dest chips
+  renderDestChips();
+}
+
+function updateHomeUI() {
+  const t = T[lang];
+  const greeting = document.getElementById('home-greeting');
+  if(greeting) {
+    if(currentCity) {
+      greeting.innerHTML = t.greetingCity.replace('{city}', currentCity);
+    } else {
+      greeting.innerHTML = t.greeting.replace('{city}','');
+    }
+  }
+  const sub = document.getElementById('home-sub');
+  if(sub) sub.textContent = t.homeSub;
+  const ld = document.getElementById('label-destination');
+  if(ld) ld.textContent = t.labelDest;
+  const lp = document.getElementById('label-popular');
+  if(lp) lp.textContent = t.labelPop;
+  const ul = document.getElementById('usage-label');
+  if(ul) ul.textContent = t.usageLabel;
+  updateUsageDisplay();
+  const nb = document.getElementById('home-next-label');
+  if(nb) {
+    nb.textContent = currentCity
+      ? t.nextBtnReady.replace('{city}', currentCity)
+      : t.nextBtn;
+  }
+  document.getElementById('home-next-btn').disabled = !currentCity;
+}
+
+// ════════════════════════════════
+// SCREENS
+// ════════════════════════════════
+function showScreen(id) {
+  if(id !== 'screen-premium') prevScreen = document.querySelector('.screen.active')?.id || 'screen-home';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goBack() { showScreen(prevScreen); }
+
+// ════════════════════════════════
+// DESTINATIONS
+// ════════════════════════════════
+function renderDestChips() {
+  const wrap = document.getElementById('dest-chips');
+  if(!wrap) return;
+  const dests = T[lang].destinations;
+  wrap.innerHTML = dests.map(d => `
+    <div class="dest-card" onclick="selectCity('${d.name}')" style="background:${d.bg}">
+      <div class="dest-card-bg">${d.icon}</div>
+      <div class="dest-card-overlay">
+        <div class="dest-card-name">${d.name}</div>
+        <div class="dest-card-en">${d.en}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════
+// CITY INPUT
+// ════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderDestChips();
+  updateUsageDisplay();
+
+  document.getElementById('city-input').addEventListener('input', function() {
+    currentCity = this.value.trim();
+    document.getElementById('clear-btn').style.display = currentCity ? 'block' : 'none';
+    updateHomeUI();
+  });
+
+  document.getElementById('city-input').addEventListener('keydown', e => {
+    if(e.key === 'Enter' && currentCity) goToQuestions();
+  });
+});
+
+function clearCity() {
+  currentCity = '';
+  document.getElementById('city-input').value = '';
+  document.getElementById('clear-btn').style.display = 'none';
+  updateHomeUI();
+}
+
+function selectCity(city) {
+  currentCity = city;
+  document.getElementById('city-input').value = city;
+  document.getElementById('clear-btn').style.display = 'block';
+  updateHomeUI();
+}
+
+function useGPS() {
+  if(!navigator.geolocation) { showToast('GPSが利用できません'); return; }
+  const btn = document.querySelector('.gps-btn');
+  btn.textContent = '⏳';
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=${lang}`);
+      const d = await r.json();
+      const city = d.address.city || d.address.town || d.address.village || d.address.county || 'Current Location';
+      selectCity(city);
+    } catch(e) {
+      selectCity('Current Location');
+    }
+    btn.textContent = '📍';
+  }, () => {
+    showToast('位置情報を取得できませんでした');
+    btn.textContent = '📍';
+  });
+}
+
+// ════════════════════════════════
+// USAGE
+// ════════════════════════════════
+function updateUsageDisplay() {
+  document.getElementById('usage-count').textContent = `${freeUsage} / 3`;
+  document.getElementById('usage-fill').style.width = `${(freeUsage/3)*100}%`;
+}
+
+// ════════════════════════════════
+// QUESTIONS
+// ════════════════════════════════
+function goToQuestions() {
+  if(!currentCity) return;
+  answers = {};
+  const t = T[lang];
+  document.getElementById('q-city-name').textContent = currentCity;
+  document.getElementById('q-city-sub').textContent = t.qSub;
+  document.getElementById('generate-btn').disabled = true;
+  document.getElementById('generate-label').textContent = t.generateBtn;
+  document.getElementById('q-error').style.display = 'none';
+
+  // Render questions
+  const body = document.getElementById('q-body');
+  body.innerHTML = t.questions.map(q => `
+    <div class="q-block">
+      <div class="q-label">
+        <span class="q-emoji">${q.emoji}</span>${q.label}
+      </div>
+      <div class="q-grid">
+        ${q.opts.map(o => `
+          <button class="q-opt" data-q="${q.key}" data-v="${o.val}" onclick="selectOpt(this)">
+            <span class="q-opt-icon">${o.icon}</span>
+            <span class="q-opt-label">${o.label}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  showScreen('screen-questions');
+}
+
+function selectOpt(btn) {
+  const q = btn.dataset.q;
+  document.querySelectorAll(`[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[q] = btn.dataset.v;
+
+  const keys = T[lang].questions.map(q=>q.key);
+  const done = keys.filter(k=>answers[k]).length;
+  document.getElementById('q-progress-fill').style.width = `${(done/keys.length)*100}%`;
+  document.getElementById('q-progress-text').textContent = `${done} / ${keys.length}`;
+  document.getElementById('generate-btn').disabled = done < keys.length;
+}
+
+// ════════════════════════════════
+// GENERATE
+// ════════════════════════════════
+async function generatePlan() {
+  if(freeUsage <= 0) {
+    showScreen('screen-premium');
+    return;
+  }
+
+  showScreen('screen-loading');
+  document.getElementById('load-city').textContent = currentCity;
+
+  const t = T[lang];
+  document.getElementById('load-label').textContent = t.loadLabel;
+  const stepsEl = document.getElementById('load-steps');
+  stepsEl.innerHTML = t.loadSteps.map((s,i) => `
+    <div class="load-step" id="ls${i}">
+      <div class="load-step-dot"></div>${s}
+    </div>
+  `).join('');
+
+  // Animate loading steps
+  for(let i=0;i<t.loadSteps.length;i++) {
+    await delay(500);
+    if(i>0) document.getElementById(`ls${i-1}`).className='load-step done';
+    document.getElementById(`ls${i}`).className='load-step active';
+  }
+
+  const prompt = t.promptTemplate(currentCity, answers);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-version':'2023-06-01',
+      },
+      body: JSON.stringify({
+        model:'claude-opus-4-5',
+        max_tokens:2000,
+        system:'You are a travel concierge. Return ONLY valid JSON, no markdown, no code blocks, no explanations.',
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    if(!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    let raw = data.content.map(c=>c.text||'').join('');
+    raw = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    let plan;
+    try { plan = JSON.parse(raw); }
+    catch(e) { throw new Error('AIの応答をパースできませんでした。もう一度お試しください。'); }
+
+    t.loadSteps.forEach((_,i) => {
+      const el = document.getElementById(`ls${i}`);
+      if(el) el.className='load-step done';
+    });
+
+    freeUsage = Math.max(0, freeUsage-1);
+    updateUsageDisplay();
+    renderResult(plan);
+
+  } catch(e) {
+    showScreen('screen-questions');
+    const errEl = document.getElementById('q-error');
+    errEl.textContent = `エラー: ${e.message}`;
+    errEl.style.display = 'block';
+  }
+}
+
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ════════════════════════════════
+// RENDER RESULT
+// ════════════════════════════════
+function renderResult(plan) {
+  const t = T[lang];
+  document.getElementById('result-city').textContent = currentCity;
+
+  // Badges
+  const badges = document.getElementById('result-badges');
+  badges.innerHTML = [
+    `<span class="tag tag-gold">${answers.style?.split(/[・,]/)[0] || ''}</span>`,
+    `<span class="tag tag-green">${answers.days || ''}</span>`,
+  ].join('');
+
+  const body = document.getElementById('result-body');
+  let html = '';
+
+  // Concept
+  if(plan.concept) {
+    html += `<div class="result-section">
+      <div class="result-section-title">${t.resultLabels.concept}</div>
+      <div class="result-content">${plan.concept}</div>
+    </div>`;
+  }
+
+  // Timeline
+  if(plan.timeline?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">${t.resultLabels.timeline}</div>
+      <div class="timeline">
+        ${plan.timeline.map((item,i) => `
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-time">${item.time||''}</div>
+              ${i < plan.timeline.length-1 ? '<div class="tl-line"></div>' : ''}
+            </div>
+            <div class="tl-right">
+              <div class="tl-title">${item.title||''}</div>
+              <div class="tl-desc">${item.desc||''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Restaurants
+  if(plan.restaurants?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">${t.resultLabels.restaurants}</div>
+      ${plan.restaurants.map(r => `
+        <div class="rest-card">
+          <div class="rest-icon">${r.icon||'🍽️'}</div>
+          <div class="rest-info">
+            <div class="rest-name">${r.name||''}</div>
+            <div class="rest-desc">${r.desc||''}</div>
+            <div class="rest-price">${r.price||''}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  // Hotels
+  if(plan.hotels?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">${t.resultLabels.hotels}</div>
+      ${plan.hotels.map(h => `
+        <div class="hotel-card">
+          <div class="hotel-name">🏨 ${h.name||''}</div>
+          <div class="hotel-desc">${h.desc||''}</div>
+          <div class="hotel-price">${h.price||''}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  // Tips
+  if(plan.tips?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">${t.resultLabels.tips}</div>
+      <div>
+        ${plan.tips.map((tip,i) => `
+          <div class="tip-item">
+            <div class="tip-num">${i+1}</div>
+            <div class="tip-text">${tip}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
+
+  body.innerHTML = html;
+
+  document.getElementById('result-retry-btn').textContent = t.retryBtn;
+  document.getElementById('result-new-btn').textContent = t.newBtn;
+
+  showScreen('screen-result');
+}
+
+// ════════════════════════════════
+// TOAST
+// ════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════
+// INIT
+// ════════════════════════════════
+setLang('ja');
+</script>
+</body>
+</html>
