@@ -1077,10 +1077,10 @@ function setLang(l) {
   lang = l;
   document.querySelectorAll('.lang-btn').forEach(b => {
     b.classList.toggle('active',
-      (l==='ja'&&b.textContent.includes('日')) ||
-      (l==='en'&&b.textContent.includes('EN')||b.textContent.includes('English')) ||
-      (l==='zh'&&b.textContent.includes('中')) ||
-      (l==='ko'&&b.textContent.includes('한'))
+      (l==='ja' && b.textContent.includes('日')) ||
+      (l==='en' && (b.textContent.includes('EN') || b.textContent.includes('English'))) ||
+      (l==='zh' && b.textContent.includes('中')) ||
+      (l==='ko' && b.textContent.includes('한'))
     );
   });
   const t = T[lang];
