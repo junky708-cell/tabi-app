@@ -1143,6 +1143,8 @@ function setLang(l) {
   const blQ = document.getElementById('back-label-q');
   if(blHome) blHome.textContent = backLabel;
   if(blQ) blQ.textContent = backLabel;
+  // 表示中のエラーメッセージを新しい言語でリセット（再生成時に正しい言語で出るよう消去）
+  clearError();
   // home
   updateHomeUI();
   // dest chips
@@ -1270,12 +1272,12 @@ function updateUsageDisplay() {
 function goToQuestions() {
   if(!currentCity) return;
   answers = {};
+  clearError();
   const t = T[lang];
   document.getElementById('q-city-name').textContent = currentCity;
   document.getElementById('q-city-sub').textContent = t.qSub;
   document.getElementById('generate-btn').disabled = true;
   document.getElementById('generate-label').textContent = t.generateBtn;
-  document.getElementById('q-error').style.display = 'none';
 
   // Render questions
   const body = document.getElementById('q-body');
@@ -1368,7 +1370,7 @@ async function generatePlan() {
     try { plan = JSON.parse(raw); }
     catch(e) {
       const parseErrMsg = {ja:'AIの応答をパースできませんでした。もう一度お試しください。', en:'Failed to parse AI response. Please try again.', zh:'无法解析AI响应，请重试。', ko:'AI 응답을 파싱할 수 없습니다. 다시 시도해 주세요.'};
-      throw new Error(parseErrMsg[lang] || parseErrMsg.ja);
+      throw new Error(parseErrMsg[lang] || parseErrMsg.en);
     }
 
     t.loadSteps.forEach((_,i) => {
@@ -1538,6 +1540,12 @@ function hideBackWarning() {
 function confirmGoBack() {
   hideBackWarning();
   goToQuestions();
+}
+
+// エラー表示をリセット
+function clearError() {
+  const errEl = document.getElementById('q-error');
+  if(errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
 }
 
 // ════════════════════════════════
