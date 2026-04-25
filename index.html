@@ -104,6 +104,9 @@ html, body {
 }
 .tag-gold { background:var(--gold-dim); color:var(--gold); }
 .tag-green { background:rgba(106,177,135,.12); color:var(--green); }
+.tag-blue { background:rgba(100,160,255,.12); color:#64a0ff; }
+.tag-purple { background:rgba(180,130,255,.12); color:#b482ff; }
+.tag-orange { background:rgba(255,160,80,.12); color:#ffa050; }
 
 .divider {
   height:1px; background:var(--border); margin:0;
@@ -1416,9 +1419,9 @@ function renderResult(plan) {
   badges.innerHTML = [
     answers.style   ? `<span class="tag tag-gold">${answers.style.split(/[・,（]/)[0].trim()}</span>` : '',
     answers.budget  ? `<span class="tag tag-green">${answers.budget.split(/[（]/)[0].trim()}</span>` : '',
-    answers.food    ? `<span class="tag">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
-    answers.member  ? `<span class="tag">${answers.member.split(/[・,（]/)[0].trim()}</span>` : '',
-    answers.days    ? `<span class="tag tag-green">${answers.days.split(/[（]/)[0].trim()}</span>` : '',
+    answers.food    ? `<span class="tag tag-blue">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
+    answers.member  ? `<span class="tag tag-purple">${answers.member.split(/[・,（]/)[0].trim()}</span>` : '',
+    answers.days    ? `<span class="tag tag-orange">${answers.days.split(/[（]/)[0].trim()}</span>` : '',
   ].join('');
 
   const body = document.getElementById('result-body');
