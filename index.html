@@ -1117,7 +1117,25 @@ function setLang(l) {
   if(retryBtn) retryBtn.textContent = t.retryBtn;
   const saveLabels = { ja:'💾 保存して条件変更', en:'💾 Save & Change', zh:'💾 保存并修改', ko:'💾 저장 후 변경' };
   const newBtn = document.getElementById('result-new-btn');
-  if(newBtn) newBtn.textContent = saveLabels[l] || saveLabels.ja;
+  if(newBtn) { newBtn.textContent = saveLabels[l] || saveLabels.ja; newBtn.onclick = showComingSoon; }
+  // premium page
+  const premiumTexts = {
+    ja: { title:'TABIプレミアム', sub:'旅をもっと深く、もっと自由に', pf1:'無制限プラン生成', pf1d:'何度でも旅程を作り直せます', pf2:'複数日程プラン（最大7日間）', pf2d:'長期旅行も詳細にプランニング', pf3:'旅程の保存・共有', pf3d:'お気に入りのプランをシェア', pf4:'マップ連携', pf4d:'Google Mapsで即ナビ開始', pf5:'オフライン対応', pf5d:'電波のない場所でも旅程を確認', p1name:'月額プラン', p1per:'/ 月', p1desc:'いつでもキャンセル可能', p2name:'年額プラン', p2per:'/ 年', p2desc:'月額より34%お得 · 月あたり¥317', cta:'プレミアムを始める', note:'いつでもキャンセル可能 · 安全なStripe決済' },
+    en: { title:'TABI Premium', sub:'Deeper travel, more freedom', pf1:'Unlimited plan generation', pf1d:'Regenerate itineraries as many times as you like', pf2:'Multi-day plans (up to 7 days)', pf2d:'Detailed planning for longer trips', pf3:'Save & share itineraries', pf3d:'Share your favorite plans', pf4:'Map integration', pf4d:'Launch navigation instantly in Google Maps', pf5:'Offline access', pf5d:'View your itinerary without internet', p1name:'Monthly plan', p1per:'/ mo', p1desc:'Cancel anytime', p2name:'Annual plan', p2per:'/ yr', p2desc:'34% cheaper than monthly · ¥317/mo', cta:'Start Premium', note:'Cancel anytime · Secure Stripe payment' },
+    zh: { title:'TABI高级版', sub:'更深入的旅行，更多自由', pf1:'无限次行程生成', pf1d:'随时重新规划行程', pf2:'多日行程（最多7天）', pf2d:'长途旅行也能详细规划', pf3:'保存和分享行程', pf3d:'分享您喜欢的行程', pf4:'地图集成', pf4d:'即时在Google Maps导航', pf5:'离线访问', pf5d:'无网络也能查看行程', p1name:'月付方案', p1per:'/ 月', p1desc:'随时取消', p2name:'年付方案', p2per:'/ 年', p2desc:'比月付便宜34% · 每月¥317', cta:'开始高级版', note:'随时取消 · 安全的Stripe支付' },
+    ko: { title:'TABI 프리미엄', sub:'더 깊은 여행, 더 많은 자유', pf1:'무제한 일정 생성', pf1d:'원하는 만큼 일정을 다시 만들 수 있어요', pf2:'다일정 플랜 (최대 7일)', pf2d:'장기 여행도 상세하게 플래닝', pf3:'일정 저장 및 공유', pf3d:'마음에 드는 플랜을 공유하세요', pf4:'지도 연동', pf4d:'Google Maps로 즉시 내비게이션 시작', pf5:'오프라인 지원', pf5d:'인터넷 없이도 일정 확인 가능', p1name:'월간 플랜', p1per:'/ 월', p1desc:'언제든지 취소 가능', p2name:'연간 플랜', p2per:'/ 년', p2desc:'월간보다 34% 저렴 · 월 ¥317', cta:'프리미엄 시작하기', note:'언제든지 취소 가능 · 안전한 Stripe 결제' },
+  };
+  const p = premiumTexts[l] || premiumTexts.ja;
+  const setT = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
+  setT('premium-title', p.title); setT('premium-sub', p.sub);
+  setT('pf1-name', p.pf1); setT('pf1-desc', p.pf1d);
+  setT('pf2-name', p.pf2); setT('pf2-desc', p.pf2d);
+  setT('pf3-name', p.pf3); setT('pf3-desc', p.pf3d);
+  setT('pf4-name', p.pf4); setT('pf4-desc', p.pf4d);
+  setT('pf5-name', p.pf5); setT('pf5-desc', p.pf5d);
+  setT('plan1-name', p.p1name); setT('plan1-per', p.p1per); setT('plan1-desc', p.p1desc);
+  setT('plan2-name', p.p2name); setT('plan2-per', p.p2per); setT('plan2-desc', p.p2desc);
+  setT('premium-cta', p.cta); setT('premium-note', p.note);
   // home
   updateHomeUI();
   // dest chips
@@ -1465,7 +1483,9 @@ function renderResult(plan) {
 
   document.getElementById('result-retry-btn').textContent = t.retryBtn;
   const saveBtnText = lang==='ja'?'💾 保存して条件変更':lang==='en'?'💾 Save & Change':lang==='zh'?'💾 保存并修改':'💾 저장 후 변경';
-  document.getElementById('result-new-btn').innerHTML = saveBtnText;
+  const saveBtn = document.getElementById('result-new-btn');
+  saveBtn.textContent = saveBtnText;
+  saveBtn.onclick = showComingSoon;
 
   showScreen('screen-result');
 }
