@@ -1090,7 +1090,7 @@ function updateHomeUI() {
   const t = T[lang];
   const greeting = document.getElementById('home-greeting');
   if(greeting) {
-    greeting.textContent = currentCity ? currentCity : t.greeting.replace('{city}','').replace('\n','');
+    greeting.textContent = t.greeting;
   }
   const sub = document.getElementById('home-sub');
   if(sub) sub.textContent = t.homeSub;
