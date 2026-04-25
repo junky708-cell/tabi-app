@@ -1411,11 +1411,14 @@ function renderResult(plan) {
   const t = T[lang];
   document.getElementById('result-city').textContent = currentCity;
 
-  // Badges
+  // Badges（設問の順番通り：スタイル・予算・食事・メンバー・日数）
   const badges = document.getElementById('result-badges');
   badges.innerHTML = [
-    `<span class="tag tag-gold">${answers.style?.split(/[・,]/)[0] || ''}</span>`,
-    `<span class="tag tag-green">${answers.days || ''}</span>`,
+    answers.style   ? `<span class="tag tag-gold">${answers.style.split(/[・,（]/)[0].trim()}</span>` : '',
+    answers.budget  ? `<span class="tag tag-green">${answers.budget.split(/[（]/)[0].trim()}</span>` : '',
+    answers.food    ? `<span class="tag">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
+    answers.member  ? `<span class="tag">${answers.member.split(/[・,（]/)[0].trim()}</span>` : '',
+    answers.days    ? `<span class="tag tag-green">${answers.days.split(/[（]/)[0].trim()}</span>` : '',
   ].join('');
 
   const body = document.getElementById('result-body');
