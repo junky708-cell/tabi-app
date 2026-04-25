@@ -547,22 +547,14 @@ html, body {
 
 <!-- ══ HOME ══ -->
 <div id="screen-home" class="screen">
-  <div class="home-header">
-    <div class="home-logo display">TABI</div>
-    <div class="home-actions">
-      <div class="lang-bar" style="width:auto">
-        <button class="lang-btn active" onclick="setLang('ja')">JP</button>
-        <button class="lang-btn" onclick="setLang('en')">EN</button>
-        <button class="lang-btn" onclick="setLang('zh')">中</button>
-        <button class="lang-btn" onclick="setLang('ko')">한</button>
-      </div>
+  <div class="q-header">
+    <div class="q-nav">
+      <button class="q-back" onclick="showScreen('screen-splash')">←</button>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
     </div>
-  </div>
-
-  <div class="home-hero">
-    <div class="home-greeting" id="home-greeting">どこへ行きますか？<br><strong>目的地を入力してください</strong></div>
-    <div class="home-sub" id="home-sub">AIが旅程・グルメ・宿泊先を提案します</div>
+    <div class="q-progress-bar"><div style="height:100%;width:0%"></div></div>
+    <div class="q-city display" id="home-greeting">目的地を選択</div>
+    <div class="q-city-sub" id="home-sub">都市名を入力するか、人気の目的地から選んでください</div>
   </div>
 
   <div class="home-search-wrap">
@@ -1098,11 +1090,7 @@ function updateHomeUI() {
   const t = T[lang];
   const greeting = document.getElementById('home-greeting');
   if(greeting) {
-    if(currentCity) {
-      greeting.innerHTML = t.greetingCity.replace('{city}', currentCity);
-    } else {
-      greeting.innerHTML = t.greeting.replace('{city}','');
-    }
+    greeting.textContent = currentCity ? currentCity : t.greeting.replace('{city}','').replace('\n','');
   }
   const sub = document.getElementById('home-sub');
   if(sub) sub.textContent = t.homeSub;
