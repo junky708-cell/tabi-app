@@ -642,7 +642,7 @@ html, body {
 
   <div class="result-footer">
     <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
-    <button class="btn btn-gold" style="flex:2" onclick="showToast('近日公開予定です！')" id="result-new-btn">💾 保存して条件変更</button>
+    <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
   </div>
 </div>
 
@@ -728,7 +728,7 @@ html, body {
   </div>
 
   <div class="premium-footer">
-    <button class="btn btn-gold" style="width:100%" onclick="showToast('近日公開予定です！')">
+    <button class="btn btn-gold" style="width:100%" onclick="showComingSoon()">
       <span id="premium-cta">プレミアムを始める</span>
     </button>
     <p style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:12px" id="premium-note">
@@ -1212,7 +1212,7 @@ function selectCity(city) {
 }
 
 function useGPS() {
-  if(!navigator.geolocation) { showToast('GPSが利用できません'); return; }
+  if(!navigator.geolocation) { showToast({ja:'GPSが利用できません',en:'GPS not available',zh:'GPS不可用',ko:'GPS를 사용할 수 없습니다'}[lang]||'GPS not available'); return; }
   const btn = document.querySelector('.gps-btn');
   btn.textContent = '⏳';
   navigator.geolocation.getCurrentPosition(async pos => {
@@ -1226,7 +1226,7 @@ function useGPS() {
     }
     btn.textContent = '📍';
   }, () => {
-    showToast('位置情報を取得できませんでした');
+    showToast({ja:'位置情報を取得できませんでした',en:'Could not get location',zh:'无法获取位置',ko:'위치를 가져올 수 없습니다'}[lang]||'Could not get location');
     btn.textContent = '📍';
   });
 }
@@ -1326,11 +1326,17 @@ async function generatePlan() {
     });
 
     if(!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || `HTTP ${res.status}`);
+      const httpErrMsg = {ja:`通信エラーが発生しました (HTTP ${res.status})。もう一度お試しください。`, en:`Connection error (HTTP ${res.status}). Please try again.`, zh:`连接错误 (HTTP ${res.status})，请重试。`, ko:`연결 오류 (HTTP ${res.status}). 다시 시도해 주세요.`};
+      throw new Error(httpErrMsg[lang] || httpErrMsg.en);
     }
 
-    const data = await res.json();
+    let responseText = await res.text();
+    if(responseText.includes('<!DOCTYPE')) {
+      const htmlErrMsg = {ja:'サーバーへの接続に失敗しました。しばらくしてからもう一度お試しください。', en:'Failed to connect to server. Please try again later.', zh:'连接服务器失败，请稍后重试。', ko:'서버 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.'};
+      throw new Error(htmlErrMsg[lang] || htmlErrMsg.en);
+    }
+
+    const data = JSON.parse(responseText);
     let raw = data.content.map(c=>c.text||'').join('');
     raw = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
     let plan;
@@ -1467,6 +1473,11 @@ function renderResult(plan) {
 // ════════════════════════════════
 // TOAST
 // ════════════════════════════════
+function showComingSoon() {
+  const msg = {ja:'近日公開予定です！',en:'Coming soon!',zh:'即将推出！',ko:'곧 출시 예정입니다！'}[lang] || 'Coming soon!';
+  showToast(msg);
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
