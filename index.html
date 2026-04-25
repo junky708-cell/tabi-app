@@ -275,7 +275,7 @@ html, body {
   background:var(--bg);
 }
 .q-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-.q-back { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:20px; padding:0; }
+.q-back { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:14px; padding:0; display:flex; align-items:center; gap:4px; letter-spacing:.03em; }
 .q-back:hover { color:var(--text); }
 .q-progress-text { font-size:11px; color:var(--text-dim); letter-spacing:.1em; }
 .q-progress-bar { height:2px; background:var(--border); border-radius:1px; }
@@ -520,7 +520,7 @@ html, body {
 /* ════════════════════════════════
    FREE USAGE COUNTER
 ════════════════════════════════ */
-.usage-bar-wrap { padding:0 20px 16px; }
+.usage-bar-wrap { padding:0 20px 24px; }
 .usage-bar-top { display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:6px; }
 .usage-bar { height:4px; background:var(--surface2); border-radius:2px; }
 .usage-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--green),var(--gold)); transition:width .5s; }
@@ -532,8 +532,9 @@ html, body {
 <!-- ══ SPLASH ══ -->
 <div id="screen-splash" class="screen active">
   <div class="splash-logo display">TABI</div>
-  <p class="splash-tagline" id="splash-text">AIがあなただけの旅程を提案<br>飲食店・宿泊先・観光スポットを一括ガイド</p>
-  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center">
+  <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
+飲食店・宿泊先・観光スポットを一括ガイド</p>
+  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center;margin-top:16px">
     言語を選択 / Select Language
   </p>
   <div class="lang-bar" style="width:100%">
@@ -553,7 +554,7 @@ html, body {
 <div id="screen-home" class="screen">
   <div class="q-header">
     <div class="q-nav">
-      <button class="q-back" onclick="showScreen('screen-splash')">←</button>
+      <button class="q-back" onclick="showScreen('screen-splash')">← <span id="back-label-home">戻る</span></button>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
     </div>
     <div class="q-progress-bar"><div style="height:100%;width:0%"></div></div>
@@ -586,7 +587,7 @@ html, body {
     </div>
   </div>
 
-  <div class="home-next-wrap">
+  <div style="padding:24px 20px 40px">
     <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
       <span id="home-next-label">目的地を入力してください</span>
     </button>
@@ -597,7 +598,7 @@ html, body {
 <div id="screen-questions" class="screen">
   <div class="q-header">
     <div class="q-nav">
-      <button class="q-back" onclick="showScreen('screen-home')">←</button>
+      <button class="q-back" onclick="showScreen('screen-home')">← <span id="back-label-q">戻る</span></button>
       <span class="q-progress-text" id="q-progress-text">0 / 5</span>
     </div>
     <div class="q-progress-bar">
@@ -1091,7 +1092,7 @@ function setLang(l) {
   const t = T[lang];
   // splash
   const st = document.getElementById('splash-text');
-  if(st) st.textContent = t.splashText;
+  if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
   const ss = document.getElementById('splash-start-btn');
   if(ss) ss.textContent = t.splashStart;
   const sn = document.getElementById('splash-note');
@@ -1136,6 +1137,12 @@ function setLang(l) {
   setT('plan1-name', p.p1name); setT('plan1-per', p.p1per); setT('plan1-desc', p.p1desc);
   setT('plan2-name', p.p2name); setT('plan2-per', p.p2per); setT('plan2-desc', p.p2desc);
   setT('premium-cta', p.cta); setT('premium-note', p.note);
+  // back button labels
+  const backLabel = {ja:'戻る', en:'Back', zh:'返回', ko:'뒤로'}[l] || '戻る';
+  const blHome = document.getElementById('back-label-home');
+  const blQ = document.getElementById('back-label-q');
+  if(blHome) blHome.textContent = backLabel;
+  if(blQ) blQ.textContent = backLabel;
   // home
   updateHomeUI();
   // dest chips
