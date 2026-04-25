@@ -535,7 +535,7 @@ html, body {
   <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
 飲食店・宿泊先・観光スポットを一括ガイド</p>
   <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center;margin-top:16px">
-    言語を選択 / Select Language
+    <span id="splash-lang-label">言語を選択</span> / Select Language
   </p>
   <div class="lang-bar" style="width:100%">
     <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -544,7 +544,7 @@ html, body {
     <button class="lang-btn" onclick="setLang('ko')">한국어</button>
   </div>
   <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
-  <div class="splash-divider">無料で3回まで利用可能</div>
+  <div class="splash-divider"><span id="splash-free-label">無料で3回まで利用可能</span></div>
   <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7" id="splash-note">
     プレミアムプランで無制限利用・詳細プランが解放されます
   </p>
@@ -1090,6 +1090,14 @@ function setLang(l) {
     );
   });
   const t = T[lang];
+  // splash lang label（前半のみ選択言語に変換）
+  const langLabel = {ja:'言語を選択', en:'Select Language', zh:'选择语言', ko:'언어 선택'}[l] || '言語を選択';
+  const sll = document.getElementById('splash-lang-label');
+  if(sll) sll.textContent = langLabel;
+  // splash free label
+  const freeLabel = {ja:'無料で3回まで利用可能', en:'3 free uses available', zh:'免费使用3次', ko:'무료로 3번 이용 가능'}[l] || '無料で3回まで利用可能';
+  const sfl = document.getElementById('splash-free-label');
+  if(sfl) sfl.textContent = freeLabel;
   // splash
   const st = document.getElementById('splash-text');
   if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
