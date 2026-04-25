@@ -650,13 +650,13 @@ html, body {
 <div id="back-warning-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
   <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%">
     <div style="font-size:28px;text-align:center;margin-bottom:16px">⚠️</div>
-    <div style="font-size:16px;font-weight:700;color:var(--text);text-align:center;margin-bottom:12px">条件を変更しますか？</div>
-    <p style="font-size:13px;color:var(--text-dim);line-height:1.8;text-align:center;margin-bottom:24px">
+    <div id="warn-title" style="font-size:16px;font-weight:700;color:var(--text);text-align:center;margin-bottom:12px">条件を変更しますか？</div>
+    <p id="warn-body" style="font-size:13px;color:var(--text-dim);line-height:1.8;text-align:center;margin-bottom:24px">
       画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。
     </p>
     <div style="display:flex;gap:10px">
-      <button onclick="hideBackWarning()" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer">閉じる</button>
-      <button onclick="confirmGoBack()" style="flex:1;padding:14px;background:var(--accent);border:none;border-radius:12px;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">条件変更</button>
+      <button id="warn-close" onclick="hideBackWarning()" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer">閉じる</button>
+      <button id="warn-confirm" onclick="confirmGoBack()" style="flex:1;padding:14px;background:var(--accent);border:none;border-radius:12px;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">条件変更</button>
     </div>
   </div>
 </div>
@@ -1096,6 +1096,28 @@ function setLang(l) {
   if(ss) ss.textContent = t.splashStart;
   const sn = document.getElementById('splash-note');
   if(sn) sn.textContent = t.splashNote;
+  // back warning popup
+  const warnTexts = {
+    ja: { title:'条件を変更しますか？', body:'画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。', close:'閉じる', confirm:'条件変更' },
+    en: { title:'Change preferences?', body:'Going back will use another free count. This plan will not be saved — please take a screenshot if needed.', close:'Close', confirm:'Change' },
+    zh: { title:'要修改条件吗？', body:'返回将重新计算使用次数。此方案不会被保存，如需保留请截图。', close:'关闭', confirm:'修改条件' },
+    ko: { title:'조건을 변경하시겠어요?', body:'돌아가면 횟수가 새로 카운트됩니다. 이 제안은 저장되지 않으니 필요하면 스크린샷을 찍어두세요.', close:'닫기', confirm:'조건 변경' },
+  };
+  const w = warnTexts[l] || warnTexts.ja;
+  const wTitle = document.getElementById('warn-title');
+  const wBody = document.getElementById('warn-body');
+  const wClose = document.getElementById('warn-close');
+  const wConfirm = document.getElementById('warn-confirm');
+  if(wTitle) wTitle.textContent = w.title;
+  if(wBody) wBody.textContent = w.body;
+  if(wClose) wClose.textContent = w.close;
+  if(wConfirm) wConfirm.textContent = w.confirm;
+  // result buttons
+  const retryBtn = document.getElementById('result-retry-btn');
+  if(retryBtn) retryBtn.textContent = t.retryBtn;
+  const saveLabels = { ja:'💾 保存して条件変更', en:'💾 Save & Change', zh:'💾 保存并修改', ko:'💾 저장 후 변경' };
+  const newBtn = document.getElementById('result-new-btn');
+  if(newBtn) newBtn.textContent = saveLabels[l] || saveLabels.ja;
   // home
   updateHomeUI();
   // dest chips
@@ -1160,6 +1182,7 @@ function renderDestChips() {
 // CITY INPUT
 // ════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  setLang('ja');
   renderDestChips();
   updateUsageDisplay();
 
@@ -1468,7 +1491,7 @@ function confirmGoBack() {
 // ════════════════════════════════
 // INIT
 // ════════════════════════════════
-setLang('ja');
+// setLang is called inside DOMContentLoaded above
 </script>
 </body>
 </html>
