@@ -143,8 +143,8 @@ html, body {
 ════════════════════════════════ */
 #screen-splash {
   background: var(--bg);
-  justify-content:flex-start; align-items:center;
-  gap:24px; padding:120px 40px 24px;
+  justify-content:space-between; align-items:center;
+  padding:0;
   position:relative;
 }
 .splash-logo {
@@ -535,23 +535,27 @@ html, body {
 
 <!-- ══ SPLASH ══ -->
 <div id="screen-splash" class="screen active">
-  <div class="splash-logo display">TABI</div>
-  <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;width:100%;padding:40px 40px 0">
+    <div class="splash-logo display">TABI</div>
+    <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
 飲食店・宿泊先・観光スポットを一括ガイド</p>
-  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center;margin-top:16px">
-    <span id="splash-lang-label">言語を選択</span> / Select Language
-  </p>
-  <div class="lang-bar" style="width:100%">
-    <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
-    <button class="lang-btn" onclick="setLang('en')">English</button>
-    <button class="lang-btn" onclick="setLang('zh')">中文</button>
-    <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+    <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center">
+      <span id="splash-lang-label">言語を選択</span> / Select Language
+    </p>
+    <div class="lang-bar" style="width:100%">
+      <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+      <button class="lang-btn" onclick="setLang('en')">English</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+    </div>
+    <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
   </div>
-  <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
-  <div class="splash-divider"><span id="splash-free-label">無料で3回まで利用可能</span></div>
-  <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;position:absolute;bottom:100px;left:40px;right:40px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" id="splash-note" onclick="showScreen('screen-premium')">
-    プレミアムプランで無制限利用・詳細プランが解放されます
-  </p>
+  <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 40px 40px">
+    <div class="splash-divider" style="width:100%"><span id="splash-free-label">無料で3回まで利用可能</span></div>
+    <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin:0" id="splash-note" onclick="showScreen('screen-premium')">
+      プレミアムプランで無制限利用・詳細プランが解放されます
+    </p>
+  </div>
 </div>
 
 <!-- ══ HOME ══ -->
