@@ -635,17 +635,39 @@ html, body {
         <div class="result-city display" id="result-city">京都</div>
         <div class="result-badges" id="result-badges"></div>
       </div>
-      <button class="btn btn-ghost" onclick="showScreen('screen-home')" style="font-size:22px;padding:4px">✕</button>
+      <!-- 地球儀ボタン：言語切り替えメニュー -->
+      <div style="position:relative">
+        <button class="btn btn-ghost" onclick="toggleLangMenu()" id="globe-btn" style="font-size:22px;padding:4px">🌐</button>
+        <div id="lang-menu" style="display:none;position:absolute;right:0;top:36px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;z-index:100;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,.4)">
+          <button onclick="setResultLang('ja')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:inherit;font-size:14px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center">🇯🇵 日本語</button>
+          <button onclick="setResultLang('en')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:inherit;font-size:14px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center;border-top:1px solid var(--border)">🇺🇸 English</button>
+          <button onclick="setResultLang('zh')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:inherit;font-size:14px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center;border-top:1px solid var(--border)">🇨🇳 中文</button>
+          <button onclick="setResultLang('ko')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:inherit;font-size:14px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center;border-top:1px solid var(--border)">🇰🇷 한국어</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="result-body" id="result-body">
-    <!-- Dynamically rendered -->
-  </div>
+  <div class="result-body" id="result-body"></div>
 
   <div class="result-footer">
-    <button class="btn btn-outline" style="flex:1" onclick="goToQuestions()" id="result-retry-btn">条件を変更</button>
-    <button class="btn btn-gold" style="flex:2" onclick="showScreen('screen-home')" id="result-new-btn">新しい旅を計画</button>
+    <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
+    <button class="btn btn-gold" style="flex:2" onclick="showToast('近日公開予定です！')" id="result-new-btn">💾 保存して条件変更</button>
+  </div>
+</div>
+
+<!-- ══ 戻る警告ポップアップ ══ -->
+<div id="back-warning-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%">
+    <div style="font-size:28px;text-align:center;margin-bottom:16px">⚠️</div>
+    <div id="back-warning-title" style="font-size:16px;font-weight:700;color:var(--text);text-align:center;margin-bottom:12px">条件を変更しますか？</div>
+    <p id="back-warning-body" style="font-size:13px;color:var(--text-dim);line-height:1.8;text-align:center;margin-bottom:24px">
+      画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。
+    </p>
+    <div style="display:flex;gap:10px">
+      <button onclick="hideBackWarning()" id="back-warning-cancel" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer">閉じる</button>
+      <button onclick="confirmGoBack()" id="back-warning-confirm" style="flex:1;padding:14px;background:var(--accent);border:none;border-radius:12px;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">戻る</button>
+    </div>
   </div>
 </div>
 
@@ -1429,6 +1451,51 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════
+// RESULT: LANG MENU
+// ════════════════════════════════
+function toggleLangMenu() {
+  const menu = document.getElementById('lang-menu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+// 結果画面で言語切り替え（再生成なしで表示言語だけ変える）
+function setResultLang(l) {
+  document.getElementById('lang-menu').style.display = 'none';
+  setLang(l);
+  // 結果画面のボタンテキストも更新
+  const t = T[l];
+  const retryBtn = document.getElementById('result-retry-btn');
+  if(retryBtn) retryBtn.textContent = t.retryBtn;
+}
+
+// メニュー外クリックで閉じる
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('lang-menu');
+  const globe = document.getElementById('globe-btn');
+  if(menu && globe && !menu.contains(e.target) && !globe.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
+
+// ════════════════════════════════
+// RESULT: BACK WARNING
+// ════════════════════════════════
+function showBackWarning() {
+  const overlay = document.getElementById('back-warning-overlay');
+  overlay.style.display = 'flex';
+}
+
+function hideBackWarning() {
+  const overlay = document.getElementById('back-warning-overlay');
+  overlay.style.display = 'none';
+}
+
+function confirmGoBack() {
+  hideBackWarning();
+  goToQuestions();
 }
 
 // ════════════════════════════════
