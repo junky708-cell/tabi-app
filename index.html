@@ -1335,7 +1335,10 @@ async function generatePlan() {
     raw = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
     let plan;
     try { plan = JSON.parse(raw); }
-    catch(e) { throw new Error('AIの応答をパースできませんでした。もう一度お試しください。'); }
+    catch(e) {
+      const parseErrMsg = {ja:'AIの応答をパースできませんでした。もう一度お試しください。', en:'Failed to parse AI response. Please try again.', zh:'无法解析AI响应，请重试。', ko:'AI 응답을 파싱할 수 없습니다. 다시 시도해 주세요.'};
+      throw new Error(parseErrMsg[lang] || parseErrMsg.ja);
+    }
 
     t.loadSteps.forEach((_,i) => {
       const el = document.getElementById(`ls${i}`);
@@ -1349,7 +1352,8 @@ async function generatePlan() {
   } catch(e) {
     showScreen('screen-questions');
     const errEl = document.getElementById('q-error');
-    errEl.textContent = `エラー: ${e.message}`;
+    const errPrefix = {ja:'エラー: ', en:'Error: ', zh:'错误：', ko:'오류: '};
+    errEl.textContent = (errPrefix[lang] || errPrefix.ja) + e.message;
     errEl.style.display = 'block';
   }
 }
@@ -1474,8 +1478,18 @@ function showToast(msg) {
 // RESULT: BACK WARNING
 // ════════════════════════════════
 function showBackWarning() {
-  const overlay = document.getElementById('back-warning-overlay');
-  overlay.style.display = 'flex';
+  const warnTexts = {
+    ja: { title:'条件を変更しますか？', body:'画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。', close:'閉じる', confirm:'条件変更' },
+    en: { title:'Change preferences?', body:'Going back will use another free count. This plan will not be saved — please take a screenshot if needed.', close:'Close', confirm:'Change' },
+    zh: { title:'要修改条件吗？', body:'返回将重新计算使用次数。此方案不会被保存，如需保留请截图。', close:'关闭', confirm:'修改条件' },
+    ko: { title:'조건을 변경하시겠어요?', body:'돌아가면 횟수가 새로 카운트됩니다. 이 제안은 저장되지 않으니 필요하면 스크린샷을 찍어두세요.', close:'닫기', confirm:'조건 변경' },
+  };
+  const w = warnTexts[lang] || warnTexts.ja;
+  document.getElementById('warn-title').textContent = w.title;
+  document.getElementById('warn-body').textContent = w.body;
+  document.getElementById('warn-close').textContent = w.close;
+  document.getElementById('warn-confirm').textContent = w.confirm;
+  document.getElementById('back-warning-overlay').style.display = 'flex';
 }
 
 function hideBackWarning() {
