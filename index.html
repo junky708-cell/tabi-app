@@ -143,8 +143,8 @@ html, body {
 ════════════════════════════════ */
 #screen-splash {
   background: var(--bg);
-  justify-content:center; align-items:center;
-  gap:24px; padding:40px 40px 60px;
+  justify-content:flex-start; align-items:center;
+  gap:24px; padding:120px 40px 24px;
   position:relative;
 }
 .splash-logo {
@@ -549,7 +549,7 @@ html, body {
   </div>
   <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
   <div class="splash-divider"><span id="splash-free-label">無料で3回まで利用可能</span></div>
-  <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" id="splash-note" onclick="showScreen('screen-premium')">
+  <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;position:absolute;bottom:24px;left:40px;right:40px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" id="splash-note" onclick="showScreen('screen-premium')">
     プレミアムプランで無制限利用・詳細プランが解放されます
   </p>
 </div>
