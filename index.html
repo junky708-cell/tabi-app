@@ -524,6 +524,12 @@ html, body {
    FREE USAGE COUNTER
 ════════════════════════════════ */
 .usage-bar-wrap { padding:0 20px 24px; min-height:56px; }
+.home-bottom-fixed {
+  position:sticky; bottom:0;
+  background:var(--bg);
+  padding-top:8px;
+  border-top:1px solid var(--border);
+}
 .usage-bar-top { display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:6px; }
 .usage-bar { height:4px; background:var(--surface2); border-radius:2px; }
 .usage-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--green),var(--gold)); transition:width .5s; }
@@ -580,20 +586,21 @@ html, body {
     <div class="dest-scroll" id="dest-chips"></div>
   </div>
 
-  <div class="usage-bar-wrap">
-    <div class="usage-bar-top">
-      <span id="usage-label">無料残り回数</span>
-      <span id="usage-count">3 / 3</span>
+  <div class="home-bottom-fixed">
+    <div class="usage-bar-wrap">
+      <div class="usage-bar-top">
+        <span id="usage-label">無料残り回数</span>
+        <span id="usage-count">3 / 3</span>
+      </div>
+      <div class="usage-bar">
+        <div class="usage-fill" id="usage-fill" style="width:100%"></div>
+      </div>
     </div>
-    <div class="usage-bar">
-      <div class="usage-fill" id="usage-fill" style="width:100%"></div>
+    <div style="padding:0 20px 40px">
+      <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
+        <span id="home-next-label">目的地を入力してください</span>
+      </button>
     </div>
-  </div>
-
-  <div style="padding:24px 20px 40px">
-    <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
-      <span id="home-next-label">目的地を入力してください</span>
-    </button>
   </div>
 </div>
 
