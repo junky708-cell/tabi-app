@@ -523,13 +523,7 @@ html, body {
 /* ════════════════════════════════
    FREE USAGE COUNTER
 ════════════════════════════════ */
-.usage-bar-wrap { padding:0 20px 24px; min-height:56px; }
-.home-bottom-fixed {
-  position:sticky; bottom:0;
-  background:var(--bg);
-  padding-top:8px;
-  border-top:1px solid var(--border);
-}
+.usage-bar-wrap { padding:0 20px 24px; }
 .usage-bar-top { display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:6px; }
 .usage-bar { height:4px; background:var(--surface2); border-radius:2px; }
 .usage-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--green),var(--gold)); transition:width .5s; }
@@ -586,7 +580,7 @@ html, body {
     <div class="dest-scroll" id="dest-chips"></div>
   </div>
 
-  <div class="home-bottom-fixed">
+  <div style="margin-top:auto">
     <div class="usage-bar-wrap">
       <div class="usage-bar-top">
         <span id="usage-label">無料残り回数</span>
@@ -1100,14 +1094,6 @@ function setLang(l) {
     );
   });
   const t = T[lang];
-  // splash lang label（前半のみ選択言語に変換）
-  const langLabel = {ja:'言語を選択', en:'Select Language', zh:'选择语言', ko:'언어 선택'}[l] || '言語を選択';
-  const sll = document.getElementById('splash-lang-label');
-  if(sll) sll.textContent = langLabel;
-  // splash free label
-  const freeLabel = {ja:'無料で3回まで利用可能', en:'3 free uses available', zh:'免费使用3次', ko:'무료로 3번 이용 가능'}[l] || '無料で3回まで利用可能';
-  const sfl = document.getElementById('splash-free-label');
-  if(sfl) sfl.textContent = freeLabel;
   // splash
   const st = document.getElementById('splash-text');
   if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
@@ -1161,7 +1147,15 @@ function setLang(l) {
   const blQ = document.getElementById('back-label-q');
   if(blHome) blHome.textContent = backLabel;
   if(blQ) blQ.textContent = backLabel;
-  // 表示中のエラーメッセージを新しい言語でリセット（再生成時に正しい言語で出るよう消去）
+  // splash lang label（前半のみ選択言語に変換）
+  const langLabel = {ja:'言語を選択', en:'Select Language', zh:'选择语言', ko:'언어 선택'}[l] || '言語を選択';
+  const sll = document.getElementById('splash-lang-label');
+  if(sll) sll.textContent = langLabel;
+  // splash free label
+  const freeLabel = {ja:'無料で3回まで利用可能', en:'3 free uses available', zh:'免费使用3次', ko:'무료로 3번 이용 가능'}[l] || '無料で3回まで利用可能';
+  const sfl = document.getElementById('splash-free-label');
+  if(sfl) sfl.textContent = freeLabel;
+  // 言語切り替え時は表示中エラーをクリア
   clearError();
   // home
   updateHomeUI();
@@ -1296,6 +1290,7 @@ function goToQuestions() {
   document.getElementById('q-city-sub').textContent = t.qSub;
   document.getElementById('generate-btn').disabled = true;
   document.getElementById('generate-label').textContent = t.generateBtn;
+  document.getElementById('q-error').style.display = 'none';
 
   // Render questions
   const body = document.getElementById('q-body');
@@ -1558,15 +1553,14 @@ function hideBackWarning() {
   overlay.style.display = 'none';
 }
 
-function confirmGoBack() {
-  hideBackWarning();
-  goToQuestions();
-}
-
-// エラー表示をリセット
 function clearError() {
   const errEl = document.getElementById('q-error');
   if(errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+}
+
+function confirmGoBack() {
+  hideBackWarning();
+  goToQuestions();
 }
 
 // ════════════════════════════════
