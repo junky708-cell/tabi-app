@@ -143,9 +143,8 @@ html, body {
 ════════════════════════════════ */
 #screen-splash {
   background: var(--bg);
-  justify-content:space-between; align-items:center;
-  padding:0;
-  position:relative;
+  justify-content:center; align-items:center;
+  gap:24px; padding:40px;
 }
 .splash-logo {
   font-family:'Playfair Display',serif;
@@ -535,27 +534,23 @@ html, body {
 
 <!-- ══ SPLASH ══ -->
 <div id="screen-splash" class="screen active">
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;width:100%;padding:40px 40px 0">
-    <div class="splash-logo display">TABI</div>
-    <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
+  <div class="splash-logo display">TABI</div>
+  <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
 飲食店・宿泊先・観光スポットを一括ガイド</p>
-    <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center">
-      <span id="splash-lang-label">言語を選択</span> / Select Language
-    </p>
-    <div class="lang-bar" style="width:100%">
-      <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
-      <button class="lang-btn" onclick="setLang('en')">English</button>
-      <button class="lang-btn" onclick="setLang('zh')">中文</button>
-      <button class="lang-btn" onclick="setLang('ko')">한국어</button>
-    </div>
-    <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
+  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center">
+    <span id="splash-lang-label">言語を選択</span> / Select Language
+  </p>
+  <div class="lang-bar" style="width:100%">
+    <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" onclick="setLang('ko')">한국어</button>
   </div>
-  <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 40px 40px">
-    <div class="splash-divider" style="width:100%"><span id="splash-free-label">無料で3回まで利用可能</span></div>
-    <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin:0" id="splash-note" onclick="showScreen('screen-premium')">
-      プレミアムプランで無制限利用・詳細プランが解放されます
-    </p>
-  </div>
+  <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
+  <div class="splash-divider" style="width:100%"><span id="splash-free-label">無料で3回まで利用可能</span></div>
+  <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" id="splash-note" onclick="showScreen('screen-premium')">
+    プレミアムプラン（有料）で<br>無制限利用・詳細プランが解放されます
+  </p>
 </div>
 
 <!-- ══ HOME ══ -->
@@ -769,7 +764,7 @@ const T = {
   ja: {
     splashText: 'AIがあなただけの旅程を提案\n飲食店・宿泊先・観光スポットを一括ガイド',
     splashStart: 'はじめる →',
-    splashNote: 'プレミアムプランで無制限利用・詳細プランが解放されます',
+    splashNote: 'プレミアムプラン（有料）で<br>無制限利用・詳細プランが解放されます',
     greeting: '目的地を入力',
     greetingCity: '{city}',
     homeSub: 'AIが旅程・グルメ・宿泊先を提案します',
@@ -855,7 +850,7 @@ timelineは${a.days === '日帰り（1日）' ? '6〜8' : '各日4〜6'}件、re
   en: {
     splashText: 'AI-powered travel guide for Japan\nRestaurants · Hotels · Sightseeing all in one',
     splashStart: 'Get Started →',
-    splashNote: 'Upgrade to Premium for unlimited plans & detailed itineraries',
+    splashNote: 'Upgrade to Premium (paid) for<br>unlimited plans & detailed itineraries',
     greeting: 'Enter Destination',
     greetingCity: '{city}',
     homeSub: 'AI suggests itineraries, dining & accommodation',
@@ -933,7 +928,7 @@ Timeline: ${a.days === 'day trip (1 day)' ? '6-8' : '4-6 per day'} items. Restau
   zh: {
     splashText: 'AI为您规划专属日本旅程\n餐厅 · 住宿 · 景点一站式导览',
     splashStart: '开始使用 →',
-    splashNote: '升级至高级版，享受无限次规划和详细行程',
+    splashNote: '升级至高级版（付费），<br>享受无限次规划和详细行程',
     greeting: '输入目的地',
     greetingCity: '{city}',
     homeSub: 'AI推荐行程、餐厅和住宿',
@@ -1010,7 +1005,7 @@ Timeline: ${a.days === 'day trip (1 day)' ? '6-8' : '4-6 per day'} items. Restau
   ko: {
     splashText: 'AI가 당신만의 일본 여행을 계획\n맛집 · 숙소 · 관광지 원스톱 가이드',
     splashStart: '시작하기 →',
-    splashNote: '프리미엄으로 무제한 사용 및 상세 일정을 이용하세요',
+    splashNote: '프리미엄（유료）으로<br>무제한 사용 및 상세 일정을 이용하세요',
     greeting: '목적지 입력',
     greetingCity: '{city}',
     homeSub: 'AI가 일정, 맛집, 숙소를 추천합니다',
@@ -1105,7 +1100,7 @@ function setLang(l) {
   const ss = document.getElementById('splash-start-btn');
   if(ss) ss.textContent = t.splashStart;
   const sn = document.getElementById('splash-note');
-  if(sn) sn.textContent = t.splashNote;
+  if(sn) sn.innerHTML = t.splashNote;
   // back warning popup
   const warnTexts = {
     ja: { title:'条件を変更しますか？', body:'画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。', close:'閉じる', confirm:'条件変更' },
