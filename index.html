@@ -1346,7 +1346,10 @@ function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
 // ════════════════════════════════
 // RENDER RESULT
 // ════════════════════════════════
+let lastPlan = null;
+
 function renderResult(plan) {
+  lastPlan = plan;
   const t = T[lang];
   document.getElementById('result-city').textContent = currentCity;
 
@@ -1438,7 +1441,8 @@ function renderResult(plan) {
   body.innerHTML = html;
 
   document.getElementById('result-retry-btn').textContent = t.retryBtn;
-  document.getElementById('result-new-btn').textContent = t.newBtn;
+  const saveBtnText = lang==='ja'?'💾 保存して条件変更':lang==='en'?'💾 Save & Change':lang==='zh'?'💾 保存并修改':'💾 저장 후 변경';
+  document.getElementById('result-new-btn').innerHTML = saveBtnText;
 
   showScreen('screen-result');
 }
@@ -1461,14 +1465,49 @@ function toggleLangMenu() {
   menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
-// 結果画面で言語切り替え（再生成なしで表示言語だけ変える）
+// 結果画面で言語切り替え
 function setResultLang(l) {
   document.getElementById('lang-menu').style.display = 'none';
-  setLang(l);
-  // 結果画面のボタンテキストも更新
+  lang = l;
+
+  // 結果画面のボタン・ポップアップテキストを更新
   const t = T[l];
   const retryBtn = document.getElementById('result-retry-btn');
   if(retryBtn) retryBtn.textContent = t.retryBtn;
+  const newBtn = document.getElementById('result-new-btn');
+  if(newBtn) newBtn.innerHTML = l==='ja'?'💾 保存して条件変更':l==='en'?'💾 Save & Change':l==='zh'?'💾 保存并修改':'💾 저장 후 변경';
+
+  // 警告ポップアップのテキストを更新
+  const warnTitle = document.getElementById('back-warning-title');
+  const warnBody = document.getElementById('back-warning-body');
+  const warnCancel = document.getElementById('back-warning-cancel');
+  const warnConfirm = document.getElementById('back-warning-confirm');
+  if(l==='ja') {
+    if(warnTitle) warnTitle.textContent = '条件を変更しますか？';
+    if(warnBody) warnBody.textContent = '画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。';
+    if(warnCancel) warnCancel.textContent = '閉じる';
+    if(warnConfirm) warnConfirm.textContent = '戻る';
+  } else if(l==='en') {
+    if(warnTitle) warnTitle.textContent = 'Change preferences?';
+    if(warnBody) warnBody.textContent = 'Going back will use another free count. This plan will not be saved — please take a screenshot if needed.';
+    if(warnCancel) warnCancel.textContent = 'Close';
+    if(warnConfirm) warnConfirm.textContent = 'Go back';
+  } else if(l==='zh') {
+    if(warnTitle) warnTitle.textContent = '要修改条件吗？';
+    if(warnBody) warnBody.textContent = '返回将重新计算使用次数。此方案不会被保存，如需保留请截图。';
+    if(warnCancel) warnCancel.textContent = '关闭';
+    if(warnConfirm) warnConfirm.textContent = '返回';
+  } else if(l==='ko') {
+    if(warnTitle) warnTitle.textContent = '조건을 변경하시겠어요？';
+    if(warnBody) warnBody.textContent = '돌아가면 횟수가 새로 카운트됩니다. 이 제안은 저장되지 않으니 필요하면 스크린샷을 찍어두세요.';
+    if(warnCancel) warnCancel.textContent = '닫기';
+    if(warnConfirm) warnConfirm.textContent = '돌아가기';
+  }
+
+  // 旅程の中身をAIで再生成（言語が変わったため）
+  if(lastPlan) {
+    renderResult(lastPlan);
+  }
 }
 
 // メニュー外クリックで閉じる
