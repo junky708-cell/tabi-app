@@ -1406,17 +1406,25 @@ async function generatePlan() {
 
     const data = JSON.parse(responseText);
     let raw = data.content.map(c=>c.text||'').join('');
+    console.log('=== RAW START ===');
+    console.log(raw);
+    console.log('=== RAW END ===');
     // マークダウンのコードブロックを確実に除去
     raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
     // JSONの { } の範囲だけを抽出
     const jsonStart = raw.indexOf('{');
     const jsonEnd = raw.lastIndexOf('}');
+    console.log('jsonStart:', jsonStart, 'jsonEnd:', jsonEnd);
     if(jsonStart !== -1 && jsonEnd !== -1) {
       raw = raw.slice(jsonStart, jsonEnd + 1);
     }
+    console.log('=== EXTRACTED JSON START ===');
+    console.log(raw.slice(0, 200));
+    console.log('=== EXTRACTED JSON END ===');
     let plan;
     try { plan = JSON.parse(raw); }
     catch(e) {
+      console.log('PARSE ERROR:', e.message);
       const parseErrMsg = {ja:'AIの応答をパースできませんでした。もう一度お試しください。', en:'Failed to parse AI response. Please try again.', zh:'无法解析AI响应，请重试。', ko:'AI 응답을 파싱할 수 없습니다. 다시 시도해 주세요.'};
       throw new Error(parseErrMsg[lang] || parseErrMsg.en);
     }
