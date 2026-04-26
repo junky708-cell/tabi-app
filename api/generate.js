@@ -4,15 +4,18 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // OPTIONSリクエストへの対応
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
+  // POSTのみ受け付ける
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { prompt } = req.body;
+
   if (!prompt) {
     return res.status(400).json({ error: 'prompt is required' });
   }
@@ -28,16 +31,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
-        system: `You are TABI, an expert Japan travel concierge with deep local knowledge.
-
-CRITICAL RULES:
-- Return ONLY valid JSON. No markdown, no code blocks, no explanations, no extra text.
-- Use REAL, SPECIFIC venue names that actually exist in Japan (e.g. "金閣寺", "道頓堀 今井", "浅草 駒形どぜう"). Never invent fictional names.
-- Tailor every recommendation to the user's stated style, budget, food preference, and group type.
-- For short durations (2 hours / half day): all spots must be walkable from each other. Focus on 1 compact area.
-- For multi-day trips: organize timeline by day with "Day 1", "Day 2" labels in the time field.
-- Budget accuracy: low budget = standing bars / convenience store meals / free spots. Luxury = Michelin / high-end ryokan.
-- Be specific: include neighborhood names, famous local dishes, practical tips like "book in advance" or "best visited at opening time".`,
+        system: 'You are a travel concierge. Return ONLY valid JSON, no markdown, no code blocks, no explanations.',
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -49,6 +43,7 @@ CRITICAL RULES:
 
     const data = await response.json();
     return res.status(200).json(data);
+
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
