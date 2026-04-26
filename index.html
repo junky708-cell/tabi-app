@@ -1516,39 +1516,39 @@ function renderResult(plan) {
   // Timeline
   if(plan.timeline?.length) {
     const noteStart = {ja:'⚠️ 表示時刻は現地での行動時間の目安です。出発・移動時間を加えてご計画ください。', en:'⚠️ Times shown are approximate activity times. Please account for travel time to each location.', zh:'⚠️ 显示时间为现场活动的参考时间，请加上出行和交通时间。', ko:'⚠️ 표시 시간은 현지 활동 기준입니다. 이동 시간을 추가로 고려해 주세요.'};
-    const noteEnd = {ja:'🏠 最後の場所からの帰路・移動時間もお忘れなく。', en:'🏠 Don't forget to account for your return journey after the last stop.', zh:'🏠 别忘了最后一个地点的返程时间。', ko:'🏠 마지막 장소에서의 귀로 시간도 잊지 마세요.'};
+    const noteEnd = {ja:'🏠 最後の場所からの帰路・移動時間もお忘れなく。', en:"🏠 Don't forget to account for your return journey after the last stop.", zh:'🏠 别忘了最后一个地点的返程时间。', ko:'🏠 마지막 장소에서의 귀로 시간도 잊지 마세요.'};
     let seenDays = new Set();
     let timelineHtml = '';
-    plan.timeline.forEach((item, i) => {
-      const timeStr = item.time||'';
+    plan.timeline.forEach(function(item, i) {
+      const timeStr = item.time || '';
       const dayMatch = timeStr.match(/Day\s*(\d+)/i);
       if(dayMatch) {
         const dayKey = dayMatch[0];
         if(!seenDays.has(dayKey)) {
           seenDays.add(dayKey);
-          timelineHtml += \`<div class="tl-day-label">Day \${dayMatch[1]}</div>\`;
+          timelineHtml += '<div class="tl-day-label">Day ' + dayMatch[1] + '</div>';
         }
       }
-      timelineHtml += \`
-        <div class="tl-item">
-          <div class="tl-left">
-            <div class="tl-time">\${timeStr.replace(/Day\s*\d+\s*/i,'')}</div>
-            <div class="tl-badge">\${i+1}</div>
-            \${i < plan.timeline.length-1 ? '<div class="tl-line"></div>' : ''}
-          </div>
-          <div class="tl-right">
-            <div class="tl-title">\${item.title||''}</div>
-            <div class="tl-desc">\${item.desc||''}</div>
-          </div>
-        </div>
-      \`;
+      const cleanTime = timeStr.replace(/Day\s*\d+\s*/i, '');
+      const line = i < plan.timeline.length - 1 ? '<div class="tl-line"></div>' : '';
+      timelineHtml += '<div class="tl-item">'
+        + '<div class="tl-left">'
+        + '<div class="tl-time">' + cleanTime + '</div>'
+        + '<div class="tl-badge">' + (i+1) + '</div>'
+        + line
+        + '</div>'
+        + '<div class="tl-right">'
+        + '<div class="tl-title">' + (item.title||'') + '</div>'
+        + '<div class="tl-desc">' + (item.desc||'') + '</div>'
+        + '</div>'
+        + '</div>';
     });
-    html += \`<div class="result-section">
-      <div class="result-section-title">\${t.resultLabels.timeline}</div>
-      <div class="tl-note">\${noteStart[lang]||noteStart.ja}</div>
-      <div class="timeline">\${timelineHtml}</div>
-      <div class="tl-note" style="margin-top:12px;margin-bottom:0">\${noteEnd[lang]||noteEnd.ja}</div>
-    </div>\`;
+    html += '<div class="result-section">'
+      + '<div class="result-section-title">' + t.resultLabels.timeline + '</div>'
+      + '<div class="tl-note">' + (noteStart[lang]||noteStart.ja) + '</div>'
+      + '<div class="timeline">' + timelineHtml + '</div>'
+      + '<div class="tl-note" style="margin-top:12px;margin-bottom:0">' + (noteEnd[lang]||noteEnd.ja) + '</div>'
+      + '</div>';
   }
 
   // Restaurants
