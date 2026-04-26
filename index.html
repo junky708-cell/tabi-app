@@ -537,7 +537,7 @@ html, body {
   <div class="splash-logo display">TABI</div>
   <p class="splash-tagline" id="splash-text" style="white-space:pre-line;text-align:center">AIがあなただけの旅程を提案
 飲食店・宿泊先・観光スポットを一括ガイド</p>
-  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center">
+  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);text-align:center;margin-top:16px">
     <span id="splash-lang-label">言語を選択</span> / Select Language
   </p>
   <div class="lang-bar" style="width:100%">
@@ -547,7 +547,7 @@ html, body {
     <button class="lang-btn" onclick="setLang('ko')">한국어</button>
   </div>
   <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
-  <div class="splash-divider" style="width:100%"><span id="splash-free-label">無料で3回まで利用可能</span></div>
+  <div class="splash-divider"><span id="splash-free-label">無料で3回まで利用可能</span></div>
   <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" id="splash-note" onclick="showScreen('screen-premium')">
     プレミアムプラン（有料）で<br>無制限利用・詳細プランが解放されます
   </p>
@@ -580,21 +580,20 @@ html, body {
     <div class="dest-scroll" id="dest-chips"></div>
   </div>
 
-  <div style="margin-top:auto">
-    <div class="usage-bar-wrap">
-      <div class="usage-bar-top">
-        <span id="usage-label">無料残り回数</span>
-        <span id="usage-count">3 / 3</span>
-      </div>
-      <div class="usage-bar">
-        <div class="usage-fill" id="usage-fill" style="width:100%"></div>
-      </div>
+  <div class="usage-bar-wrap">
+    <div class="usage-bar-top">
+      <span id="usage-label">無料残り回数</span>
+      <span id="usage-count">3 / 3</span>
     </div>
-    <div style="padding:0 20px 40px">
-      <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
-        <span id="home-next-label">目的地を入力してください</span>
-      </button>
+    <div class="usage-bar">
+      <div class="usage-fill" id="usage-fill" style="width:100%"></div>
     </div>
+  </div>
+
+  <div style="padding:24px 20px 40px">
+    <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
+      <span id="home-next-label">目的地を入力してください</span>
+    </button>
   </div>
 </div>
 
@@ -804,11 +803,13 @@ const T = {
         {icon:'👫',label:'友人グループ',val:'友人グループ旅行'},
         {icon:'👨‍👩‍👧',label:'家族旅行',val:'子連れ家族旅行'},
       ]},
-      { key:'days', emoji:'⏱️', label:'旅の日数は？', opts:[
-        {icon:'🌅',label:'日帰り',val:'日帰り（1日）'},
+      { key:'days', emoji:'⏱️', label:'時間・日数は？', opts:[
+        {icon:'⏱️',label:'2時間',val:'2時間（散歩・デート・プチ旅）'},
+        {icon:'🌤️',label:'半日',val:'半日（3〜4時間）'},
+        {icon:'🌄',label:'日帰り',val:'日帰り（1日）'},
         {icon:'🌙',label:'1泊2日',val:'1泊2日'},
         {icon:'🌙🌙',label:'2泊3日',val:'2泊3日'},
-        {icon:'✈️',label:'3泊以上',val:'3泊以上の長旅'},
+        {icon:'✈️',label:'3泊以上',val:'3泊以上'},
       ]},
     ],
     destinations: [
@@ -843,7 +844,11 @@ const T = {
   "tips": ["アドバイス1", "アドバイス2", "アドバイス3"]
 }
 
-timelineは${a.days === '日帰り（1日）' ? '6〜8' : '各日4〜6'}件、restaurantsは3〜4件、hotelsは${a.days === '日帰り（1日）' ? '0件（日帰りのため）' : '2〜3件'}、tipsは3件。実在する可能性が高い具体的な施設名を使ってください。`,
+以下の件数で返してください：
+- 「2時間」「半日」の場合：timeline 3〜4件、restaurants 1〜2件、hotels 0件（短時間のため不要）
+- 「日帰り（1日）」の場合：timeline 6〜8件、restaurants 2〜3件、hotels 0件
+- 「1泊2日」以上の場合：timeline 各日4〜6件、restaurants 3〜4件、hotels 2〜3件
+tipsは3件。実在する具体的な施設名・店名を使ってください。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。`,
     resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
   },
 
@@ -890,8 +895,10 @@ timelineは${a.days === '日帰り（1日）' ? '6〜8' : '各日4〜6'}件、re
         {icon:'👫',label:'Friend group',val:'group of friends'},
         {icon:'👨‍👩‍👧',label:'Family',val:'family with children'},
       ]},
-      { key:'days', emoji:'⏱️', label:'Trip length?', opts:[
-        {icon:'🌅',label:'Day trip',val:'day trip (1 day)'},
+      { key:'days', emoji:'⏱️', label:'Time / Duration?', opts:[
+        {icon:'⏱️',label:'2 hours',val:'2 hours (stroll / date / quick trip)'},
+        {icon:'🌤️',label:'Half day',val:'half day (3–4 hours)'},
+        {icon:'🌄',label:'Day trip',val:'day trip (1 day)'},
         {icon:'🌙',label:'1 night',val:'1 night 2 days'},
         {icon:'🌙🌙',label:'2 nights',val:'2 nights 3 days'},
         {icon:'✈️',label:'3+ nights',val:'3 or more nights'},
@@ -921,7 +928,11 @@ Return ONLY a JSON object, no other text:
   "hotels": [{"name":"Hotel name","desc":"Description and location","price":"Price per night"}],
   "tips": ["Tip 1","Tip 2","Tip 3"]
 }
-Timeline: ${a.days === 'day trip (1 day)' ? '6-8' : '4-6 per day'} items. Restaurants: 3-4. Hotels: ${a.days === 'day trip (1 day)' ? '0 (day trip)' : '2-3'}. Tips: 3. Use realistic venue names.`,
+Output counts:
+- '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
+- 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
+- '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
+Tips: 3. Use real, specific venue names. For short durations, keep all spots within walking distance.`,
     resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
   },
 
@@ -968,8 +979,10 @@ Timeline: ${a.days === 'day trip (1 day)' ? '6-8' : '4-6 per day'} items. Restau
         {icon:'👫',label:'朋友团',val:'朋友群体旅行'},
         {icon:'👨‍👩‍👧',label:'家庭出游',val:'带孩子的家庭旅行'},
       ]},
-      { key:'days', emoji:'⏱️', label:'旅行天数？', opts:[
-        {icon:'🌅',label:'当天往返',val:'当天往返'},
+      { key:'days', emoji:'⏱️', label:'时间 / 天数？', opts:[
+        {icon:'⏱️',label:'2小时',val:'2小时（散步・约会・短途）'},
+        {icon:'🌤️',label:'半天',val:'半天（3～4小时）'},
+        {icon:'🌄',label:'当天往返',val:'当天往返'},
         {icon:'🌙',label:'1晚2天',val:'1晚2天'},
         {icon:'🌙🌙',label:'2晚3天',val:'2晚3天'},
         {icon:'✈️',label:'3晚以上',val:'3晚以上'},
@@ -1045,8 +1058,10 @@ Timeline: ${a.days === 'day trip (1 day)' ? '6-8' : '4-6 per day'} items. Restau
         {icon:'👫',label:'친구 그룹',val:'친구들과 여행'},
         {icon:'👨‍👩‍👧',label:'가족 여행',val:'아이와 함께하는 가족 여행'},
       ]},
-      { key:'days', emoji:'⏱️', label:'여행 기간은？', opts:[
-        {icon:'🌅',label:'당일치기',val:'당일치기'},
+      { key:'days', emoji:'⏱️', label:'시간 / 기간은？', opts:[
+        {icon:'⏱️',label:'2시간',val:'2시간（산책・데이트・짧은 여행）'},
+        {icon:'🌤️',label:'반나절',val:'반나절（3～4시간）'},
+        {icon:'🌄',label:'당일치기',val:'당일치기'},
         {icon:'🌙',label:'1박 2일',val:'1박 2일'},
         {icon:'🌙🌙',label:'2박 3일',val:'2박 3일'},
         {icon:'✈️',label:'3박 이상',val:'3박 이상'},
@@ -1145,11 +1160,11 @@ function setLang(l) {
   const backLabel = {ja:'戻る', en:'Back', zh:'返回', ko:'뒤로'}[l] || '戻る';
   const blHome = document.getElementById('back-label-home');
   const blQ = document.getElementById('back-label-q');
-  const blP = document.getElementById('back-label-premium');
   if(blHome) blHome.textContent = backLabel;
   if(blQ) blQ.textContent = backLabel;
+  const blP = document.getElementById('back-label-premium');
   if(blP) blP.textContent = backLabel;
-  // splash lang label（前半のみ選択言語に変換）
+  // splash lang label
   const langLabel = {ja:'言語を選択', en:'Select Language', zh:'选择语言', ko:'언어 선택'}[l] || '言語を選択';
   const sll = document.getElementById('splash-lang-label');
   if(sll) sll.textContent = langLabel;
@@ -1157,7 +1172,6 @@ function setLang(l) {
   const freeLabel = {ja:'無料で3回まで利用可能', en:'3 free uses available', zh:'免费使用3次', ko:'무료로 3번 이용 가능'}[l] || '無料で3回まで利用可能';
   const sfl = document.getElementById('splash-free-label');
   if(sfl) sfl.textContent = freeLabel;
-  // 言語切り替え時は表示中エラーをクリア
   clearError();
   // home
   updateHomeUI();
@@ -1204,9 +1218,10 @@ function showScreen(id) {
 
 function goBack() {
   if(screenHistory.length > 0) {
-    showScreen(screenHistory.pop());
-    // push先をhistoryに積まないよう1つ余分に除去
-    screenHistory.pop();
+    const prev = screenHistory.pop();
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(prev).classList.add('active');
+    window.scrollTo(0,0);
   } else {
     showScreen('screen-splash');
   }
