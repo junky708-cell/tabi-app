@@ -394,51 +394,86 @@ html, body {
 
 /* Timeline */
 .timeline { display:flex; flex-direction:column; gap:0; }
+.tl-day-label {
+  font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--gold); background:var(--gold-dim);
+  padding:4px 10px; border-radius:20px; display:inline-block;
+  margin:8px 0 12px 58px;
+}
+.tl-note {
+  font-size:11px; color:var(--text-dim); line-height:1.6;
+  padding:10px 14px; background:var(--surface);
+  border-left:2px solid var(--border); border-radius:0 6px 6px 0;
+  margin-bottom:12px;
+}
 .tl-item { display:flex; gap:14px; }
 .tl-left { display:flex; flex-direction:column; align-items:center; width:44px; flex-shrink:0; }
-.tl-time { font-size:11px; color:var(--gold); font-weight:700; letter-spacing:.04em; text-align:center; line-height:1.2; }
+.tl-time { font-size:10px; color:var(--gold); font-weight:700; letter-spacing:.04em; text-align:center; line-height:1.2; }
 .tl-line { flex:1; width:1px; background:var(--border); margin:4px 0; min-height:20px; }
-.tl-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:4px; }
-.tl-right { padding-bottom:20px; flex:1; padding-top:2px; }
+.tl-badge {
+  width:24px; height:24px; border-radius:50%;
+  background:var(--gold-dim); border:1px solid var(--gold);
+  color:var(--gold); font-size:10px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:4px;
+}
+.tl-right { padding-bottom:20px; flex:1; padding-top:4px; }
 .tl-title { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
-.tl-desc { font-size:13px; color:var(--text-dim); line-height:1.6; }
+.tl-desc { font-size:13px; color:var(--text-dim); line-height:1.65; }
 
 /* Restaurant card */
 .rest-card {
-  display:flex; gap:12px; padding:12px;
-  background:var(--surface); border-radius:var(--radius-sm);
-  border:1px solid var(--border); margin-bottom:8px;
+  display:flex; gap:14px; padding:14px;
+  background:var(--surface); border-radius:10px;
+  border:1px solid var(--border); margin-bottom:10px;
+  transition:border-color .2s;
 }
-.rest-icon { font-size:28px; width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.rest-card:last-child { margin-bottom:0; }
+.rest-icon-wrap {
+  width:48px; height:48px; border-radius:12px;
+  background:var(--gold-dim); display:flex; align-items:center;
+  justify-content:center; font-size:24px; flex-shrink:0;
+}
 .rest-info { flex:1; }
-.rest-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:2px; }
-.rest-desc { font-size:12px; color:var(--text-dim); line-height:1.5; }
-.rest-price { font-size:11px; color:var(--gold); margin-top:4px; }
+.rest-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.rest-desc { font-size:12px; color:var(--text-dim); line-height:1.55; margin-bottom:6px; }
+.rest-price {
+  display:inline-block; font-size:11px; font-weight:600;
+  color:var(--gold); background:var(--gold-dim);
+  padding:2px 8px; border-radius:20px;
+}
 
 /* Hotel card */
 .hotel-card {
-  padding:14px; background:var(--surface);
-  border-radius:var(--radius-sm); border:1px solid var(--border);
-  margin-bottom:8px;
+  padding:14px 14px 14px 16px; background:var(--surface);
+  border-radius:10px; border:1px solid var(--border);
+  border-left:3px solid var(--gold);
+  margin-bottom:10px;
 }
-.hotel-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
-.hotel-desc { font-size:12px; color:var(--text-dim); line-height:1.5; }
-.hotel-price { font-size:12px; color:var(--gold); margin-top:6px; font-weight:500; }
+.hotel-card:last-child { margin-bottom:0; }
+.hotel-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:6px; }
+.hotel-name { font-size:14px; font-weight:600; color:var(--text); }
+.hotel-price {
+  font-size:11px; font-weight:600; color:var(--gold);
+  background:var(--gold-dim); padding:2px 8px; border-radius:20px;
+  white-space:nowrap; flex-shrink:0;
+}
+.hotel-desc { font-size:12px; color:var(--text-dim); line-height:1.55; }
 
 /* Tips */
 .tip-item {
-  display:flex; gap:10px; padding:10px 0;
+  display:flex; gap:12px; padding:12px 0;
   border-bottom:1px solid var(--border);
 }
 .tip-item:last-child { border-bottom:none; }
 .tip-num {
-  width:22px; height:22px; border-radius:50%;
+  width:24px; height:24px; border-radius:50%;
   background:var(--gold-dim); color:var(--gold);
   font-size:11px; font-weight:700;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0; margin-top:1px;
 }
-.tip-text { font-size:13px; color:var(--text-dim); line-height:1.6; }
+.tip-text { font-size:13px; color:var(--text-dim); line-height:1.65; }
 
 /* Result footer */
 .result-footer {
@@ -820,8 +855,9 @@ const T = {
       {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a) => `あなたは経験豊富な旅行コンシェルジュです。
+    promptTemplate: (city, a, now) => `あなたは経験豊富な旅行コンシェルジュです。
 【目的地】${city}
+【現在時刻】${now}
 【旅のスタイル】${a.style}
 【予算】${a.budget}
 【食事の好み】${a.food}
@@ -912,8 +948,9 @@ tipsは3件。実在する具体的な施設名・店名を使ってください
       {name:'Hokkaido',en:'北海道',icon:'🦀',bg:'#1a2230'},
       {name:'Nara',en:'奈良',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a) => `You are an expert travel concierge for Japan.
+    promptTemplate: (city, a, now) => `You are an expert travel concierge for Japan.
 City: ${city}
+Current time: ${now}
 Style: ${a.style}
 Budget: ${a.budget}
 Food: ${a.food}
@@ -996,8 +1033,9 @@ Tips: 3. Use real, specific venue names. For short durations, keep all spots wit
       {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a) => `你是一位日本旅游专家。
+    promptTemplate: (city, a, now) => `你是一位日本旅游专家。
 目的地：${city}
+当前时间：${now}
 风格：${a.style}
 预算：${a.budget}
 餐饮：${a.food}
@@ -1075,8 +1113,9 @@ Tips: 3. Use real, specific venue names. For short durations, keep all spots wit
       {name:'홋카이도',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'나라',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a) => `당신은 일본 여행 전문 컨시어지입니다.
+    promptTemplate: (city, a, now) => `당신은 일본 여행 전문 컨시어지입니다.
 목적지: ${city}
+현재 시각: ${now}
 여행 스타일: ${a.style}
 예산: ${a.budget}
 음식: ${a.food}
@@ -1382,7 +1421,9 @@ async function generatePlan() {
     document.getElementById(`ls${i}`).className='load-step active';
   }
 
-  const prompt = t.promptTemplate(currentCity, answers);
+  const now = new Date();
+  const currentTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const prompt = t.promptTemplate(currentCity, answers, currentTime);
 
   try {
     const res = await fetch('/api/generate', {
@@ -1474,23 +1515,40 @@ function renderResult(plan) {
 
   // Timeline
   if(plan.timeline?.length) {
-    html += `<div class="result-section">
-      <div class="result-section-title">${t.resultLabels.timeline}</div>
-      <div class="timeline">
-        ${plan.timeline.map((item,i) => `
-          <div class="tl-item">
-            <div class="tl-left">
-              <div class="tl-time">${item.time||''}</div>
-              ${i < plan.timeline.length-1 ? '<div class="tl-line"></div>' : ''}
-            </div>
-            <div class="tl-right">
-              <div class="tl-title">${item.title||''}</div>
-              <div class="tl-desc">${item.desc||''}</div>
-            </div>
+    const noteStart = {ja:'⚠️ 表示時刻は現地での行動時間の目安です。出発・移動時間を加えてご計画ください。', en:'⚠️ Times shown are approximate activity times. Please account for travel time to each location.', zh:'⚠️ 显示时间为现场活动的参考时间，请加上出行和交通时间。', ko:'⚠️ 표시 시간은 현지 활동 기준입니다. 이동 시간을 추가로 고려해 주세요.'};
+    const noteEnd = {ja:'🏠 最後の場所からの帰路・移動時間もお忘れなく。', en:'🏠 Don't forget to account for your return journey after the last stop.', zh:'🏠 别忘了最后一个地点的返程时间。', ko:'🏠 마지막 장소에서의 귀로 시간도 잊지 마세요.'};
+    let seenDays = new Set();
+    let timelineHtml = '';
+    plan.timeline.forEach((item, i) => {
+      const timeStr = item.time||'';
+      const dayMatch = timeStr.match(/Day\s*(\d+)/i);
+      if(dayMatch) {
+        const dayKey = dayMatch[0];
+        if(!seenDays.has(dayKey)) {
+          seenDays.add(dayKey);
+          timelineHtml += \`<div class="tl-day-label">Day \${dayMatch[1]}</div>\`;
+        }
+      }
+      timelineHtml += \`
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-time">\${timeStr.replace(/Day\s*\d+\s*/i,'')}</div>
+            <div class="tl-badge">\${i+1}</div>
+            \${i < plan.timeline.length-1 ? '<div class="tl-line"></div>' : ''}
           </div>
-        `).join('')}
-      </div>
-    </div>`;
+          <div class="tl-right">
+            <div class="tl-title">\${item.title||''}</div>
+            <div class="tl-desc">\${item.desc||''}</div>
+          </div>
+        </div>
+      \`;
+    });
+    html += \`<div class="result-section">
+      <div class="result-section-title">\${t.resultLabels.timeline}</div>
+      <div class="tl-note">\${noteStart[lang]||noteStart.ja}</div>
+      <div class="timeline">\${timelineHtml}</div>
+      <div class="tl-note" style="margin-top:12px;margin-bottom:0">\${noteEnd[lang]||noteEnd.ja}</div>
+    </div>\`;
   }
 
   // Restaurants
@@ -1499,11 +1557,11 @@ function renderResult(plan) {
       <div class="result-section-title">${t.resultLabels.restaurants}</div>
       ${plan.restaurants.map(r => `
         <div class="rest-card">
-          <div class="rest-icon">${r.icon||'🍽️'}</div>
+          <div class="rest-icon-wrap">${r.icon||'🍽️'}</div>
           <div class="rest-info">
             <div class="rest-name">${r.name||''}</div>
             <div class="rest-desc">${r.desc||''}</div>
-            <div class="rest-price">${r.price||''}</div>
+            ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
           </div>
         </div>
       `).join('')}
@@ -1516,9 +1574,11 @@ function renderResult(plan) {
       <div class="result-section-title">${t.resultLabels.hotels}</div>
       ${plan.hotels.map(h => `
         <div class="hotel-card">
-          <div class="hotel-name">🏨 ${h.name||''}</div>
+          <div class="hotel-header">
+            <div class="hotel-name">🏨 ${h.name||''}</div>
+            ${h.price ? `<div class="hotel-price">${h.price}</div>` : ''}
+          </div>
           <div class="hotel-desc">${h.desc||''}</div>
-          <div class="hotel-price">${h.price||''}</div>
         </div>
       `).join('')}
     </div>`;
