@@ -669,7 +669,7 @@ html, body {
 <!-- ══ PREMIUM ══ -->
 <div id="screen-premium" class="screen">
   <div class="premium-header">
-    <button class="btn btn-ghost" onclick="goBack()" style="font-size:20px;padding:4px">←</button>
+    <button class="q-back" onclick="goBack()">← <span id="back-label-premium">戻る</span></button>
     <div class="tag tag-gold">PREMIUM</div>
     <div style="width:36px"></div>
   </div>
@@ -1145,8 +1145,10 @@ function setLang(l) {
   const backLabel = {ja:'戻る', en:'Back', zh:'返回', ko:'뒤로'}[l] || '戻る';
   const blHome = document.getElementById('back-label-home');
   const blQ = document.getElementById('back-label-q');
+  const blP = document.getElementById('back-label-premium');
   if(blHome) blHome.textContent = backLabel;
   if(blQ) blQ.textContent = backLabel;
+  if(blP) blP.textContent = backLabel;
   // splash lang label（前半のみ選択言語に変換）
   const langLabel = {ja:'言語を選択', en:'Select Language', zh:'选择语言', ko:'언어 선택'}[l] || '言語を選択';
   const sll = document.getElementById('splash-lang-label');
@@ -1190,14 +1192,25 @@ function updateHomeUI() {
 // ════════════════════════════════
 // SCREENS
 // ════════════════════════════════
+const screenHistory = [];
+
 function showScreen(id) {
-  if(id !== 'screen-premium') prevScreen = document.querySelector('.screen.active')?.id || 'screen-home';
+  const current = document.querySelector('.screen.active')?.id;
+  if(current && current !== id) screenHistory.push(current);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
 
-function goBack() { showScreen(prevScreen); }
+function goBack() {
+  if(screenHistory.length > 0) {
+    showScreen(screenHistory.pop());
+    // push先をhistoryに積まないよう1つ余分に除去
+    screenHistory.pop();
+  } else {
+    showScreen('screen-splash');
+  }
+}
 
 // ════════════════════════════════
 // DESTINATIONS
