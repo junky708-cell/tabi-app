@@ -1406,7 +1406,14 @@ async function generatePlan() {
 
     const data = JSON.parse(responseText);
     let raw = data.content.map(c=>c.text||'').join('');
+    // マークダウンのコードブロックを除去
     raw = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    // JSONの { } の範囲だけを抽出（前後に余分なテキストがあっても対応）
+    const jsonStart = raw.indexOf('{');
+    const jsonEnd = raw.lastIndexOf('}');
+    if(jsonStart !== -1 && jsonEnd !== -1) {
+      raw = raw.slice(jsonStart, jsonEnd + 1);
+    }
     let plan;
     try { plan = JSON.parse(raw); }
     catch(e) {
