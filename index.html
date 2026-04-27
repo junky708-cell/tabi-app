@@ -569,7 +569,7 @@ html, body {
    TOAST
 ════════════════════════════════ */
 #toast {
-  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-10px);
   background:var(--surface2); border:1px solid var(--border);
   border-radius:10px; padding:10px 16px;
   font-size:13px; color:var(--text-mid);
@@ -577,6 +577,7 @@ html, body {
   white-space:normal; max-width:80vw; text-align:center;
   z-index:1000;
 }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* ════════════════════════════════
