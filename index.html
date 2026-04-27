@@ -1454,6 +1454,7 @@ async function confirmCity() {
       body: JSON.stringify({prompt: promptMap[lang] || promptMap.ja})
     });
     const data = await res.json();
+    console.log('confirm API raw response:', JSON.stringify(data).slice(0, 300));
     let raw = (data.content || []).map(c => c.text||'').join('');
     raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
     const j = raw.indexOf('{'), k = raw.lastIndexOf('}');
