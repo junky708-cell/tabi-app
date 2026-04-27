@@ -995,7 +995,7 @@ tipsは3件。【店名・施設名のルール】有名観光地・世界遺産
       {name:'Hokkaido',en:'北海道',icon:'🦀',bg:'#1a2230'},
       {name:'Nara',en:'奈良',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `You are an expert travel concierge for Japan.
+    promptTemplate: (city, a, now) => `You are an expert travel concierge for any destination worldwide.
 City: ${city}
 ${now ? `Current time: ${now.time} (leaving now — start the schedule from this time. ${now.sameDay ? 'This is a day trip or short outing, so keep all activities within today — do not extend to the next day.' : 'This is an overnight trip, so start from this time and continue normally.'})` : 'Timing: Planning ahead (use standard 8–9am departure time)'}
 Style: ${a.style}
@@ -1084,7 +1084,7 @@ Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shr
       {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `你是一位日本旅游专家。
+    promptTemplate: (city, a, now) => `你是一位全球旅游专家。
 目的地：${city}
 ${now ? `当前时间：${now.time}（现在出发，请从此时间开始安排行程。${now.sameDay ? '这是当天行程，所有活动须在当天内完成，不得延续到第二天。' : '这是多日行程，从此时间出发正常安排即可。'}）` : '出行时间：计划中（请使用早上8-9点的标准出发时间）'}
 风格：${a.style}
@@ -1168,7 +1168,7 @@ ${now ? `当前时间：${now.time}（现在出发，请从此时间开始安排
       {name:'홋카이도',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'나라',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `당신은 일본 여행 전문 컨시어지입니다.
+    promptTemplate: (city, a, now) => `당신은 전 세계 여행 전문 컨시어지입니다.
 목적지: ${city}
 ${now ? `현재 시각: ${now.time}（지금 출발 — 이 시간부터 일정 구성. ${now.sameDay ? '당일 일정이므로 모든 활동을 당일 내로 마무리할 것. 다음 날로 넘기지 말 것.' : '숙박 일정이므로 이 시간부터 정상적으로 구성할 것.'}）` : '여행 시기: 계획 중（오전 8-9시 표준 출발 시간으로 구성）'}
 여행 스타일: ${a.style}
