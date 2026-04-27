@@ -641,14 +641,15 @@ html, body {
 </div>
 
 <!-- ══ CITY CONFIRM POPUP ══ -->
-<div id="city-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:24px">
+<div id="city-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
   <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:380px">
-    <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px" id="city-confirm-label">目的地の確認</div>
-    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.5" id="city-confirm-name"></div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:20px" id="city-confirm-desc"></div>
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:12px" id="city-confirm-label">目的地の確認</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.5" id="city-confirm-name"></div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:12px;min-height:40px" id="city-confirm-desc"></div>
+    <div style="font-size:13px;color:var(--text);font-weight:500;margin-bottom:20px;min-height:20px" id="city-confirm-question"></div>
     <div style="display:flex;gap:10px">
-      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border)" onclick="cancelCityConfirm()" id="city-confirm-no">違う</button>
-      <button class="btn btn-gold" style="flex:1" onclick="acceptCityConfirm()" id="city-confirm-yes">はい、進む →</button>
+      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border);display:none" onclick="cancelCityConfirm()" id="city-confirm-no">違う</button>
+      <button class="btn btn-gold" style="flex:1;display:none" onclick="acceptCityConfirm()" id="city-confirm-yes">はい、進む →</button>
     </div>
   </div>
 </div>
@@ -1399,19 +1400,23 @@ async function confirmCity() {
 
   // i18n
   const confirmLabels = {
-    ja: {label:'目的地の確認', loading:'確認中...', yes:'はい、進む →', no:'違う地名を入力'},
-    en: {label:'Confirm destination', loading:'Checking...', yes:'Yes, continue →', no:'Enter different name'},
-    zh: {label:'确认目的地', loading:'确认中...', yes:'是，继续 →', no:'输入其他地名'},
-    ko: {label:'목적지 확인', loading:'확인 중...', yes:'네, 계속 →', no:'다른 지명 입력'},
+    ja: {label:'目的地の確認', loading:'地名を確認中...', confirm:'こちらで間違いないですか？', yes:'はい、進む →', no:'再度入力'},
+    en: {label:'Confirm destination', loading:'Checking destination...', confirm:'Is this correct?', yes:'Yes, continue →', no:'Re-enter'},
+    zh: {label:'确认目的地', loading:'正在确认地名...', confirm:'请确认是否正确？', yes:'是，继续 →', no:'重新输入'},
+    ko: {label:'목적지 확인', loading:'지명 확인 중...', confirm:'맞으신가요？', yes:'네, 계속 →', no:'다시 입력'},
   };
   const cl = confirmLabels[lang] || confirmLabels.ja;
 
   labelEl.textContent = cl.label;
-  yesBtn.textContent = cl.loading;
+  yesBtn.textContent = cl.yes;
   yesBtn.disabled = true;
   noBtn.textContent = cl.no;
-  nameEl.textContent = currentCity;
+  nameEl.textContent = cl.loading;
   descEl.textContent = '';
+  document.getElementById('city-confirm-question').textContent = '';
+  // ボタンを隠して確認中を表示
+  yesBtn.style.display = 'none';
+  noBtn.style.display = 'none';
   overlay.style.display = 'flex';
 
   try {
@@ -1434,15 +1439,18 @@ async function confirmCity() {
     const info = JSON.parse(raw);
     nameEl.textContent = info.name + (info.location ? '　' + info.location : '');
     descEl.textContent = info.desc || '';
+    document.getElementById('city-confirm-question').textContent = cl.confirm;
     confirmedCity = info.name || currentCity;
   } catch(e) {
-    // API失敗時はそのまま進む
     confirmedCity = currentCity;
     nameEl.textContent = currentCity;
     descEl.textContent = '';
+    document.getElementById('city-confirm-question').textContent = cl.confirm;
   }
 
-  yesBtn.textContent = cl.yes;
+  // 情報取得後にボタンを表示
+  yesBtn.style.display = '';
+  noBtn.style.display = '';
   yesBtn.disabled = false;
 }
 
