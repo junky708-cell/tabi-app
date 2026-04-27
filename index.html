@@ -1889,7 +1889,7 @@ function renderResult(plan) {
           <div class="rest-info">
             <div class="rest-name">${r.name||''}</div>
             <div class="rest-desc">${r.desc||''}</div>
-            ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
+            ${r.price ? `<div class="rest-price">${convertPrice(r.price)}</div>` : ''}
             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる'}</a>
           </div>
         </div>
@@ -1905,7 +1905,7 @@ function renderResult(plan) {
         <div class="hotel-card">
           <div class="hotel-header">
             <div class="hotel-name">🏨 ${h.name||''}</div>
-            ${h.price ? `<div class="hotel-price">${h.price}</div>` : ''}
+            ${h.price ? `<div class="hotel-price">${convertPrice(h.price)}</div>` : ''}
           </div>
           <div class="hotel-desc">${h.desc||''}</div>
           <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる'}</a>
@@ -2002,6 +2002,26 @@ function initPwaBanner() {
 function dismissPwaBanner() {
   document.getElementById('pwa-banner').style.display = 'none';
   localStorage.setItem('pwaBannerDismissed', '1');
+}
+
+// ════════════════════════════════
+// CURRENCY CONVERSION
+// ════════════════════════════════
+const RATES = { en: { symbol: 'USD', rate: 0.0067 }, zh: { symbol: 'CNY', rate: 0.048 }, ko: { symbol: 'KRW', rate: 8.9 } };
+
+function convertPrice(priceText) {
+  if(lang === 'ja' || !RATES[lang]) return priceText;
+  const { symbol, rate } = RATES[lang];
+  // ¥や円の数字を抽出
+  const match = priceText.match(/[¥￥]?\s*([\d,]+)/);
+  if(!match) return priceText;
+  const yen = parseInt(match[1].replace(/,/g, ''));
+  if(isNaN(yen) || yen === 0) return priceText;
+  const converted = Math.round(yen * rate);
+  const formatted = symbol === 'KRW'
+    ? converted.toLocaleString()
+    : converted.toLocaleString(undefined, {maximumFractionDigits: 1});
+  return priceText + ` <span style="opacity:.7;font-size:.9em">≈ ${symbol} ${formatted}</span>`;
 }
 
 // ════════════════════════════════
