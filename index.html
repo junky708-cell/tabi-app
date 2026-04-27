@@ -1469,6 +1469,23 @@ let confirmedLocation = '';
 
 async function confirmCity() {
   if(!currentCity) return;
+
+  // 広範囲地名チェック
+  const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
+  if(broadAreaPattern.test(currentCity.trim())) {
+    const msg = {
+      ja: '範囲が広すぎます。より具体的な都市名・地名を入力してください。\n例：東京、京都、大阪、札幌',
+      en: 'Too broad. Please enter a specific city or area.\nEx: Tokyo, Kyoto, Osaka, London',
+      zh: '范围太广。请输入具体的城市名称。\n例：东京、京都、大阪',
+      ko: '범위가 너무 넓습니다. 구체적인 도시명을 입력해 주세요.\n예: 도쿄, 교토, 오사카',
+    };
+    showToast(msg[lang] || msg.ja);
+    const input = document.getElementById('city-input');
+    input.focus();
+    input.select();
+    return;
+  }
+
   const t = T[lang];
   const overlay = document.getElementById('city-confirm-overlay');
   const nameEl = document.getElementById('city-confirm-name');
