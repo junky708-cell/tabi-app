@@ -616,11 +616,11 @@ html, body {
   <div class="q-header">
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-splash')">← <span id="back-label-home">戻る</span></button>
-      <div class="font-ctrl">
-        <button class="font-ctrl-btn" onclick="changeFontSize(-1)" id="font-btn-minus">A-</button>
-        <button class="font-ctrl-btn" onclick="changeFontSize(1)" id="font-btn-plus">A+</button>
-      </div>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
+      <div class="font-ctrl">
+        <button class="font-ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+        <button class="font-ctrl-btn" onclick="changeFontSize(1)">A+</button>
+      </div>
     </div>
     <div class="q-progress-bar"><div style="height:100%;width:0%"></div></div>
     <div class="q-city display" id="home-greeting">目的地を選択</div>
@@ -697,11 +697,14 @@ html, body {
   <div class="q-header">
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-home')">← <span id="back-label-q">戻る</span></button>
-      <div class="font-ctrl">
-        <button class="font-ctrl-btn" onclick="changeFontSize(-1)">A-</button>
-        <button class="font-ctrl-btn" onclick="changeFontSize(1)">A+</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="font-ctrl">
+          <button class="font-ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+          <button class="font-ctrl-btn" onclick="changeFontSize(1)">A+</button>
+        </div>
+        <span class="q-progress-text" id="q-progress-text">0 / 5</span>
       </div>
-      <span class="q-progress-text" id="q-progress-text">0 / 5</span>
     </div>
     <div class="q-progress-bar">
       <div class="q-progress-fill" id="q-progress-fill" style="width:0%"></div>
@@ -734,14 +737,18 @@ html, body {
 <!-- ══ RESULT ══ -->
 <div id="screen-result" class="screen">
   <div class="result-header">
+    <div class="q-nav" style="margin-bottom:12px">
+      <div style="width:60px"></div>
+      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
+      <div class="font-ctrl">
+        <button class="font-ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+        <button class="font-ctrl-btn" onclick="changeFontSize(1)">A+</button>
+      </div>
+    </div>
     <div class="result-top">
       <div>
         <div class="result-city display" id="result-city">京都</div>
         <div class="result-badges" id="result-badges"></div>
-      </div>
-      <div class="font-ctrl" style="margin-top:4px">
-        <button class="font-ctrl-btn" onclick="changeFontSize(-1)">A-</button>
-        <button class="font-ctrl-btn" onclick="changeFontSize(1)">A+</button>
       </div>
     </div>
   </div>
@@ -773,12 +780,11 @@ html, body {
 <div id="screen-premium" class="screen">
   <div class="premium-header">
     <button class="q-back" onclick="goBack()">← <span id="back-label-premium">戻る</span></button>
+    <div class="tag tag-gold">PREMIUM</div>
     <div class="font-ctrl">
       <button class="font-ctrl-btn" onclick="changeFontSize(-1)">A-</button>
       <button class="font-ctrl-btn" onclick="changeFontSize(1)">A+</button>
     </div>
-    <div class="tag tag-gold">PREMIUM</div>
-    <div style="width:36px"></div>
   </div>
 
   <div class="premium-hero">
