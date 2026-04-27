@@ -574,7 +574,8 @@ html, body {
   border-radius:10px; padding:10px 16px;
   font-size:13px; color:var(--text-mid);
   opacity:0; transition:all .3s; pointer-events:none;
-  white-space:nowrap; z-index:1000;
+  white-space:normal; max-width:80vw; text-align:center;
+  z-index:1000;
 }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
@@ -1474,15 +1475,13 @@ async function confirmCity() {
   const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
   if(broadAreaPattern.test(currentCity.trim())) {
     const msg = {
-      ja: '範囲が広すぎます。より具体的な都市名・地名を入力してください。\n例：東京、京都、大阪、札幌',
-      en: 'Too broad. Please enter a specific city or area.\nEx: Tokyo, Kyoto, Osaka, London',
-      zh: '范围太广。请输入具体的城市名称。\n例：东京、京都、大阪',
-      ko: '범위가 너무 넓습니다. 구체적인 도시명을 입력해 주세요.\n예: 도쿄, 교토, 오사카',
+      ja: '範囲が広すぎます。例：東京、京都、大阪、札幌など具体的な都市名を入力してください',
+      en: 'Too broad. Please enter a specific city. Ex: Tokyo, Kyoto, London',
+      zh: '范围太广。请输入具体城市名。例：东京、京都、大阪',
+      ko: '범위가 너무 넓습니다. 예: 도쿄, 교토, 오사카',
     };
     showToast(msg[lang] || msg.ja);
-    const input = document.getElementById('city-input');
-    input.focus();
-    input.select();
+    document.getElementById('city-input').select();
     return;
   }
 
