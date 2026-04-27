@@ -910,7 +910,7 @@ const T = {
 - 「2時間」「半日」の場合：timeline 3〜4件、restaurants 1〜2件、hotels 0件（短時間のため不要）
 - 「日帰り（1日）」の場合：timeline 6〜8件、restaurants 2〜3件、hotels 0件
 - 「1泊2日」以上の場合：timeline 各日4〜6件、restaurants 3〜4件、hotels 2〜3件
-tipsは3件。実在する具体的な施設名・店名を使ってください。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。`,
+tipsは3件。【重要】実在が確認できる具体的な施設名・店名のみ使用してください。不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の店名・施設名は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。`,
     resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
   },
 
@@ -999,7 +999,7 @@ Output counts:
 - '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
 - 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
 - '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
-Tips: 3. Use real, specific venue names. For short durations, keep all spots within walking distance.`,
+Tips: 3. IMPORTANT: Only use venue names you are confident actually exist. If unsure, use general descriptions like "local ramen shop near the station" instead of inventing names. Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details. Do the same for each day in multi-day trips.`,
     resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
   },
 
@@ -1387,6 +1387,7 @@ function updateUsageDisplay() {
 // QUESTIONS
 // ════════════════════════════════
 let confirmedCity = '';
+let confirmedLocation = '';
 
 async function confirmCity() {
   if(!currentCity) return;
@@ -1441,6 +1442,7 @@ async function confirmCity() {
     descEl.textContent = info.desc || '';
     document.getElementById('city-confirm-question').textContent = cl.confirm;
     confirmedCity = info.name || currentCity;
+    confirmedLocation = info.location || '';
   } catch(e) {
     confirmedCity = currentCity;
     nameEl.textContent = currentCity;
@@ -1543,7 +1545,8 @@ async function generatePlan() {
 
   const now = new Date();
   const currentTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const prompt = t.promptTemplate(currentCity, answers, currentTime);
+  const cityWithLocation = confirmedLocation ? currentCity + '（' + confirmedLocation + '）' : currentCity;
+  const prompt = t.promptTemplate(cityWithLocation, answers, currentTime);
 
   try {
     const res = await fetch('/api/generate', {
