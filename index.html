@@ -377,7 +377,7 @@ html, body {
 }
 .result-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
 
-.result-body { flex:1; overflow-y:auto; padding:0 0 100px; }
+.result-body { flex:1; overflow-y:auto; padding:0 0 140px; }
 
 .result-section {
   padding:20px; border-bottom:1px solid var(--border);
@@ -770,14 +770,16 @@ html, body {
 
   <div class="result-body" id="result-body"></div>
 
-  <div style="padding:0 20px 8px">
-    <button class="btn" style="width:100%;background:var(--surface);border:1px solid var(--border)" onclick="showShareMenu()" id="result-share-btn">
-      🔗 <span id="result-share-label">この旅程をシェア</span>
-    </button>
-  </div>
   <div class="result-footer">
-    <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
-    <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
+    <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+      <button class="btn" style="width:100%;background:var(--surface);border:1px solid var(--border)" onclick="showShareMenu()" id="result-share-btn">
+        🔗 <span id="result-share-label">この旅程をシェア</span>
+      </button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
+        <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
+      </div>
+    </div>
   </div>
 </div>
 
