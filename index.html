@@ -2059,7 +2059,7 @@ function getShareText() {
 }
 
 function shareUrl() {
-  const url = 'https://tabi-app-one.vercel.app';
+  const url = 'https://tabi-guide.vercel.app';
   if(navigator.clipboard) {
     navigator.clipboard.writeText(url).then(function() {
       hideShareMenu();
@@ -2073,13 +2073,13 @@ function shareUrl() {
 }
 
 function shareX() {
-  const text = encodeURIComponent(getShareText() + ' https://tabi-app-one.vercel.app');
+  const text = encodeURIComponent(getShareText() + ' https://tabi-guide.vercel.app');
   window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
   hideShareMenu();
 }
 
 function shareLine() {
-  const url = encodeURIComponent('https://tabi-app-one.vercel.app');
+  const url = encodeURIComponent('https://tabi-guide.vercel.app');
   const text = encodeURIComponent(getShareText());
   window.open('https://line.me/R/msg/text/?' + text + '%0A' + url, '_blank');
   hideShareMenu();
