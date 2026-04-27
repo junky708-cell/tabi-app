@@ -462,12 +462,13 @@ html, body {
 .hotel-desc { font-size:12px; color:var(--text-dim); line-height:1.55; }
 
 /* Font size control */
-.font-ctrl { display:flex; align-items:center; gap:2px; }
+.font-ctrl { display:flex; align-items:center; gap:4px; }
 .font-ctrl-btn {
   background:none; border:1px solid var(--border);
   color:var(--text-dim); cursor:pointer;
-  border-radius:6px; padding:3px 7px;
-  font-size:11px; font-weight:700; line-height:1;
+  border-radius:6px; padding:5px 10px;
+  font-size:13px; font-weight:700; line-height:1;
+  min-width:36px; min-height:32px;
   transition:color .15s, border-color .15s;
 }
 .font-ctrl-btn:hover { color:var(--text); border-color:var(--text-dim); }
@@ -1489,13 +1490,13 @@ async function confirmCity() {
     const j = raw.indexOf('{'), k = raw.lastIndexOf('}');
     if(j !== -1 && k !== -1) raw = raw.slice(j, k+1);
     const info = JSON.parse(raw);
-    const displayName = (info.name || currentCity).trim();
+    const displayName = currentCity; // 元の入力値を維持
     const displayLocation = (info.location || '').trim();
     const displayDesc = (info.desc || '').trim();
     nameEl.textContent = displayName + (displayLocation ? '　' + displayLocation : '');
     descEl.textContent = displayDesc;
     document.getElementById('city-confirm-question').textContent = cl.confirm;
-    confirmedCity = displayName || currentCity;
+    confirmedCity = currentCity; // 常に元の入力値を使う
     confirmedLocation = displayLocation;
   } catch(e) {
     confirmedCity = currentCity;
