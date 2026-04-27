@@ -770,9 +770,36 @@ html, body {
 
   <div class="result-body" id="result-body"></div>
 
+  <div style="padding:0 20px 8px">
+    <button class="btn" style="width:100%;background:var(--surface);border:1px solid var(--border)" onclick="showShareMenu()" id="result-share-btn">
+      🔗 <span id="result-share-label">この旅程をシェア</span>
+    </button>
+  </div>
   <div class="result-footer">
     <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
     <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
+  </div>
+</div>
+
+<!-- ══ SHARE POPUP ══ -->
+<div id="share-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center;padding:0">
+  <div style="background:var(--surface);border-radius:20px 20px 0 0;border:1px solid var(--border);padding:24px 20px 40px;width:100%;max-width:430px">
+    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:20px" id="share-title">シェア</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn" style="width:100%;background:var(--bg);border:1px solid var(--border);justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareUrl()">
+        <span style="font-size:20px">🔗</span>
+        <span id="share-copy-label">URLをコピー</span>
+      </button>
+      <button class="btn" style="width:100%;background:#000;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareX()">
+        <span style="font-size:16px;font-weight:900;color:#fff">𝕏</span>
+        <span style="color:#fff" id="share-x-label">Xでシェア</span>
+      </button>
+      <button class="btn" style="width:100%;background:#06C755;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareLine()">
+        <span style="font-size:20px">💬</span>
+        <span style="color:#fff" id="share-line-label">LINEでシェア</span>
+      </button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:16px;background:var(--bg);border:1px solid var(--border)" onclick="hideShareMenu()" id="share-cancel-label">キャンセル</button>
   </div>
 </div>
 
@@ -1266,6 +1293,9 @@ function setLang(l) {
     );
   });
   const t = T[lang];
+  // share button
+  const shareLabelEl = document.getElementById('result-share-label');
+  if(shareLabelEl) shareLabelEl.textContent = {ja:'この旅程をシェア', en:'Share this itinerary', zh:'分享此行程', ko:'일정 공유하기'}[l] || 'この旅程をシェア';
   // splash
   const st = document.getElementById('splash-text');
   if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
@@ -1919,6 +1949,66 @@ function changeFontSize() {
   fontSizeIdx = (fontSizeIdx + 1) % FONT_SIZES.length;
   localStorage.setItem('tabiFontIdx', fontSizeIdx);
   applyFontSize();
+}
+
+// ════════════════════════════════
+// SHARE
+// ════════════════════════════════
+function showShareMenu() {
+  const labels = {
+    ja: { title:'シェア', copy:'URLをコピー', x:'Xでシェア', line:'LINEでシェア', cancel:'キャンセル', btn:'この旅程をシェア' },
+    en: { title:'Share', copy:'Copy URL', x:'Share on X', line:'Share on LINE', cancel:'Cancel', btn:'Share this itinerary' },
+    zh: { title:'分享', copy:'复制链接', x:'分享到X', line:'分享到LINE', cancel:'取消', btn:'分享此行程' },
+    ko: { title:'공유', copy:'URL 복사', x:'X에서 공유', line:'LINE에서 공유', cancel:'취소', btn:'일정 공유하기' },
+  };
+  const l = labels[lang] || labels.ja;
+  document.getElementById('share-title').textContent = l.title;
+  document.getElementById('share-copy-label').textContent = l.copy;
+  document.getElementById('share-x-label').textContent = l.x;
+  document.getElementById('share-line-label').textContent = l.line;
+  document.getElementById('share-cancel-label').textContent = l.cancel;
+  document.getElementById('share-overlay').style.display = 'flex';
+}
+
+function hideShareMenu() {
+  document.getElementById('share-overlay').style.display = 'none';
+}
+
+function getShareText() {
+  const city = currentCity || '';
+  const msgs = {
+    ja: `TABIが${city}の旅程を提案してくれました！\nAI旅行ガイド TABI →`,
+    en: `TABI suggested a trip to ${city}!\nAI Travel Guide TABI →`,
+    zh: `TABI为我推荐了${city}的行程！\nAI旅行向导 TABI →`,
+    ko: `TABI가 ${city} 여행 일정을 제안해줬어요!\nAI 여행 가이드 TABI →`,
+  };
+  return msgs[lang] || msgs.ja;
+}
+
+function shareUrl() {
+  const url = 'https://tabi-app-one.vercel.app';
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() {
+      hideShareMenu();
+      const msg = {ja:'URLをコピーしました！', en:'URL copied!', zh:'链接已复制！', ko:'URL이 복사되었습니다！'}[lang] || 'URL copied!';
+      showToast(msg);
+    });
+  } else {
+    hideShareMenu();
+    showToast(url);
+  }
+}
+
+function shareX() {
+  const text = encodeURIComponent(getShareText() + ' https://tabi-app-one.vercel.app');
+  window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
+  hideShareMenu();
+}
+
+function shareLine() {
+  const text = encodeURIComponent(getShareText() + ' https://tabi-app-one.vercel.app');
+  window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent('https://tabi-app-one.vercel.app') + '&text=' + text, '_blank');
+  hideShareMenu();
 }
 
 // ════════════════════════════════
