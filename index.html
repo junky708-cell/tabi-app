@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
+  --base-font: 15px;
   --bg: #0f0e0c;
   --surface: #1a1916;
   --surface2: #232220;
@@ -1473,7 +1474,7 @@ async function confirmCity() {
 
   try {
     const promptMap = {
-      ja: `「${currentCity}」という場所についてJSONオブジェクトのみを返してください。他のテキスト不可。形式：{"name":"正式名称（例：マンチェスター）","location":"所在地（例：イングランド、イギリス）","desc":"旅行者向けの1〜2文の説明。"} マークダウン不可。`,
+      ja: `「${currentCity}」という場所について、必ず日本語でJSONオブジェクトのみを返してください。他のテキスト不可。形式：{"name":"日本語の正式名称（例：瀬戸市）","location":"所在地（例：愛知県）","desc":"旅行者向けの1〜2文の日本語説明。"} マークダウン不可。英語での回答不可。`,
       en: `You must return ONLY a JSON object with no other text. For the place "${currentCity}", respond with exactly this format: {"name":"Manchester","location":"Greater Manchester, United Kingdom","desc":"One or two sentences about this destination for travelers."} Do not include any explanation or markdown.`,
       zh: `请只返回一个JSON对象，不要其他任何文字。关于地点"${currentCity}"，格式如下：{"name":"正式名称（例：曼彻斯特）","location":"所在地（例：英格兰，英国）","desc":"给旅行者的1-2句介绍。"} 不要Markdown。`,
       ko: `"${currentCity}" 장소에 대해 JSON 객체만 반환하세요. 다른 텍스트 불가. 형식: {"name":"정식 명칭（예: 맨체스터）","location":"소재지（예: 잉글랜드, 영국）","desc":"여행자를 위한 1-2문장 설명."} 마크다운 불가.`,
@@ -1855,7 +1856,7 @@ const FONT_SIZES = [15, 17, 19];
 let fontSizeIdx = parseInt(localStorage.getItem('tabiFontIdx') || '0');
 
 function applyFontSize() {
-  document.body.style.fontSize = FONT_SIZES[fontSizeIdx] + 'px';
+  document.documentElement.style.setProperty('--base-font', FONT_SIZES[fontSizeIdx] + 'px');
 }
 
 function changeFontSize(dir) {
