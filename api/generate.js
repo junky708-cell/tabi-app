@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 CRITICAL RULES:
 - Return ONLY valid JSON. Absolutely NO markdown, NO code blocks (no \`\`\`json), NO explanations, NO extra text before or after the JSON.
 - Start your response with { and end with }. Nothing else.
-- ANTI-HALLUCINATION: Only use venue names, restaurant names, and facility names that you are highly confident actually exist. If you are not sure a specific venue exists, use a descriptive placeholder like "local soba restaurant near the station" or "traditional ryokan in the area" instead of inventing a name. Never fabricate venue names.
+- VENUE NAMING: Always use real names for well-known attractions, temples, shrines, and landmarks. For restaurants and hotels, use real names when highly confident they exist; otherwise use descriptive phrases like "local soba restaurant near the station". Never fabricate venue names.
 - The destination provided may include location info in parentheses (e.g. "馬籠宿（岐阜県中津川市）"). Always use this exact location to ensure accuracy.
 - DEPARTURE POINT: Always start the first timeline item from the nearest train station or a clear departure point. Include transport instructions. For multi-day trips, start each day the same way.
 - Tailor every recommendation to the user's stated style, budget, food preference, and group type.
