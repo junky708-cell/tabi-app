@@ -1444,7 +1444,7 @@ async function confirmCity() {
   try {
     const promptMap = {
       ja: `「${currentCity}」という地名・観光地名について、すべて日本語で以下のJSONのみ返してください。他のテキスト不要：{"name":"日本語での正式名称または一般的な呼び方（例：ロンドン、馬籠宿）","location":"都道府県・国など所在地（日本語で）","desc":"旅行者向け1〜2文の簡潔な説明（日本語で）"}`,
-      en: `For the destination "${currentCity}", return ONLY this JSON in English, no other text: {"name":"official or common name in English","location":"region/country in English","desc":"1-2 sentence description for travelers in English"}`,
+      en: `You must return ONLY a JSON object with no other text. For the place "${currentCity}", respond with exactly this format: {"name":"Manchester","location":"Greater Manchester, United Kingdom","desc":"One or two sentences about this destination for travelers."} Do not include any explanation or markdown.`,
       zh: `关于地名"${currentCity}"，只用中文返回以下JSON，不要其他文字：{"name":"中文正式名称","location":"所在地区/国家（中文）","desc":"给旅行者的1-2句简介（中文）"}`,
       ko: `"${currentCity}" 지명에 대해 한국어로만 아래 JSON을 반환하세요. 다른 텍스트 불필요: {"name":"한국어 정식 명칭","location":"소재지/국가（한국어）","desc":"여행자를 위한 한국어 1-2문장 설명"}`,
     };
@@ -1454,16 +1454,19 @@ async function confirmCity() {
       body: JSON.stringify({prompt: promptMap[lang] || promptMap.ja})
     });
     const data = await res.json();
-    let raw = data.content.map(c => c.text||'').join('');
+    let raw = (data.content || []).map(c => c.text||'').join('');
     raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
     const j = raw.indexOf('{'), k = raw.lastIndexOf('}');
     if(j !== -1 && k !== -1) raw = raw.slice(j, k+1);
     const info = JSON.parse(raw);
-    nameEl.textContent = info.name + (info.location ? '　' + info.location : '');
-    descEl.textContent = info.desc || '';
+    const displayName = (info.name || currentCity).trim();
+    const displayLocation = (info.location || '').trim();
+    const displayDesc = (info.desc || '').trim();
+    nameEl.textContent = displayName + (displayLocation ? '　' + displayLocation : '');
+    descEl.textContent = displayDesc;
     document.getElementById('city-confirm-question').textContent = cl.confirm;
-    confirmedCity = info.name || currentCity;
-    confirmedLocation = info.location || '';
+    confirmedCity = displayName || currentCity;
+    confirmedLocation = displayLocation;
   } catch(e) {
     confirmedCity = currentCity;
     nameEl.textContent = currentCity;
