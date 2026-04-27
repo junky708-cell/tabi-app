@@ -654,7 +654,26 @@ html, body {
   </div>
 </div>
 
-<!-- ══ QUESTIONS ══ -->
+<!-- ══ TIMING POPUP ══ -->
+<div id="timing-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:380px">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:12px" id="timing-label">この旅はいつ？</div>
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.5" id="timing-title">旅のタイミングを教えてください</div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:20px" id="timing-desc">提案するスケジュールの時間軸が変わります。</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectTiming('plan')" id="timing-plan-btn">
+        <span style="font-size:22px">🗓</span>
+        <span style="font-size:13px;font-weight:600;color:var(--text)" id="timing-plan-label">計画中</span>
+        <span style="font-size:11px;color:var(--text-dim)" id="timing-plan-sub">日時未定</span>
+      </button>
+      <button class="btn btn-gold" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectTiming('now')" id="timing-now-btn">
+        <span style="font-size:22px">📍</span>
+        <span style="font-size:13px;font-weight:600" id="timing-now-label">今すぐ出発</span>
+        <span style="font-size:11px;opacity:.8" id="timing-now-sub">現在時刻から提案</span>
+      </button>
+    </div>
+  </div>
+</div>
 <div id="screen-questions" class="screen">
   <div class="q-header">
     <div class="q-nav">
@@ -879,7 +898,7 @@ const T = {
     ],
     promptTemplate: (city, a, now) => `あなたは経験豊富な旅行コンシェルジュです。
 【目的地】${city}
-【現在時刻】${now}
+${now ? `【現在時刻】${now}（今すぐ出発のため、この時刻からスケジュールを組んでください）` : '【旅のタイミング】将来の計画（朝8時〜9時頃の標準的な出発時間で組んでください）'}
 【旅のスタイル】${a.style}
 【予算】${a.budget}
 【食事の好み】${a.food}
@@ -976,7 +995,7 @@ tipsは3件。【店名・施設名のルール】有名観光地・世界遺産
     ],
     promptTemplate: (city, a, now) => `You are an expert travel concierge for Japan.
 City: ${city}
-Current time: ${now}
+${now ? `Current time: ${now} (leaving now — start schedule from this time)` : 'Timing: Planning ahead (use standard 8–9am departure time)'}
 Style: ${a.style}
 Budget: ${a.budget}
 Food: ${a.food}
@@ -1065,7 +1084,7 @@ Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shr
     ],
     promptTemplate: (city, a, now) => `你是一位日本旅游专家。
 目的地：${city}
-当前时间：${now}
+${now ? `当前时间：${now}（现在出发，请从此时间开始安排行程）` : '出行时间：计划中（请使用早上8-9点的标准出发时间）'}
 风格：${a.style}
 预算：${a.budget}
 餐饮：${a.food}
@@ -1149,7 +1168,7 @@ Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shr
     ],
     promptTemplate: (city, a, now) => `당신은 일본 여행 전문 컨시어지입니다.
 목적지: ${city}
-현재 시각: ${now}
+${now ? `현재 시각: ${now}（지금 출발 — 이 시간부터 일정 구성）` : '여행 시기: 계획 중（오전 8-9시 표준 출발 시간으로 구성）'}
 여행 스타일: ${a.style}
 예산: ${a.budget}
 음식: ${a.food}
@@ -1462,6 +1481,38 @@ function acceptCityConfirm() {
   goToQuestions();
 }
 
+let tripTiming = 'plan'; // 'plan' or 'now'
+
+function acceptCityConfirm() {
+  document.getElementById('city-confirm-overlay').style.display = 'none';
+  if(confirmedCity) currentCity = confirmedCity;
+  showTimingPopup();
+}
+
+function showTimingPopup() {
+  const labels = {
+    ja: { label:'この旅はいつ？', title:'旅のタイミングを教えてください', desc:'提案するスケジュールの時間軸が変わります。', planLabel:'計画中', planSub:'日時未定・標準的な時間軸', nowLabel:'今すぐ出発', nowSub:'現在時刻から提案' },
+    en: { label:'When is this trip?', title:'Tell us your travel timing', desc:'This changes how we schedule your itinerary.', planLabel:'Planning ahead', planSub:'Flexible dates', nowLabel:'Leaving now', nowSub:'Based on current time' },
+    zh: { label:'这次旅行是什么时候？', title:'请告诉我们您的出行时间', desc:'这将影响我们为您规划的行程时间轴。', planLabel:'计划中', planSub:'日期未定', nowLabel:'现在出发', nowSub:'根据当前时间推荐' },
+    ko: { label:'이 여행은 언제인가요？', title:'여행 시기를 알려주세요', desc:'일정 시간축이 달라집니다.', planLabel:'계획 중', planSub:'날짜 미정', nowLabel:'지금 출발', nowSub:'현재 시간 기준 추천' },
+  };
+  const l = labels[lang] || labels.ja;
+  document.getElementById('timing-label').textContent = l.label;
+  document.getElementById('timing-title').textContent = l.title;
+  document.getElementById('timing-desc').textContent = l.desc;
+  document.getElementById('timing-plan-label').textContent = l.planLabel;
+  document.getElementById('timing-plan-sub').textContent = l.planSub;
+  document.getElementById('timing-now-label').textContent = l.nowLabel;
+  document.getElementById('timing-now-sub').textContent = l.nowSub;
+  document.getElementById('timing-overlay').style.display = 'flex';
+}
+
+function selectTiming(mode) {
+  tripTiming = mode;
+  document.getElementById('timing-overlay').style.display = 'none';
+  goToQuestions();
+}
+
 function cancelCityConfirm() {
   document.getElementById('city-confirm-overlay').style.display = 'none';
   confirmedCity = '';
@@ -1546,7 +1597,8 @@ async function generatePlan() {
   const now = new Date();
   const currentTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
   const cityWithLocation = confirmedLocation ? currentCity + '（' + confirmedLocation + '）' : currentCity;
-  const prompt = t.promptTemplate(cityWithLocation, answers, currentTime);
+  const timeContext = tripTiming === 'now' ? currentTime : null;
+  const prompt = t.promptTemplate(cityWithLocation, answers, timeContext);
 
   try {
     const res = await fetch('/api/generate', {
