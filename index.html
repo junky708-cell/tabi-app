@@ -2008,8 +2008,9 @@ function shareX() {
 }
 
 function shareLine() {
-  const text = encodeURIComponent(getShareText() + ' https://tabi-app-one.vercel.app');
-  window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent('https://tabi-app-one.vercel.app') + '&text=' + text, '_blank');
+  const url = encodeURIComponent('https://tabi-app-one.vercel.app');
+  const text = encodeURIComponent(getShareText());
+  window.open('https://line.me/R/msg/text/?' + text + '%0A' + url, '_blank');
   hideShareMenu();
 }
 
