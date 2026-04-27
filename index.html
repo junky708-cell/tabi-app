@@ -107,6 +107,7 @@ html, body {
 .tag-blue { background:rgba(100,160,255,.12); color:#64a0ff; }
 .tag-purple { background:rgba(180,130,255,.12); color:#b482ff; }
 .tag-orange { background:rgba(255,160,80,.12); color:#ffa050; }
+.tag-teal { background:rgba(80,200,180,.12); color:#50c8b4; }
 
 .divider {
   height:1px; background:var(--border); margin:0;
@@ -684,6 +685,7 @@ html, body {
       <div class="q-progress-fill" id="q-progress-fill" style="width:0%"></div>
     </div>
     <div class="q-city display" id="q-city-name">京都</div>
+    <div style="margin-top:6px"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span></div>
     <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
   </div>
 
@@ -1528,6 +1530,12 @@ function goToQuestions() {
   const t = T[lang];
   document.getElementById('q-city-name').textContent = currentCity;
   document.getElementById('q-city-sub').textContent = t.qSub;
+  const qTimingBadge = document.getElementById('q-timing-badge');
+  if(qTimingBadge) {
+    qTimingBadge.textContent = tripTiming === 'now'
+      ? ({ja:'📍 今すぐ', en:'📍 Now', zh:'📍 现在', ko:'📍 지금'}[lang] || '📍 今すぐ')
+      : ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
+  }
   document.getElementById('generate-btn').disabled = true;
   document.getElementById('generate-label').textContent = t.generateBtn;
   document.getElementById('q-error').style.display = 'none';
@@ -1670,7 +1678,11 @@ function renderResult(plan) {
 
   // Badges（設問の順番通り：スタイル・予算・食事・メンバー・日数）
   const badges = document.getElementById('result-badges');
+  const timingLabel = tripTiming === 'now'
+    ? {ja:'📍 今すぐ', en:'📍 Now', zh:'📍 现在', ko:'📍 지금'}[lang] || '📍 今すぐ'
+    : {ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中';
   badges.innerHTML = [
+    `<span class="tag tag-teal">${timingLabel}</span>`,
     answers.style   ? `<span class="tag tag-gold">${answers.style.split(/[・,（]/)[0].trim()}</span>` : '',
     answers.budget  ? `<span class="tag tag-green">${answers.budget.split(/[（]/)[0].trim()}</span>` : '',
     answers.food    ? `<span class="tag tag-blue">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
