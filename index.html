@@ -869,6 +869,7 @@ html, body {
     <button class="btn btn-gold" style="width:100%" onclick="showComingSoon()">
       <span id="premium-cta">プレミアムを始める</span>
     </button>
+    <div id="premium-inline-msg" style="display:none;margin-top:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-mid);text-align:center"></div>
     <p style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:12px" id="premium-note">
       いつでもキャンセル可能 · 安全なStripe決済
     </p>
@@ -1925,14 +1926,22 @@ function changeFontSize() {
 // ════════════════════════════════
 function showComingSoon() {
   const msg = {ja:'近日公開予定です！',en:'Coming soon!',zh:'即将推出！',ko:'곧 출시 예정입니다！'}[lang] || 'Coming soon!';
-  showToast(msg);
+  const inlineEl = document.getElementById('premium-inline-msg');
+  const isPremiumScreen = document.getElementById('screen-premium').classList.contains('active');
+  if(isPremiumScreen && inlineEl) {
+    inlineEl.textContent = msg;
+    inlineEl.style.display = 'block';
+    setTimeout(() => { inlineEl.style.display = 'none'; }, 5000);
+  } else {
+    showToast(msg);
+  }
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 6000);
+  setTimeout(() => t.classList.remove('show'), 5000);
 }
 
 // ════════════════════════════════
