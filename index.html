@@ -475,6 +475,14 @@ html, body {
 }
 .tip-text { font-size:13px; color:var(--text-dim); line-height:1.65; }
 
+/* Destination intro */
+.dest-intro { background:var(--surface); border-radius:10px; border:1px solid var(--border); border-left:3px solid var(--gold); padding:14px 16px; margin-bottom:4px; }
+.dest-intro-label { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+.dest-intro-summary { font-size:13px; color:var(--text); line-height:1.65; margin-bottom:10px; }
+.dest-intro-highlights { display:flex; flex-direction:column; gap:6px; }
+.dest-intro-highlight { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text-dim); line-height:1.5; }
+.dest-intro-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:5px; }
+
 /* Result footer */
 .result-footer {
   position:fixed; bottom:0; left:50%; transform:translateX(-50%);
@@ -867,6 +875,10 @@ const T = {
 以下のJSON形式で旅程を返してください。他のテキストは一切含めず、JSONのみ返してください：
 
 {
+  "destination_intro": {
+    "summary": "目的地の簡潔な概要（2文程度）",
+    "highlights": ["旅行者が知っておくべき特徴1", "特徴2", "特徴3"]
+  },
   "concept": "この旅のコンセプト（2〜3文）",
   "timeline": [
     {"time": "08:00", "title": "場所・活動名", "desc": "詳細説明（具体的な場所名・アドバイス含む）"}
@@ -959,6 +971,10 @@ Duration: ${a.days}
 
 Return ONLY a JSON object, no other text:
 {
+  "destination_intro": {
+    "summary": "Brief overview of the destination (2 sentences)",
+    "highlights": ["Key fact travelers should know 1", "Key fact 2", "Key fact 3"]
+  },
   "concept": "Trip concept (2-3 sentences)",
   "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
   "restaurants": [{"icon":"🍜","name":"Restaurant name","desc":"Description and recommendations","price":"Price range"}],
@@ -1044,6 +1060,10 @@ Tips: 3. Use real, specific venue names. For short durations, keep all spots wit
 
 仅返回以下JSON格式，不要包含其他文字：
 {
+  "destination_intro": {
+    "summary": "目的地简介（2句话）",
+    "highlights": ["旅行者应该知道的特点1", "特点2", "特点3"]
+  },
   "concept": "旅行概念（2-3句话）",
   "timeline": [{"time":"09:00","title":"地点/活动名称","desc":"详细说明（包含具体地点名称）"}],
   "restaurants": [{"icon":"🍜","name":"餐厅名称","desc":"描述和推荐菜品","price":"价格范围"}],
@@ -1124,6 +1144,10 @@ Tips: 3. Use real, specific venue names. For short durations, keep all spots wit
 
 다른 텍스트 없이 JSON만 반환해 주세요:
 {
+  "destination_intro": {
+    "summary": "목적지 간략 소개 (2문장)",
+    "highlights": ["여행자가 알아야 할 특징1", "특징2", "특징3"]
+  },
   "concept": "여행 콘셉트 (2-3문장)",
   "timeline": [{"time":"09:00","title":"장소/활동명","desc":"구체적인 장소명 포함 상세 설명"}],
   "restaurants": [{"icon":"🍜","name":"식당명","desc":"설명 및 추천 메뉴","price":"가격대"}],
@@ -1504,6 +1528,22 @@ function renderResult(plan) {
 
   const body = document.getElementById('result-body');
   let html = '';
+
+  // Destination intro
+  if(plan.destination_intro) {
+    const di = plan.destination_intro;
+    const introLabel = {ja:'📍 この目的地について', en:'📍 About this destination', zh:'📍 关于目的地', ko:'📍 목적지 소개'}[lang] || '📍 この目的地について';
+    const highlightsHtml = (di.highlights||[]).map(function(h) {
+      return '<div class="dest-intro-highlight"><div class="dest-intro-dot"></div><span>' + h + '</span></div>';
+    }).join('');
+    html += '<div class="result-section">'
+      + '<div class="dest-intro">'
+      + '<div class="dest-intro-label">' + introLabel + '</div>'
+      + '<div class="dest-intro-summary">' + (di.summary||'') + '</div>'
+      + '<div class="dest-intro-highlights">' + highlightsHtml + '</div>'
+      + '</div>'
+      + '</div>';
+  }
 
   // Concept
   if(plan.concept) {
