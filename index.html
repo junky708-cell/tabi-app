@@ -746,7 +746,7 @@ html, body {
 <div id="screen-result" class="screen">
   <div class="result-header">
     <div class="q-nav" style="margin-bottom:12px">
-      <div class="display" style="font-size:18px;letter-spacing:.1em;color:var(--gold)">TABI</div>
+      <div class="display" style="font-size:28px;letter-spacing:.12em;color:var(--gold);line-height:1">TABI</div>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
       <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -965,8 +965,8 @@ ${now ? `【現在時刻】${now.time}（今すぐ出発。この時刻からス
 
 {
   "destination_intro": {
-    "summary": "目的地の簡潔な概要（2文程度）",
-    "highlights": ["旅行者が知っておくべき特徴1", "特徴2", "特徴3"]
+    "summary": "目的地の概要（1文のみ）",
+    "highlights": ["旅行者が知っておくべき特徴1", "特徴2"]
   },
   "concept": "この旅のコンセプト（2〜3文）",
   "timeline": [
@@ -1061,8 +1061,8 @@ Duration: ${a.days}
 Return ONLY a JSON object, no other text:
 {
   "destination_intro": {
-    "summary": "Brief overview of the destination (2 sentences)",
-    "highlights": ["Key fact travelers should know 1", "Key fact 2", "Key fact 3"]
+    "summary": "Brief overview (1 sentence only)",
+    "highlights": ["Key fact 1", "Key fact 2"]
   },
   "concept": "Trip concept (2-3 sentences)",
   "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
@@ -1150,8 +1150,8 @@ ${now ? `当前时间：${now.time}（现在出发，请从此时间开始安排
 仅返回以下JSON格式，不要包含其他文字：
 {
   "destination_intro": {
-    "summary": "目的地简介（2句话）",
-    "highlights": ["旅行者应该知道的特点1", "特点2", "特点3"]
+    "summary": "目的地简介（仅1句话）",
+    "highlights": ["特点1", "特点2"]
   },
   "concept": "旅行概念（2-3句话）",
   "timeline": [{"time":"09:00","title":"地点/活动名称","desc":"详细说明（包含具体地点名称）"}],
@@ -1234,8 +1234,8 @@ ${now ? `현재 시각: ${now.time}（지금 출발 — 이 시간부터 일정 
 다른 텍스트 없이 JSON만 반환해 주세요:
 {
   "destination_intro": {
-    "summary": "목적지 간략 소개 (2문장)",
-    "highlights": ["여행자가 알아야 할 특징1", "특징2", "특징3"]
+    "summary": "목적지 소개 (1문장)",
+    "highlights": ["특징1", "특징2"]
   },
   "concept": "여행 콘셉트 (2-3문장)",
   "timeline": [{"time":"09:00","title":"장소/활동명","desc":"구체적인 장소명 포함 상세 설명"}],
@@ -1794,6 +1794,10 @@ function renderResult(plan) {
       }
       const cleanTime = timeStr.replace(/Day\s*\d+\s*/i, '');
       const line = i < plan.timeline.length - 1 ? '<div class="tl-line"></div>' : '';
+      const mapQuery = encodeURIComponent((item.title||'') + ' ' + currentCity);
+      const mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + mapQuery;
+      const mapLinkLabel = ({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る';
+      const mapLink = '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ' + mapLinkLabel + '</a>';
       timelineHtml += '<div class="tl-item">'
         + '<div class="tl-left">'
         + '<div class="tl-time">' + cleanTime + '</div>'
@@ -1803,6 +1807,7 @@ function renderResult(plan) {
         + '<div class="tl-right">'
         + '<div class="tl-title">' + (item.title||'') + '</div>'
         + '<div class="tl-desc">' + (item.desc||'') + '</div>'
+        + mapLink
         + '</div>'
         + '</div>';
     });
@@ -1825,6 +1830,7 @@ function renderResult(plan) {
             <div class="rest-name">${r.name||''}</div>
             <div class="rest-desc">${r.desc||''}</div>
             ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
+            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
           </div>
         </div>
       `).join('')}
@@ -1842,6 +1848,7 @@ function renderResult(plan) {
             ${h.price ? `<div class="hotel-price">${h.price}</div>` : ''}
           </div>
           <div class="hotel-desc">${h.desc||''}</div>
+          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
         </div>
       `).join('')}
     </div>`;
