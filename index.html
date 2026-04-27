@@ -1794,10 +1794,11 @@ function renderResult(plan) {
       }
       const cleanTime = timeStr.replace(/Day\s*\d+\s*/i, '');
       const line = i < plan.timeline.length - 1 ? '<div class="tl-line"></div>' : '';
+      const isTransport = /駅|アクセス|移動|出発|到着|乗換|乗り換え|バス|電車|新幹線|路線|station|transit|transfer|access|depart|arriv|bus |train|subway|metro/i.test(item.title||'');
       const mapQuery = encodeURIComponent((item.title||'') + ' ' + currentCity);
       const mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + mapQuery;
-      const mapLinkLabel = ({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る';
-      const mapLink = '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ' + mapLinkLabel + '</a>';
+      const mapLinkLabel = ({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる';
+      const mapLink = isTransport ? '' : '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">' + mapLinkLabel + '</a>';
       timelineHtml += '<div class="tl-item">'
         + '<div class="tl-left">'
         + '<div class="tl-time">' + cleanTime + '</div>'
@@ -1830,7 +1831,7 @@ function renderResult(plan) {
             <div class="rest-name">${r.name||''}</div>
             <div class="rest-desc">${r.desc||''}</div>
             ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
-            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">${({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる'}</a>
           </div>
         </div>
       `).join('')}
@@ -1848,7 +1849,7 @@ function renderResult(plan) {
             ${h.price ? `<div class="hotel-price">${h.price}</div>` : ''}
           </div>
           <div class="hotel-desc">${h.desc||''}</div>
-          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
+          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">${({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる'}</a>
         </div>
       `).join('')}
     </div>`;
