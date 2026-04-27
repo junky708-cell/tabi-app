@@ -279,7 +279,8 @@ html, body {
   z-index:10;
   background:var(--bg);
 }
-.q-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.q-nav { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom:16px; }
+.q-nav > *:last-child { display:flex; justify-content:flex-end; }
 .q-back { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:14px; padding:0; display:flex; align-items:center; gap:4px; letter-spacing:.03em; }
 .q-back:hover { color:var(--text); }
 .q-progress-text { font-size:11px; color:var(--text-dim); letter-spacing:.1em; }
@@ -615,8 +616,8 @@ html, body {
   <div class="q-header">
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-splash')">← <span id="back-label-home">戻る</span></button>
-      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
-      <div class="font-ctrl"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -701,8 +702,8 @@ html, body {
   <div class="q-header">
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-home')">← <span id="back-label-q">戻る</span></button>
-      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
-      <div class="font-ctrl"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -745,9 +746,9 @@ html, body {
 <div id="screen-result" class="screen">
   <div class="result-header">
     <div class="q-nav" style="margin-bottom:12px">
-      <div style="width:36px"></div>
-      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px">👑</button>
-      <div class="font-ctrl"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+      <div class="display" style="font-size:18px;letter-spacing:.1em;color:var(--gold)">TABI</div>
+      <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -792,8 +793,8 @@ html, body {
 <div id="screen-premium" class="screen">
   <div class="premium-header">
     <button class="q-back" onclick="goBack()">← <span id="back-label-premium">戻る</span></button>
-    <div class="tag tag-gold">PREMIUM</div>
-    <div class="font-ctrl"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+    <div class="tag tag-gold" style="justify-self:center">PREMIUM</div>
+    <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
