@@ -652,7 +652,7 @@ html, body {
   <div id="pwa-banner" style="display:none;margin:0 20px 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;position:relative">
     <button onclick="dismissPwaBanner()" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:0;line-height:1">×</button>
     <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px" id="pwa-title">📲 ホーム画面に追加できます</div>
-    <div style="font-size:12px;color:var(--text-dim);line-height:1.6" id="pwa-desc">iPhoneの場合：Safariで開き、共有ボタン → 「ホーム画面に追加」</div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.6" id="pwa-desc">Safariで開き、共有ボタン（□↑）→「ホーム画面に追加」</div>
   </div>
 
   <div class="usage-bar-wrap">
@@ -1980,7 +1980,7 @@ function initPwaBanner() {
   };
   const descs = {
     ja: isIos
-      ? 'SafariでSafariで開き、共有ボタン（□↑）→「ホーム画面に追加」'
+      ? 'Safariで開き、共有ボタン（□↑）→「ホーム画面に追加」'
       : 'ブラウザのメニュー →「ホーム画面に追加」またはインストール',
     en: isIos
       ? 'In Safari, tap Share (□↑) → "Add to Home Screen"'
