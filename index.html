@@ -634,9 +634,22 @@ html, body {
   </div>
 
   <div style="padding:24px 20px 40px">
-    <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="goToQuestions()" disabled>
+    <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="confirmCity()" disabled>
       <span id="home-next-label">目的地を入力してください</span>
     </button>
+  </div>
+</div>
+
+<!-- ══ CITY CONFIRM POPUP ══ -->
+<div id="city-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:380px">
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px" id="city-confirm-label">目的地の確認</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.5" id="city-confirm-name"></div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:20px" id="city-confirm-desc"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border)" onclick="cancelCityConfirm()" id="city-confirm-no">違う</button>
+      <button class="btn btn-gold" style="flex:1" onclick="acceptCityConfirm()" id="city-confirm-yes">はい、進む →</button>
+    </div>
   </div>
 </div>
 
@@ -1372,6 +1385,81 @@ function updateUsageDisplay() {
 // ════════════════════════════════
 // QUESTIONS
 // ════════════════════════════════
+let confirmedCity = '';
+
+async function confirmCity() {
+  if(!currentCity) return;
+  const t = T[lang];
+  const overlay = document.getElementById('city-confirm-overlay');
+  const nameEl = document.getElementById('city-confirm-name');
+  const descEl = document.getElementById('city-confirm-desc');
+  const labelEl = document.getElementById('city-confirm-label');
+  const yesBtn = document.getElementById('city-confirm-yes');
+  const noBtn = document.getElementById('city-confirm-no');
+
+  // i18n
+  const confirmLabels = {
+    ja: {label:'目的地の確認', loading:'確認中...', yes:'はい、進む →', no:'違う地名を入力'},
+    en: {label:'Confirm destination', loading:'Checking...', yes:'Yes, continue →', no:'Enter different name'},
+    zh: {label:'确认目的地', loading:'确认中...', yes:'是，继续 →', no:'输入其他地名'},
+    ko: {label:'목적지 확인', loading:'확인 중...', yes:'네, 계속 →', no:'다른 지명 입력'},
+  };
+  const cl = confirmLabels[lang] || confirmLabels.ja;
+
+  labelEl.textContent = cl.label;
+  yesBtn.textContent = cl.loading;
+  yesBtn.disabled = true;
+  noBtn.textContent = cl.no;
+  nameEl.textContent = currentCity;
+  descEl.textContent = '';
+  overlay.style.display = 'flex';
+
+  try {
+    const promptMap = {
+      ja: `「${currentCity}」という地名・観光地名について、以下のJSONのみ返してください。他のテキスト不要：{"name":"正式名称または一般的な呼び方","location":"都道府県・国など所在地","desc":"旅行者向け1〜2文の簡潔な説明"}`,
+      en: `For the destination "${currentCity}", return ONLY this JSON, no other text: {"name":"official or common name","location":"region/country","desc":"1-2 sentence description for travelers"}`,
+      zh: `关于地名"${currentCity}"，只返回以下JSON，不要其他文字：{"name":"正式名称","location":"所在地区/国家","desc":"给旅行者的1-2句简介"}`,
+      ko: `"${currentCity}" 지명에 대해 아래 JSON만 반환하세요. 다른 텍스트 불필요: {"name":"정식 명칭","location":"소재지/국가","desc":"여행자를 위한 1-2문장 설명"}`,
+    };
+    const res = await fetch('/api/generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt: promptMap[lang] || promptMap.ja})
+    });
+    const data = await res.json();
+    let raw = data.content.map(c => c.text||'').join('');
+    raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
+    const j = raw.indexOf('{'), k = raw.lastIndexOf('}');
+    if(j !== -1 && k !== -1) raw = raw.slice(j, k+1);
+    const info = JSON.parse(raw);
+    nameEl.textContent = info.name + (info.location ? '　' + info.location : '');
+    descEl.textContent = info.desc || '';
+    confirmedCity = info.name || currentCity;
+  } catch(e) {
+    // API失敗時はそのまま進む
+    confirmedCity = currentCity;
+    nameEl.textContent = currentCity;
+    descEl.textContent = '';
+  }
+
+  yesBtn.textContent = cl.yes;
+  yesBtn.disabled = false;
+}
+
+function acceptCityConfirm() {
+  document.getElementById('city-confirm-overlay').style.display = 'none';
+  if(confirmedCity) currentCity = confirmedCity;
+  goToQuestions();
+}
+
+function cancelCityConfirm() {
+  document.getElementById('city-confirm-overlay').style.display = 'none';
+  confirmedCity = '';
+  const input = document.getElementById('city-input');
+  input.focus();
+  input.select();
+}
+
 function goToQuestions() {
   if(!currentCity) return;
   answers = {};
