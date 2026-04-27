@@ -1852,11 +1852,11 @@ function renderResult(plan) {
 // ════════════════════════════════
 // FONT SIZE
 // ════════════════════════════════
-const FONT_SIZES = [15, 17, 19];
+const FONT_SIZES = [1, 1.1, 1.2];
 let fontSizeIdx = parseInt(localStorage.getItem('tabiFontIdx') || '0');
 
 function applyFontSize() {
-  document.documentElement.style.setProperty('--base-font', FONT_SIZES[fontSizeIdx] + 'px');
+  document.getElementById('app').style.zoom = FONT_SIZES[fontSizeIdx];
 }
 
 function changeFontSize(dir) {
