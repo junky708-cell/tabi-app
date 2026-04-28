@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0d0d0d">
+<meta name="theme-color" content="#0f0e0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TABI">
-<meta name="description" content="AI旅行ガイド — AIがあなただけの旅程を提案">
+<meta name="description" content="AI-powered travel guide for Japan">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>TABI — AI Travel Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -378,7 +377,7 @@ html, body {
 }
 .result-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
 
-.result-body { flex:1; overflow-y:auto; padding:0 0 140px; }
+.result-body { flex:1; overflow-y:auto; padding:0 0 100px; }
 
 .result-section {
   padding:20px; border-bottom:1px solid var(--border);
@@ -570,15 +569,13 @@ html, body {
    TOAST
 ════════════════════════════════ */
 #toast {
-  position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-10px);
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
   background:var(--surface2); border:1px solid var(--border);
   border-radius:10px; padding:10px 16px;
   font-size:13px; color:var(--text-mid);
   opacity:0; transition:all .3s; pointer-events:none;
-  white-space:normal; max-width:80vw; text-align:center;
-  z-index:1000;
+  white-space:nowrap; z-index:1000;
 }
-#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* ════════════════════════════════
@@ -648,12 +645,6 @@ html, body {
     </div>
     <div class="section-title" id="label-popular">人気の目的地</div>
     <div class="dest-scroll" id="dest-chips"></div>
-  </div>
-
-  <div id="pwa-banner" style="display:none;margin:0 20px 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;position:relative">
-    <button onclick="dismissPwaBanner()" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:0;line-height:1">×</button>
-    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px" id="pwa-title">📲 ホーム画面に追加できます</div>
-    <div style="font-size:12px;color:var(--text-dim);line-height:1.6" id="pwa-desc">Safariで開き、共有ボタン（□↑）→「ホーム画面に追加」</div>
   </div>
 
   <div class="usage-bar-wrap">
@@ -778,37 +769,8 @@ html, body {
   <div class="result-body" id="result-body"></div>
 
   <div class="result-footer">
-    <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-      <button class="btn" style="width:100%;background:var(--surface);border:1px solid var(--border)" onclick="showShareMenu()" id="result-share-btn">
-        🔗 <span id="result-share-label">この旅程をシェア</span>
-      </button>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
-        <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ SHARE POPUP ══ -->
-<div id="share-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center;padding:0">
-  <div style="background:var(--surface);border-radius:20px 20px 0 0;border:1px solid var(--border);padding:24px 20px 40px;width:100%;max-width:430px">
-    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:20px" id="share-title">シェア</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn" style="width:100%;background:var(--bg);border:1px solid var(--border);justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareUrl()">
-        <span style="font-size:20px">🔗</span>
-        <span id="share-copy-label">URLをコピー</span>
-      </button>
-      <button class="btn" style="width:100%;background:#000;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareX()">
-        <span style="font-size:16px;font-weight:900;color:#fff">𝕏</span>
-        <span style="color:#fff" id="share-x-label">Xでシェア</span>
-      </button>
-      <button class="btn" style="width:100%;background:#06C755;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareLine()">
-        <span style="font-size:20px">💬</span>
-        <span style="color:#fff" id="share-line-label">LINEでシェア</span>
-      </button>
-    </div>
-    <button class="btn" style="width:100%;margin-top:16px;background:var(--bg);border:1px solid var(--border)" onclick="hideShareMenu()" id="share-cancel-label">キャンセル</button>
+    <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
+    <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
   </div>
 </div>
 
@@ -905,7 +867,6 @@ html, body {
     <button class="btn btn-gold" style="width:100%" onclick="showComingSoon()">
       <span id="premium-cta">プレミアムを始める</span>
     </button>
-    <div id="premium-inline-msg" style="display:none;margin-top:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-mid);text-align:center"></div>
     <p style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:12px" id="premium-note">
       いつでもキャンセル可能 · 安全なStripe決済
     </p>
@@ -1005,7 +966,7 @@ ${now ? `【現在時刻】${now.time}（今すぐ出発。この時刻からス
 {
   "destination_intro": {
     "summary": "目的地の概要（1文のみ）",
-    "highlights": ["旅行者が知っておくべき特徴1", "特徴2", "特徴3"]
+    "highlights": ["旅行者が知っておくべき特徴1", "特徴2"]
   },
   "concept": "この旅のコンセプト（2〜3文）",
   "timeline": [
@@ -1022,9 +983,8 @@ ${now ? `【現在時刻】${now.time}（今すぐ出発。この時刻からス
 
 以下の件数で返してください：
 - 「2時間」「半日」の場合：timeline 3〜4件、restaurants 1〜2件、hotels 0件（短時間のため不要）
-- 「日帰り（1日）」の場合：timeline 5〜6件、restaurants 2件、hotels 0件
-- 「1泊2日」「2泊3日」の場合：timeline 各日3〜4件、restaurants 3件、hotels 2件
-- 「3泊以上」の場合：timeline 各日3件（合計9〜12件以内）、restaurants 3件、hotels 2件
+- 「日帰り（1日）」の場合：timeline 6〜8件、restaurants 2〜3件、hotels 0件
+- 「1泊2日」以上の場合：timeline 各日4〜6件、restaurants 3〜4件、hotels 2〜3件
 tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。`,
     resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
   },
@@ -1102,7 +1062,7 @@ Return ONLY a JSON object, no other text:
 {
   "destination_intro": {
     "summary": "Brief overview (1 sentence only)",
-    "highlights": ["Key fact 1", "Key fact 2", "Key fact 3"]
+    "highlights": ["Key fact 1", "Key fact 2"]
   },
   "concept": "Trip concept (2-3 sentences)",
   "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
@@ -1112,9 +1072,8 @@ Return ONLY a JSON object, no other text:
 }
 Output counts:
 - '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
-- 'day trip': timeline 5-6 items, restaurants 2, hotels 0
-- '1 night' or '2 nights': timeline 3-4 per day, restaurants 3, hotels 2
-- '3 or more nights': timeline 3 per day (max 9-12 total), restaurants 3, hotels 2
+- 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
+- '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
 Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shrines should always be named specifically (e.g. "Kinkaku-ji", "Senso-ji"). For restaurants and hotels, use real names when confident they exist; if unsure, use descriptive phrases like "local ramen shop near the station". Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details. Do the same for each day in multi-day trips.`,
     resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
   },
@@ -1192,7 +1151,7 @@ ${now ? `当前时间：${now.time}（现在出发，请从此时间开始安排
 {
   "destination_intro": {
     "summary": "目的地简介（仅1句话）",
-    "highlights": ["特点1", "特点2", "特点3"]
+    "highlights": ["特点1", "特点2"]
   },
   "concept": "旅行概念（2-3句话）",
   "timeline": [{"time":"09:00","title":"地点/活动名称","desc":"详细说明（包含具体地点名称）"}],
@@ -1276,7 +1235,7 @@ ${now ? `현재 시각: ${now.time}（지금 출발 — 이 시간부터 일정 
 {
   "destination_intro": {
     "summary": "목적지 소개 (1문장)",
-    "highlights": ["특징1", "특징2", "특징3"]
+    "highlights": ["특징1", "특징2"]
   },
   "concept": "여행 콘셉트 (2-3문장)",
   "timeline": [{"time":"09:00","title":"장소/활동명","desc":"구체적인 장소명 포함 상세 설명"}],
@@ -1302,9 +1261,6 @@ function setLang(l) {
     );
   });
   const t = T[lang];
-  // share button
-  const shareLabelEl = document.getElementById('result-share-label');
-  if(shareLabelEl) shareLabelEl.textContent = {ja:'この旅程をシェア', en:'Share this itinerary', zh:'分享此行程', ko:'일정 공유하기'}[l] || 'この旅程をシェア';
   // splash
   const st = document.getElementById('splash-text');
   if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
@@ -1410,7 +1366,6 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
-  if(id === 'screen-home') initPwaBanner();
 }
 
 function goBack() {
@@ -1458,7 +1413,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('city-input').addEventListener('keydown', e => {
-    if(e.key === 'Enter' && currentCity) goToQuestions();
+    if(e.key === 'Enter' && currentCity) confirmCity();
   });
 });
 
@@ -1512,21 +1467,6 @@ let confirmedLocation = '';
 
 async function confirmCity() {
   if(!currentCity) return;
-
-  // 広範囲地名チェック
-  const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
-  if(broadAreaPattern.test(currentCity.trim())) {
-    const msg = {
-      ja: '範囲が広すぎます。例：東京、京都、大阪、札幌など具体的な都市名を入力してください',
-      en: 'Too broad. Please enter a specific city. Ex: Tokyo, Kyoto, London',
-      zh: '范围太广。请输入具体城市名。例：东京、京都、大阪',
-      ko: '범위가 너무 넓습니다. 예: 도쿄, 교토, 오사카',
-    };
-    showToast(msg[lang] || msg.ja);
-    document.getElementById('city-input').select();
-    return;
-  }
-
   const t = T[lang];
   const overlay = document.getElementById('city-confirm-overlay');
   const nameEl = document.getElementById('city-confirm-name');
@@ -1594,12 +1534,6 @@ async function confirmCity() {
   yesBtn.style.display = '';
   noBtn.style.display = '';
   yesBtn.disabled = false;
-}
-
-function acceptCityConfirm() {
-  document.getElementById('city-confirm-overlay').style.display = 'none';
-  if(confirmedCity) currentCity = confirmedCity;
-  goToQuestions();
 }
 
 let tripTiming = 'plan'; // 'plan' or 'now'
@@ -1816,7 +1750,7 @@ function renderResult(plan) {
   if(plan.destination_intro) {
     const di = plan.destination_intro;
     const introLabel = {ja:'📍 この目的地について', en:'📍 About this destination', zh:'📍 关于目的地', ko:'📍 목적지 소개'}[lang] || '📍 この目的地について';
-    const highlightsHtml = (di.highlights||[]).slice(0, 3).map(function(h) {
+    const highlightsHtml = (di.highlights||[]).map(function(h) {
       return '<div class="dest-intro-highlight"><div class="dest-intro-dot"></div><span>' + h + '</span></div>';
     }).join('');
     html += '<div class="result-section">'
@@ -1856,7 +1790,7 @@ function renderResult(plan) {
       const line = i < plan.timeline.length - 1 ? '<div class="tl-line"></div>' : '';
       const mapQuery = encodeURIComponent((item.title||'') + ' ' + currentCity);
       const mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + mapQuery;
-      const mapLinkLabel = ({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる';
+      const mapLinkLabel = ({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る';
       const mapLink = '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ' + mapLinkLabel + '</a>';
       timelineHtml += '<div class="tl-item">'
         + '<div class="tl-left">'
@@ -1889,8 +1823,8 @@ function renderResult(plan) {
           <div class="rest-info">
             <div class="rest-name">${r.name||''}</div>
             <div class="rest-desc">${r.desc||''}</div>
-            ${r.price ? `<div class="rest-price">${convertPrice(r.price)}</div>` : ''}
-            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる'}</a>
+            ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
+            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
           </div>
         </div>
       `).join('')}
@@ -1905,10 +1839,10 @@ function renderResult(plan) {
         <div class="hotel-card">
           <div class="hotel-header">
             <div class="hotel-name">🏨 ${h.name||''}</div>
-            ${h.price ? `<div class="hotel-price">${convertPrice(h.price)}</div>` : ''}
+            ${h.price ? `<div class="hotel-price">${h.price}</div>` : ''}
           </div>
           <div class="hotel-desc">${h.desc||''}</div>
-          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'🔍 詳しく調べる', 'en':'🔍 Search more', 'zh':'🔍 查询更多', 'ko':'🔍 자세히 알아보기'})[lang] || '🔍 詳しく調べる'}</a>
+          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
         </div>
       `).join('')}
     </div>`;
@@ -1962,150 +1896,18 @@ function changeFontSize() {
 }
 
 // ════════════════════════════════
-// PWA INSTALL BANNER
-// ════════════════════════════════
-function initPwaBanner() {
-  if(localStorage.getItem('pwaBannerDismissed')) return;
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if(isStandalone) return; // すでにインストール済み
-
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isAndroid = /android/i.test(navigator.userAgent);
-  if(!isIos && !isAndroid) return; // PCは表示しない
-
-  const titles = {
-    ja: '📲 ホーム画面に追加できます',
-    en: '📲 Add to Home Screen',
-    zh: '📲 可添加到主屏幕',
-    ko: '📲 홈 화면에 추가할 수 있습니다',
-  };
-  const descs = {
-    ja: isIos
-      ? 'Safariで開き、共有ボタン（□↑）→「ホーム画面に追加」'
-      : 'ブラウザのメニュー →「ホーム画面に追加」またはインストール',
-    en: isIos
-      ? 'In Safari, tap Share (□↑) → "Add to Home Screen"'
-      : 'Tap browser menu → "Add to Home Screen" or Install',
-    zh: isIos
-      ? '在Safari中，点击分享（□↑）→「添加到主屏幕」'
-      : '点击浏览器菜单 → 「添加到主屏幕」',
-    ko: isIos
-      ? 'Safari에서 공유(□↑) → 「홈 화면에 추가」'
-      : '브라우저 메뉴 → 「홈 화면에 추가」',
-  };
-
-  document.getElementById('pwa-title').textContent = titles[lang] || titles.ja;
-  document.getElementById('pwa-desc').textContent = descs[lang] || descs.ja;
-  document.getElementById('pwa-banner').style.display = 'block';
-}
-
-function dismissPwaBanner() {
-  document.getElementById('pwa-banner').style.display = 'none';
-  localStorage.setItem('pwaBannerDismissed', '1');
-}
-
-// ════════════════════════════════
-// CURRENCY CONVERSION
-// ════════════════════════════════
-const RATES = { en: { symbol: 'USD', rate: 0.0067 }, zh: { symbol: 'CNY', rate: 0.048 }, ko: { symbol: 'KRW', rate: 8.9 } };
-
-function convertPrice(priceText) {
-  if(lang === 'ja' || !RATES[lang]) return priceText;
-  const { symbol, rate } = RATES[lang];
-  // ¥や円の数字を抽出
-  const match = priceText.match(/[¥￥]?\s*([\d,]+)/);
-  if(!match) return priceText;
-  const yen = parseInt(match[1].replace(/,/g, ''));
-  if(isNaN(yen) || yen === 0) return priceText;
-  const converted = Math.round(yen * rate);
-  const formatted = symbol === 'KRW'
-    ? converted.toLocaleString()
-    : converted.toLocaleString(undefined, {maximumFractionDigits: 1});
-  return priceText + ` <span style="opacity:.7;font-size:.9em">≈ ${symbol} ${formatted}</span>`;
-}
-
-// ════════════════════════════════
-// SHARE
-// ════════════════════════════════
-function showShareMenu() {
-  const labels = {
-    ja: { title:'シェア', copy:'URLをコピー', x:'Xでシェア', line:'LINEでシェア', cancel:'キャンセル', btn:'この旅程をシェア' },
-    en: { title:'Share', copy:'Copy URL', x:'Share on X', line:'Share on LINE', cancel:'Cancel', btn:'Share this itinerary' },
-    zh: { title:'分享', copy:'复制链接', x:'分享到X', line:'分享到LINE', cancel:'取消', btn:'分享此行程' },
-    ko: { title:'공유', copy:'URL 복사', x:'X에서 공유', line:'LINE에서 공유', cancel:'취소', btn:'일정 공유하기' },
-  };
-  const l = labels[lang] || labels.ja;
-  document.getElementById('share-title').textContent = l.title;
-  document.getElementById('share-copy-label').textContent = l.copy;
-  document.getElementById('share-x-label').textContent = l.x;
-  document.getElementById('share-line-label').textContent = l.line;
-  document.getElementById('share-cancel-label').textContent = l.cancel;
-  document.getElementById('share-overlay').style.display = 'flex';
-}
-
-function hideShareMenu() {
-  document.getElementById('share-overlay').style.display = 'none';
-}
-
-function getShareText() {
-  const city = currentCity || '';
-  const msgs = {
-    ja: `TABIが${city}の旅程を提案してくれました！\nAI旅行ガイド TABI →`,
-    en: `TABI suggested a trip to ${city}!\nAI Travel Guide TABI →`,
-    zh: `TABI为我推荐了${city}的行程！\nAI旅行向导 TABI →`,
-    ko: `TABI가 ${city} 여행 일정을 제안해줬어요!\nAI 여행 가이드 TABI →`,
-  };
-  return msgs[lang] || msgs.ja;
-}
-
-function shareUrl() {
-  const url = 'https://tabi-guide.vercel.app';
-  if(navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(function() {
-      hideShareMenu();
-      const msg = {ja:'URLをコピーしました！', en:'URL copied!', zh:'链接已复制！', ko:'URL이 복사되었습니다！'}[lang] || 'URL copied!';
-      showToast(msg);
-    });
-  } else {
-    hideShareMenu();
-    showToast(url);
-  }
-}
-
-function shareX() {
-  const text = encodeURIComponent(getShareText() + ' https://tabi-guide.vercel.app');
-  window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
-  hideShareMenu();
-}
-
-function shareLine() {
-  const url = encodeURIComponent('https://tabi-guide.vercel.app');
-  const text = encodeURIComponent(getShareText());
-  window.open('https://line.me/R/msg/text/?' + text + '%0A' + url, '_blank');
-  hideShareMenu();
-}
-
-// ════════════════════════════════
 // TOAST
 // ════════════════════════════════
 function showComingSoon() {
   const msg = {ja:'近日公開予定です！',en:'Coming soon!',zh:'即将推出！',ko:'곧 출시 예정입니다！'}[lang] || 'Coming soon!';
-  const inlineEl = document.getElementById('premium-inline-msg');
-  const isPremiumScreen = document.getElementById('screen-premium').classList.contains('active');
-  if(isPremiumScreen && inlineEl) {
-    inlineEl.textContent = msg;
-    inlineEl.style.display = 'block';
-    setTimeout(() => { inlineEl.style.display = 'none'; }, 5000);
-  } else {
-    showToast(msg);
-  }
+  showToast(msg);
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 5000);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 // ════════════════════════════════
