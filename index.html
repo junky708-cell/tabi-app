@@ -648,6 +648,12 @@ html, body {
     <div class="dest-scroll" id="dest-chips"></div>
   </div>
 
+  <div id="pwa-banner" style="display:none;margin:0 20px 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;position:relative">
+    <button onclick="dismissPwaBanner()" style="position:absolute;top:0;right:0;bottom:0;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:0 14px;line-height:1;display:flex;align-items:center">×</button>
+    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;padding-right:32px" id="pwa-title">📲 ホーム画面に追加できます</div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.6;padding-right:32px" id="pwa-desc">Safariで開き、共有ボタン（□↑）→「ホーム画面に追加」</div>
+  </div>
+
   <div class="usage-bar-wrap">
     <div class="usage-bar-top">
       <span id="usage-label">無料残り回数</span>
@@ -1986,6 +1992,38 @@ function showResultDisclaimer() {
   const rd = document.getElementById('result-disclaimer-text');
   if(rd) rd.textContent = disclaimerTexts[lang] || disclaimerTexts.ja;
   banner.style.display = 'block';
+}
+
+// ════════════════════════════════
+// PWA INSTALL BANNER
+// ════════════════════════════════
+function initPwaBanner() {
+  if(localStorage.getItem('pwaBannerDismissed')) return;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if(isStandalone) return;
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  if(!isIos && !isAndroid) return;
+  const titles = {
+    ja: '📲 ホーム画面に追加できます',
+    en: '📲 Add to Home Screen',
+    zh: '📲 可添加到主屏幕',
+    ko: '📲 홈 화면에 추가할 수 있습니다',
+  };
+  const descs = {
+    ja: isIos ? 'Safariで開き、共有ボタン（□↑）→「ホーム画面に追加」' : 'ブラウザのメニュー →「ホーム画面に追加」またはインストール',
+    en: isIos ? 'In Safari, tap Share (□↑) → "Add to Home Screen"' : 'Tap browser menu → "Add to Home Screen" or Install',
+    zh: isIos ? '在Safari中，点击分享（□↑）→「添加到主屏幕」' : '点击浏览器菜单 → 「添加到主屏幕」',
+    ko: isIos ? 'Safari에서 공유(□↑) → 「홈 화면에 추가」' : '브라우저 메뉴 → 「홈 화면에 추가」',
+  };
+  document.getElementById('pwa-title').textContent = titles[lang] || titles.ja;
+  document.getElementById('pwa-desc').textContent = descs[lang] || descs.ja;
+  document.getElementById('pwa-banner').style.display = 'block';
+}
+
+function dismissPwaBanner() {
+  document.getElementById('pwa-banner').style.display = 'none';
+  localStorage.setItem('pwaBannerDismissed', '1');
 }
 
 // ════════════════════════════════
