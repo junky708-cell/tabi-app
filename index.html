@@ -1999,11 +1999,9 @@ function showResultDisclaimer() {
 // ════════════════════════════════
 function initPwaBanner() {
   if(localStorage.getItem('pwaBannerDismissed')) return;
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if(isStandalone) return;
+  // ※テスト用：スタンドアロン・端末チェックを一時的に外す
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isAndroid = /android/i.test(navigator.userAgent);
-  if(!isIos && !isAndroid) return;
   const titles = {
     ja: '📲 ホーム画面に追加できます',
     en: '📲 Add to Home Screen',
