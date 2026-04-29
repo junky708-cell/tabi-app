@@ -783,15 +783,23 @@ html, body {
     </div>
   </div>
 
-  <div id="result-disclaimer" style="display:none;margin:12px 20px 0;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-dim);line-height:1.6;position:relative">
-    <button onclick="document.getElementById('result-disclaimer').style.display='none'" style="position:absolute;top:0;right:0;bottom:0;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:0 14px;line-height:1;display:flex;align-items:center">×</button>
-    <span id="result-disclaimer-text">⚠️ AIによる提案のため、情報に誤りを含む場合があります。ご利用の際は必ず内容をご確認ください。</span>
-  </div>
   <div class="result-body" id="result-body"></div>
 
+  <div style="padding:16px 20px 8px;border-top:1px solid var(--border);text-align:center">
+    <p style="font-size:10px;color:var(--text-dim);opacity:.6;line-height:1.7;white-space:pre-line" id="result-disclaimer-text">⚠️ AIによる提案のため、情報に誤りを含む場合があります。
+ご利用の際は必ず内容をご確認ください。</p>
+  </div>
+
   <div class="result-footer">
-    <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
-    <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
+    <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+      <button class="btn" style="width:100%;background:var(--surface);border:1px solid var(--border)" onclick="showShareMenu()" id="result-share-btn">
+        🔗 <span id="result-share-label">この旅程をシェア</span>
+      </button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
+        <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1916,7 +1924,6 @@ function renderResult(plan) {
   saveBtn.onclick = showComingSoon;
 
   showScreen('screen-result');
-  showResultDisclaimer();
 
 
 }
@@ -1967,10 +1974,10 @@ function selectDisambiguation(name, location) {
 // DISCLAIMER
 // ════════════════════════════════
 const disclaimerTexts = {
-  ja: '⚠️ AIの回答は誤りを含む場合があります。内容は必ずご確認ください。',
-  en: '⚠️ AI responses may contain errors. Please verify all information before use.',
-  zh: '⚠️ AI回答可能包含错误，请务必核实内容。',
-  ko: '⚠️ AI 답변에는 오류가 포함될 수 있습니다. 내용을 반드시 확인해 주세요.',
+  ja: '⚠️ AIによる提案のため、情報に誤りを含む場合があります。\nご利用の際は必ず内容をご確認ください。',
+  en: '⚠️ AI-generated content may contain inaccuracies.\nPlease verify all information before use.',
+  zh: '⚠️ 本内容由AI生成，可能包含错误。\n使用前请务必核实相关信息。',
+  ko: '⚠️ AI가 생성한 내용으로 오류가 포함될 수 있습니다.\n이용 전 반드시 내용을 확인해 주세요.',
 };
 const splashDisclaimerTexts = {
   ja: 'AIの回答は誤りを含む場合があります。\n内容は必ずご確認ください。',
