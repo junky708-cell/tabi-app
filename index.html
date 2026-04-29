@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#0f0e0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TABI">
-<meta name="description" content="AI-powered travel guide for Japan">
+<meta name="apple-mobile-web-app-title" content="LOCATE">
+<meta name="description" content="LOCATE — AI Travel Guide | AIがあなただけの旅程を提案">
 <link rel="manifest" href="manifest.json">
-<title>TABI — AI Travel Guide</title>
+<title>LOCATE — AI Travel Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -799,6 +799,28 @@ html, body {
   </div>
 </div>
 
+
+<!-- ══ SHARE POPUP ══ -->
+<div id="share-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center;padding:0">
+  <div style="background:var(--surface);border-radius:20px 20px 0 0;border:1px solid var(--border);padding:24px 20px 40px;width:100%;max-width:430px">
+    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:20px" id="share-title">シェア</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn" style="width:100%;background:var(--bg);border:1px solid var(--border);justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareUrl()">
+        <span style="font-size:20px">🔗</span>
+        <span id="share-copy-label">URLをコピー</span>
+      </button>
+      <button class="btn" style="width:100%;background:#000;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareX()">
+        <span style="font-size:16px;font-weight:900;color:#fff">𝕏</span>
+        <span style="color:#fff" id="share-x-label">Xでシェア</span>
+      </button>
+      <button class="btn" style="width:100%;background:#06C755;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareLine()">
+        <span style="font-size:20px">💬</span>
+        <span style="color:#fff" id="share-line-label">LINEでシェア</span>
+      </button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:16px;background:var(--bg);border:1px solid var(--border)" onclick="hideShareMenu()" id="share-cancel-label">キャンセル</button>
+  </div>
+</div>
 <!-- ══ 戻る警告ポップアップ ══ -->
 <div id="back-warning-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
   <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%">
@@ -832,7 +854,7 @@ html, body {
 
   <div class="premium-hero">
     <div class="premium-crown">👑</div>
-    <div class="premium-title display" id="premium-title">TABIプレミアム</div>
+    <div class="premium-title display" id="premium-title">LOCATEプレミアム</div>
     <p class="premium-sub" id="premium-sub">旅をもっと深く、もっと自由に</p>
   </div>
 
@@ -1320,10 +1342,10 @@ function setLang(l) {
   if(newBtn) { newBtn.textContent = saveLabels[l] || saveLabels.ja; newBtn.onclick = showComingSoon; }
   // premium page
   const premiumTexts = {
-    ja: { title:'TABIプレミアム', sub:'旅をもっと深く、もっと自由に', pf1:'無制限プラン生成', pf1d:'何度でも旅程を作り直せます', pf2:'複数日程プラン（最大7日間）', pf2d:'長期旅行も詳細にプランニング', pf3:'旅程の保存・共有', pf3d:'お気に入りのプランをシェア', pf4:'マップ連携', pf4d:'Google Mapsで即ナビ開始', pf5:'オフライン対応', pf5d:'電波のない場所でも旅程を確認', p1name:'月額プラン', p1per:'/ 月', p1desc:'いつでもキャンセル可能', p2name:'年額プラン', p2per:'/ 年', p2desc:'月額より34%お得 · 月あたり¥317', cta:'プレミアムを始める', note:'いつでもキャンセル可能 · 安全なStripe決済' },
-    en: { title:'TABI Premium', sub:'Deeper travel, more freedom', pf1:'Unlimited plan generation', pf1d:'Regenerate itineraries as many times as you like', pf2:'Multi-day plans (up to 7 days)', pf2d:'Detailed planning for longer trips', pf3:'Save & share itineraries', pf3d:'Share your favorite plans', pf4:'Map integration', pf4d:'Launch navigation instantly in Google Maps', pf5:'Offline access', pf5d:'View your itinerary without internet', p1name:'Monthly plan', p1per:'/ mo', p1desc:'Cancel anytime', p2name:'Annual plan', p2per:'/ yr', p2desc:'34% cheaper than monthly · ¥317/mo', cta:'Start Premium', note:'Cancel anytime · Secure Stripe payment' },
-    zh: { title:'TABI高级版', sub:'更深入的旅行，更多自由', pf1:'无限次行程生成', pf1d:'随时重新规划行程', pf2:'多日行程（最多7天）', pf2d:'长途旅行也能详细规划', pf3:'保存和分享行程', pf3d:'分享您喜欢的行程', pf4:'地图集成', pf4d:'即时在Google Maps导航', pf5:'离线访问', pf5d:'无网络也能查看行程', p1name:'月付方案', p1per:'/ 月', p1desc:'随时取消', p2name:'年付方案', p2per:'/ 年', p2desc:'比月付便宜34% · 每月¥317', cta:'开始高级版', note:'随时取消 · 安全的Stripe支付' },
-    ko: { title:'TABI 프리미엄', sub:'더 깊은 여행, 더 많은 자유', pf1:'무제한 일정 생성', pf1d:'원하는 만큼 일정을 다시 만들 수 있어요', pf2:'다일정 플랜 (최대 7일)', pf2d:'장기 여행도 상세하게 플래닝', pf3:'일정 저장 및 공유', pf3d:'마음에 드는 플랜을 공유하세요', pf4:'지도 연동', pf4d:'Google Maps로 즉시 내비게이션 시작', pf5:'오프라인 지원', pf5d:'인터넷 없이도 일정 확인 가능', p1name:'월간 플랜', p1per:'/ 월', p1desc:'언제든지 취소 가능', p2name:'연간 플랜', p2per:'/ 년', p2desc:'월간보다 34% 저렴 · 월 ¥317', cta:'프리미엄 시작하기', note:'언제든지 취소 가능 · 안전한 Stripe 결제' },
+    ja: { title:'LOCATEプレミアム', sub:'旅をもっと深く、もっと自由に', pf1:'無制限プラン生成', pf1d:'何度でも旅程を作り直せます', pf2:'複数日程プラン（最大7日間）', pf2d:'長期旅行も詳細にプランニング', pf3:'旅程の保存・共有', pf3d:'お気に入りのプランをシェア', pf4:'マップ連携', pf4d:'Google Mapsで即ナビ開始', pf5:'オフライン対応', pf5d:'電波のない場所でも旅程を確認', p1name:'月額プラン', p1per:'/ 月', p1desc:'いつでもキャンセル可能', p2name:'年額プラン', p2per:'/ 年', p2desc:'月額より34%お得 · 月あたり¥317', cta:'プレミアムを始める', note:'いつでもキャンセル可能 · 安全なStripe決済' },
+    en: { title:'LOCATE Premium', sub:'Deeper travel, more freedom', pf1:'Unlimited plan generation', pf1d:'Regenerate itineraries as many times as you like', pf2:'Multi-day plans (up to 7 days)', pf2d:'Detailed planning for longer trips', pf3:'Save & share itineraries', pf3d:'Share your favorite plans', pf4:'Map integration', pf4d:'Launch navigation instantly in Google Maps', pf5:'Offline access', pf5d:'View your itinerary without internet', p1name:'Monthly plan', p1per:'/ mo', p1desc:'Cancel anytime', p2name:'Annual plan', p2per:'/ yr', p2desc:'34% cheaper than monthly · ¥317/mo', cta:'Start Premium', note:'Cancel anytime · Secure Stripe payment' },
+    zh: { title:'LOCATE高级版', sub:'更深入的旅行，更多自由', pf1:'无限次行程生成', pf1d:'随时重新规划行程', pf2:'多日行程（最多7天）', pf2d:'长途旅行也能详细规划', pf3:'保存和分享行程', pf3d:'分享您喜欢的行程', pf4:'地图集成', pf4d:'即时在Google Maps导航', pf5:'离线访问', pf5d:'无网络也能查看行程', p1name:'月付方案', p1per:'/ 月', p1desc:'随时取消', p2name:'年付方案', p2per:'/ 年', p2desc:'比月付便宜34% · 每月¥317', cta:'开始高级版', note:'随时取消 · 安全的Stripe支付' },
+    ko: { title:'LOCATE 프리미엄', sub:'더 깊은 여행, 더 많은 자유', pf1:'무제한 일정 생성', pf1d:'원하는 만큼 일정을 다시 만들 수 있어요', pf2:'다일정 플랜 (최대 7일)', pf2d:'장기 여행도 상세하게 플래닝', pf3:'일정 저장 및 공유', pf3d:'마음에 드는 플랜을 공유하세요', pf4:'지도 연동', pf4d:'Google Maps로 즉시 내비게이션 시작', pf5:'오프라인 지원', pf5d:'인터넷 없이도 일정 확인 가능', p1name:'월간 플랜', p1per:'/ 월', p1desc:'언제든지 취소 가능', p2name:'연간 플랜', p2per:'/ 년', p2desc:'월간보다 34% 저렴 · 월 ¥317', cta:'프리미엄 시작하기', note:'언제든지 취소 가능 · 안전한 Stripe 결제' },
   };
   const p = premiumTexts[l] || premiumTexts.ja;
   const setT = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
@@ -1937,7 +1959,7 @@ function renderResult(plan) {
 // FONT SIZE
 // ════════════════════════════════
 const FONT_SIZES = [1, 1.1, 1.2];
-let fontSizeIdx = parseInt(localStorage.getItem('tabiFontIdx') || '0');
+let fontSizeIdx = parseInt(localStorage.getItem('locateFontIdx') || '0');
 
 function applyFontSize() {
   document.getElementById('app').style.zoom = FONT_SIZES[fontSizeIdx];
@@ -1950,7 +1972,7 @@ function applyFontSize() {
 
 function changeFontSize() {
   fontSizeIdx = (fontSizeIdx + 1) % FONT_SIZES.length;
-  localStorage.setItem('tabiFontIdx', fontSizeIdx);
+  localStorage.setItem('locateFontIdx', fontSizeIdx);
   applyFontSize();
 }
 
@@ -2054,6 +2076,73 @@ const AMBIGUOUS_PLACES = {
 
 function checkAmbiguous(city) {
   return AMBIGUOUS_PLACES[city] || null;
+}
+
+// ════════════════════════════════
+// SHARE
+// ════════════════════════════════
+function showShareMenu() {
+  const labels = {
+    ja: { title:'シェア', copy:'URLをコピー', x:'Xでシェア', line:'LINEでシェア', cancel:'キャンセル' },
+    en: { title:'Share', copy:'Copy URL', x:'Share on X', line:'Share on LINE', cancel:'Cancel' },
+    zh: { title:'分享', copy:'复制链接', x:'分享到X', line:'分享到LINE', cancel:'取消' },
+    ko: { title:'공유', copy:'URL 복사', x:'X에서 공유', line:'LINE에서 공유', cancel:'취소' },
+  };
+  const l = labels[lang] || labels.ja;
+  document.getElementById('share-title').textContent = l.title;
+  document.getElementById('share-copy-label').textContent = l.copy;
+  document.getElementById('share-x-label').textContent = l.x;
+  document.getElementById('share-line-label').textContent = l.line;
+  document.getElementById('share-cancel-label').textContent = l.cancel;
+  const shareLabelEl = document.getElementById('result-share-label');
+  if(shareLabelEl) shareLabelEl.textContent = {ja:'この旅程をシェア', en:'Share this itinerary', zh:'分享此行程', ko:'일정 공유하기'}[lang] || 'この旅程をシェア';
+  document.getElementById('share-overlay').style.display = 'flex';
+}
+
+function hideShareMenu() {
+  document.getElementById('share-overlay').style.display = 'none';
+}
+
+function getShareText() {
+  const city = currentCity || '';
+  const msgs = {
+    ja: `LOCATEが${city}の旅程を提案してくれました！
+AI旅行ガイド LOCATE →`,
+    en: `LOCATE suggested a trip to ${city}!
+AI Travel Guide LOCATE →`,
+    zh: `LOCATE为我推荐了${city}的行程！
+AI旅行向导 LOCATE →`,
+    ko: `LOCATE가 ${city} 여행 일정을 제안해줬어요!
+AI 여행 가이드 LOCATE →`,
+  };
+  return msgs[lang] || msgs.ja;
+}
+
+function shareUrl() {
+  const url = 'https://tabi-guide.vercel.app';
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() {
+      hideShareMenu();
+      const msg = {ja:'URLをコピーしました！', en:'URL copied!', zh:'链接已复制！', ko:'URL이 복사되었습니다！'}[lang] || 'URL copied!';
+      showToast(msg);
+    });
+  } else {
+    hideShareMenu();
+    showToast(url);
+  }
+}
+
+function shareX() {
+  const text = encodeURIComponent(getShareText() + ' https://tabi-guide.vercel.app');
+  window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
+  hideShareMenu();
+}
+
+function shareLine() {
+  const url = encodeURIComponent('https://tabi-guide.vercel.app');
+  const text = encodeURIComponent(getShareText());
+  window.open('https://line.me/R/msg/text/?' + text + '%0A' + url, '_blank');
+  hideShareMenu();
 }
 
 // ════════════════════════════════
