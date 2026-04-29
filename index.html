@@ -1286,6 +1286,9 @@ function setLang(l) {
     );
   });
   const t = T[lang];
+  // share button label
+  const shareLabelEl = document.getElementById('result-share-label');
+  if(shareLabelEl) shareLabelEl.textContent = {ja:'この旅程をシェア', en:'Share this itinerary', zh:'分享此行程', ko:'일정 공유하기'}[l] || 'この旅程をシェア';
   // splash
   const st = document.getElementById('splash-text');
   if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
@@ -1548,8 +1551,8 @@ async function confirmCity() {
     const promptMap = {
       ja: `「${currentCity}」という場所について、必ず日本語でJSONオブジェクトのみを返してください。他のテキスト不可。形式：{"name":"日本語の正式名称（例：瀬戸市）","location":"所在地（例：愛知県）","desc":"旅行者向けの1〜2文の日本語説明。"} マークダウン不可。英語での回答不可。`,
       en: `You must return ONLY a JSON object with no other text. For the place "${currentCity}", respond with exactly this format: {"name":"Manchester","location":"Greater Manchester, United Kingdom","desc":"One or two sentences about this destination for travelers."} Do not include any explanation or markdown.`,
-      zh: `请只返回一个JSON对象，不要其他任何文字。关于地点"${currentCity}"，格式如下：{"name":"正式名称（例：曼彻斯特）","location":"所在地（例：英格兰，英国）","desc":"给旅行者的1-2句介绍。"} 不要Markdown。`,
-      ko: `"${currentCity}" 장소에 대해 JSON 객체만 반환하세요. 다른 텍스트 불가. 형식: {"name":"정식 명칭（예: 맨체스터）","location":"소재지（예: 잉글랜드, 영국）","desc":"여행자를 위한 1-2문장 설명."} 마크다운 불가.`,
+      zh: `必须用中文回答。请只返回一个JSON对象，不要其他任何文字。关于地点"${currentCity}"，格式如下：{"name":"正式名称（例：曼彻斯特）","location":"所在地（例：英格兰，英国）","desc":"给旅行者的1-2句中文介绍。"} 不要Markdown。禁止使用英文。`,
+      ko: `반드시 한국어로만 답하세요. "${currentCity}" 장소에 대해 JSON 객체만 반환하세요. 다른 텍스트 불가. 형식: {"name":"정식 명칭（예: 맨체스터）","location":"소재지（예: 잉글랜드, 영국）","desc":"여행자를 위한 1-2문장 한국어 설명."} 마크다운 불가. 영어 사용 불가.`,
     };
     const res = await fetch('/api/generate', {
       method:'POST',
