@@ -609,6 +609,9 @@ html, body {
   <p style="font-size:11px;color:var(--text-dim);text-align:center;line-height:1.7;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" id="splash-note" onclick="showScreen('screen-premium')">
     プレミアムプラン（有料）で<br>無制限利用・詳細プランが解放されます
   </p>
+  <p style="font-size:10px;color:var(--text-dim);opacity:.6;text-align:center;line-height:1.7;padding:0 8px" id="splash-disclaimer">
+    本アプリはAIを活用していますが、提案内容に誤りを含む場合があります。ご利用の際は必ず内容をご確認ください。
+  </p>
 </div>
 
 <!-- ══ HOME ══ -->
@@ -661,6 +664,16 @@ html, body {
     <button class="btn btn-gold" style="width:100%" id="home-next-btn" onclick="confirmCity()" disabled>
       <span id="home-next-label">目的地を入力してください</span>
     </button>
+  </div>
+</div>
+
+<!-- ══ DISAMBIGUATION POPUP ══ -->
+<div id="disambiguation-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:380px">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">同名の地名があります</div>
+    <div style="font-size:14px;color:var(--text);margin-bottom:16px">「<span id="disambig-city"></span>」はどちらですか？</div>
+    <div id="disambig-options" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button class="btn" style="width:100%;margin-top:12px;background:var(--bg);border:1px solid var(--border)" onclick="document.getElementById('disambiguation-overlay').style.display='none'">キャンセル</button>
   </div>
 </div>
 
@@ -766,6 +779,14 @@ html, body {
     </div>
   </div>
 
+  <div id="result-disclaimer-banner" style="display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:rgba(201,168,76,0.08);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-dim);line-height:1.5">
+    <span style="flex:1" id="result-disclaimer-text">⚠️ AIの回答は誤りを含む場合があります。内容は必ずご確認ください。</span>
+    <button onclick="dismissResultDisclaimer()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:0;flex-shrink:0;line-height:1">×</button>
+  </div>
+  <div id="result-disclaimer" style="display:none;margin:12px 20px 0;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-dim);line-height:1.6;position:relative">
+    <button onclick="document.getElementById('result-disclaimer').style.display='none'" style="position:absolute;top:6px;right:10px;background:none;border:none;color:var(--text-dim);font-size:14px;cursor:pointer;padding:0;line-height:1">×</button>
+    <span id="result-disclaimer-text">⚠️ AIによる提案のため、情報に誤りを含む場合があります。ご利用の際は必ず内容をご確認ください。</span>
+  </div>
   <div class="result-body" id="result-body"></div>
 
   <div class="result-footer">
@@ -1325,6 +1346,7 @@ function setLang(l) {
   const sfl = document.getElementById('splash-free-label');
   if(sfl) sfl.textContent = freeLabel;
   clearError();
+  updateDisclaimerLang(l);
   // home
   updateHomeUI();
   // dest chips
@@ -1467,6 +1489,28 @@ let confirmedLocation = '';
 
 async function confirmCity() {
   if(!currentCity) return;
+
+  // 広範囲地名チェック
+  const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
+  if(broadAreaPattern.test(currentCity.trim())) {
+    const msg = {
+      ja: '範囲が広すぎます。例：東京、京都、大阪、札幌など具体的な都市名を入力してください',
+      en: 'Too broad. Please enter a specific city. Ex: Tokyo, Kyoto, London',
+      zh: '范围太广。请输入具体城市名。例：东京、京都、大阪',
+      ko: '범위가 너무 넓습니다. 예: 도쿄, 교토, 오사카',
+    };
+    showToast(msg[lang] || msg.ja);
+    document.getElementById('city-input').select();
+    return;
+  }
+
+  // 同名地名チェック（日本語のみ）
+  const ambiguous = checkAmbiguous(currentCity.trim());
+  if(ambiguous && lang === 'ja') {
+    showDisambiguationPopup(ambiguous);
+    return;
+  }
+
   const t = T[lang];
   const overlay = document.getElementById('city-confirm-overlay');
   const nameEl = document.getElementById('city-confirm-name');
@@ -1872,6 +1916,9 @@ function renderResult(plan) {
   saveBtn.onclick = showComingSoon;
 
   showScreen('screen-result');
+  showResultDisclaimer();
+
+
 }
 
 // ════════════════════════════════
@@ -1893,6 +1940,76 @@ function changeFontSize() {
   fontSizeIdx = (fontSizeIdx + 1) % FONT_SIZES.length;
   localStorage.setItem('tabiFontIdx', fontSizeIdx);
   applyFontSize();
+}
+
+function showDisambiguationPopup(candidates) {
+  document.getElementById('disambig-city').textContent = currentCity;
+  const optEl = document.getElementById('disambig-options');
+  optEl.innerHTML = candidates.map(c => `
+    <button class="btn" style="width:100%;background:var(--bg);border:1px solid var(--border);flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px"
+      onclick="selectDisambiguation('${c.name}', '${c.location}')">
+      <span style="font-size:14px;font-weight:600;color:var(--text)">${c.name}　<span style="font-size:12px;color:var(--gold)">${c.location}</span></span>
+      <span style="font-size:12px;color:var(--text-dim)">${c.hint}</span>
+    </button>
+  `).join('');
+  document.getElementById('disambiguation-overlay').style.display = 'flex';
+}
+
+function selectDisambiguation(name, location) {
+  document.getElementById('disambiguation-overlay').style.display = 'none';
+  confirmedCity = currentCity;
+  confirmedLocation = location;
+  document.getElementById('city-input').value = currentCity;
+  showTimingPopup();
+}
+
+// ════════════════════════════════
+// DISCLAIMER
+// ════════════════════════════════
+const disclaimerTexts = {
+  ja: '⚠️ AIの回答は誤りを含む場合があります。内容は必ずご確認ください。',
+  en: '⚠️ AI responses may contain errors. Please verify all information before use.',
+  zh: '⚠️ AI回答可能包含错误，请务必核实内容。',
+  ko: '⚠️ AI 답변에는 오류가 포함될 수 있습니다. 내용을 반드시 확인해 주세요.',
+};
+const splashDisclaimerTexts = {
+  ja: 'AIの回答は誤りを含む場合があります。内容は必ずご確認ください。',
+  en: 'AI responses may contain errors. Please verify all information.',
+  zh: 'AI回答可能包含错误，请务必核实内容。',
+  ko: 'AI 답변에는 오류가 포함될 수 있습니다. 내용을 반드시 확인하세요。',
+};
+
+function updateDisclaimerLang(l) {
+  const sd = document.getElementById('splash-disclaimer');
+  if(sd) sd.textContent = splashDisclaimerTexts[l] || splashDisclaimerTexts.ja;
+  const rd = document.getElementById('result-disclaimer-text');
+  if(rd) rd.textContent = disclaimerTexts[l] || disclaimerTexts.ja;
+}
+
+function showResultDisclaimer() {
+  const banner = document.getElementById('result-disclaimer');
+  if(!banner) return;
+  const rd = document.getElementById('result-disclaimer-text');
+  if(rd) rd.textContent = disclaimerTexts[lang] || disclaimerTexts.ja;
+  banner.style.display = 'block';
+}
+
+// ════════════════════════════════
+// DISAMBIGUATION（同名地名）
+// ════════════════════════════════
+const AMBIGUOUS_PLACES = {
+  '松山': [{name:'松山市', location:'愛媛県', hint:'道後温泉・松山城'}, {name:'松山市', location:'岩手県', hint:'岩手県中部の都市'}],
+  '長岡': [{name:'長岡市', location:'新潟県', hint:'花火大会で有名'}, {name:'長岡京市', location:'京都府', hint:'京都南部の都市'}],
+  '高松': [{name:'高松市', location:'香川県', hint:'讃岐うどんの聖地'}, {name:'高松市', location:'群馬県', hint:'群馬県内の地名'}],
+  '富山': [{name:'富山市', location:'富山県', hint:'黒部・立山'}, {name:'富山', location:'神奈川県', hint:'神奈川の地名'}],
+  '府中': [{name:'府中市', location:'東京都', hint:'大国魂神社・競馬場'}, {name:'府中市', location:'広島県', hint:'広島県東部の都市'}],
+  '伊達': [{name:'伊達市', location:'北海道', hint:'北海道南部の都市'}, {name:'伊達市', location:'福島県', hint:'福島県中通りの都市'}],
+  '三条': [{name:'三条市', location:'新潟県', hint:'金物の町'}, {name:'三条', location:'京都市', hint:'京都市内の地名'}],
+  '大和': [{name:'大和市', location:'神奈川県', hint:'神奈川県央の都市'}, {name:'大和高田市', location:'奈良県', hint:'奈良県北部の都市'}],
+};
+
+function checkAmbiguous(city) {
+  return AMBIGUOUS_PLACES[city] || null;
 }
 
 // ════════════════════════════════
