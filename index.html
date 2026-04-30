@@ -736,7 +736,7 @@ html, body {
     </div>
     <div style="text-align:right;margin-top:4px"><span class="q-progress-text" id="q-progress-text">0 / 5</span></div>
     <div class="q-city display" id="q-city-name">京都</div>
-    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span><span id="q-prev-answers" style="display:flex;flex-wrap:wrap;gap:6px"></span></div>
+    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span><span id="q-prev-answers" style="display:contents"></span></div>
     <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
   </div>
 
@@ -1676,21 +1676,20 @@ function goToQuestions() {
   document.getElementById('q-progress-text').textContent = `${done} / ${keys.length}`;
   document.getElementById('generate-btn').disabled = done < keys.length;
 
-  // 前回条件バッジを表示
-  const prevBadgeArea = document.getElementById('q-prev-answers');
-  if(prevBadgeArea) {
-    if(isReturning) {
-      const tagColors = ['tag-gold','tag-green','tag-blue','tag-purple','tag-orange'];
-      prevBadgeArea.innerHTML = keys.map((k,i) => answers[k]
-        ? `<span class="tag ${tagColors[i]}">${answers[k].split(/[・,（(]/)[0].trim()}</span>`
-        : ''
-      ).join('');
-    } else {
-      prevBadgeArea.innerHTML = '';
-    }
-  }
+  updateQBadges(); // 条件バッジを更新
 
   showScreen('screen-questions');
+}
+
+function updateQBadges() {
+  const keys = T[lang].questions.map(q=>q.key);
+  const tagColors = ['tag-gold','tag-green','tag-blue','tag-purple','tag-orange'];
+  const prevBadgeArea = document.getElementById('q-prev-answers');
+  if(!prevBadgeArea) return;
+  prevBadgeArea.innerHTML = keys.map((k,i) => answers[k]
+    ? `<span class="tag ${tagColors[i]}">${answers[k].split(/[・,（(]/)[0].trim()}</span>`
+    : ''
+  ).join('');
 }
 
 function selectOpt(btn) {
@@ -1704,6 +1703,7 @@ function selectOpt(btn) {
   document.getElementById('q-progress-fill').style.width = `${(done/keys.length)*100}%`;
   document.getElementById('q-progress-text').textContent = `${done} / ${keys.length}`;
   document.getElementById('generate-btn').disabled = done < keys.length;
+  updateQBadges();
 }
 
 // ════════════════════════════════
