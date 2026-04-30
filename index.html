@@ -830,6 +830,19 @@ html, body {
   </div>
 </div>
 
+<!-- ══ 無料上限ポップアップ ══ -->
+<div id="usage-limit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%">
+    <div style="font-size:36px;text-align:center;margin-bottom:16px">👑</div>
+    <div id="usage-limit-title" style="font-size:16px;font-weight:700;color:var(--text);text-align:center;margin-bottom:12px">無料でのご利用回数が上限に達しました</div>
+    <p id="usage-limit-body" style="font-size:13px;color:var(--text-dim);line-height:1.8;text-align:center;margin-bottom:24px">プレミアムプランでご利用いただけます</p>
+    <div style="display:flex;gap:10px">
+      <button id="usage-limit-close" onclick="document.getElementById('usage-limit-overlay').style.display='none'" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer">閉じる</button>
+      <button id="usage-limit-premium" onclick="document.getElementById('usage-limit-overlay').style.display='none';showScreen('screen-premium')" style="flex:1;padding:14px;background:linear-gradient(135deg,#c9a84c,#e8c96a);border:none;border-radius:12px;color:#0f0e0c;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">プレミアムへ →</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ PREMIUM ══ -->
 <div id="screen-premium" class="screen">
   <div class="premium-header">
@@ -1711,6 +1724,21 @@ function selectOpt(btn) {
 // ════════════════════════════════
 // GENERATE
 // ════════════════════════════════
+function showUsageLimitPopup() {
+  const texts = {
+    ja: { title:'無料でのご利用回数が上限に達しました', body:'プレミアムプランでご利用いただけます', close:'閉じる', premium:'プレミアムへ →' },
+    en: { title:'You have reached the free usage limit', body:'Available with a Premium plan', close:'Close', premium:'Go Premium →' },
+    zh: { title:'免费使用次数已达上限', body:'升级至高级版后可继续使用', close:'关闭', premium:'前往高级版 →' },
+    ko: { title:'무료 이용 횟수가 한도에 도달했습니다', body:'프리미엄 플랜으로 이용하실 수 있습니다', close:'닫기', premium:'프리미엄으로 →' },
+  };
+  const t = texts[lang] || texts.ja;
+  document.getElementById('usage-limit-title').textContent = t.title;
+  document.getElementById('usage-limit-body').textContent = t.body;
+  document.getElementById('usage-limit-close').textContent = t.close;
+  document.getElementById('usage-limit-premium').textContent = t.premium;
+  document.getElementById('usage-limit-overlay').style.display = 'flex';
+}
+
 function showNoChangePopup() {
   const texts = {
     ja: { title:'条件は変更されていません', body:'前回と同じ条件で生成します。このまま続けますか？', cancel:'戻る', confirm:'生成する' },
@@ -1754,7 +1782,7 @@ async function generatePlan() {
 
 async function doGenerate() {
   if(freeUsage <= 0) {
-    showScreen('screen-premium');
+    showUsageLimitPopup();
     return;
   }
 
