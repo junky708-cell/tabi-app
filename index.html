@@ -600,10 +600,10 @@ html, body {
     <span id="splash-lang-label">言語を選択</span> / Select Language
   </p>
   <div class="lang-bar" style="width:100%">
-    <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
-    <button class="lang-btn" onclick="setLang('en')">English</button>
-    <button class="lang-btn" onclick="setLang('zh')">中文</button>
-    <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+    <button class="lang-btn active" data-lang="ja" onclick="setLang('ja')">日本語</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
+    <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">한국어</button>
   </div>
   <button class="splash-start" onclick="showScreen('screen-home')" id="splash-start-btn">はじめる →</button>
   <div class="splash-divider"><span id="splash-free-label">無料で3回まで利用可能</span></div>
@@ -1277,12 +1277,7 @@ ${now ? `현재 시각: ${now.time}（지금 출발 — 이 시간부터 일정 
 function setLang(l) {
   lang = l;
   document.querySelectorAll('.lang-btn').forEach(b => {
-    b.classList.toggle('active',
-      (l==='ja' && b.textContent.includes('日')) ||
-      (l==='en' && (b.textContent.includes('EN') || b.textContent.includes('English'))) ||
-      (l==='zh' && b.textContent.includes('中')) ||
-      (l==='ko' && b.textContent.includes('한'))
-    );
+    b.classList.toggle('active', b.dataset.lang === l);
   });
   const t = T[lang];
 
