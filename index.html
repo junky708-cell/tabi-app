@@ -619,12 +619,12 @@ html, body {
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-splash')">← <span id="back-label-home">戻る</span></button>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
-      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
       </button>
       </div>
@@ -721,12 +721,12 @@ html, body {
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-home')">← <span id="back-label-q">戻る</span></button>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
-      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
       </button>
       </div>
@@ -766,12 +766,12 @@ html, body {
     <div class="q-nav" style="margin-bottom:12px">
       <img src="locate-logo-white.png" alt="Locate" style="height:28px;width:auto">
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
-      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
       </button>
       </div>
@@ -788,9 +788,7 @@ html, body {
 
   <div class="result-footer">
     <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-      <button class="btn" style="width:100%;background:var(--surface);border:1px solid var(--border)" onclick="showShareMenu()" id="result-share-btn">
-        🔗 <span id="result-share-label">この旅程をシェア</span>
-      </button>
+
       <div style="display:flex;gap:8px">
         <button class="btn btn-outline" style="flex:1" onclick="showBackWarning()" id="result-retry-btn">条件を変更</button>
         <button class="btn btn-gold" style="flex:2" onclick="showComingSoon()" id="result-new-btn">💾 保存して条件変更</button>
@@ -800,27 +798,6 @@ html, body {
 </div>
 
 
-<!-- ══ SHARE POPUP ══ -->
-<div id="share-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center;padding:0">
-  <div style="background:var(--surface);border-radius:20px 20px 0 0;border:1px solid var(--border);padding:24px 20px 40px;width:100%;max-width:430px">
-    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:20px" id="share-title">シェア</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn" style="width:100%;background:var(--bg);border:1px solid var(--border);justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareUrl()">
-        <span style="font-size:20px">🔗</span>
-        <span id="share-copy-label">URLをコピー</span>
-      </button>
-      <button class="btn" style="width:100%;background:#000;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareX()">
-        <span style="font-size:16px;font-weight:900;color:#fff">𝕏</span>
-        <span style="color:#fff" id="share-x-label">Xでシェア</span>
-      </button>
-      <button class="btn" style="width:100%;background:#06C755;border:none;justify-content:flex-start;gap:12px;padding:14px 16px" onclick="shareLine()">
-        <span style="font-size:20px">💬</span>
-        <span style="color:#fff" id="share-line-label">LINEでシェア</span>
-      </button>
-    </div>
-    <button class="btn" style="width:100%;margin-top:16px;background:var(--bg);border:1px solid var(--border)" onclick="hideShareMenu()" id="share-cancel-label">キャンセル</button>
-  </div>
-</div>
 <!-- ══ 戻る警告ポップアップ ══ -->
 <div id="back-warning-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
   <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%">
@@ -841,12 +818,12 @@ html, body {
   <div class="premium-header">
     <button class="q-back" onclick="goBack()">← <span id="back-label-premium">戻る</span></button>
     <div class="tag tag-gold" style="justify-self:center">PREMIUM</div>
-    <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" id="font-zoom-btn" title="文字サイズ変更">
+    <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" title="文字サイズ変更">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
           <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line id="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
       </button>
     </div>
@@ -1308,17 +1285,13 @@ function setLang(l) {
     );
   });
   const t = T[lang];
-  // share button label
-  const shareLabelEl = document.getElementById('result-share-label');
-  if(shareLabelEl) shareLabelEl.textContent = {ja:'この旅程をシェア', en:'Share this itinerary', zh:'分享此行程', ko:'일정 공유하기'}[l] || 'この旅程をシェア';
-  // splash
+
   const st = document.getElementById('splash-text');
   if(st) st.innerHTML = t.splashText.replace(/\n/g,'<br>');
   const ss = document.getElementById('splash-start-btn');
   if(ss) ss.textContent = t.splashStart;
   const sn = document.getElementById('splash-note');
   if(sn) sn.innerHTML = t.splashNote;
-  // back warning popup
   const warnTexts = {
     ja: { title:'条件を変更しますか？', body:'画面を戻ると回数が新たにカウントされます。この提案は保存されませんので、必要であればスクリーンショットを取っておいてください。', close:'閉じる', confirm:'条件変更' },
     en: { title:'Change preferences?', body:'Going back will use another free count. This plan will not be saved — please take a screenshot if needed.', close:'Close', confirm:'Change' },
@@ -1334,13 +1307,11 @@ function setLang(l) {
   if(wBody) wBody.textContent = w.body;
   if(wClose) wClose.textContent = w.close;
   if(wConfirm) wConfirm.textContent = w.confirm;
-  // result buttons
   const retryBtn = document.getElementById('result-retry-btn');
   if(retryBtn) retryBtn.textContent = t.retryBtn;
   const saveLabels = { ja:'💾 保存して条件変更', en:'💾 Save & Change', zh:'💾 保存并修改', ko:'💾 저장 후 변경' };
   const newBtn = document.getElementById('result-new-btn');
   if(newBtn) { newBtn.textContent = saveLabels[l] || saveLabels.ja; newBtn.onclick = showComingSoon; }
-  // premium page
   const premiumTexts = {
     ja: { title:'LOCATEプレミアム', sub:'旅をもっと深く、もっと自由に', pf1:'無制限プラン生成', pf1d:'何度でも旅程を作り直せます', pf2:'複数日程プラン（最大7日間）', pf2d:'長期旅行も詳細にプランニング', pf3:'旅程の保存・共有', pf3d:'お気に入りのプランをシェア', pf4:'マップ連携', pf4d:'Google Mapsで即ナビ開始', pf5:'オフライン対応', pf5d:'電波のない場所でも旅程を確認', p1name:'月額プラン', p1per:'/ 月', p1desc:'いつでもキャンセル可能', p2name:'年額プラン', p2per:'/ 年', p2desc:'月額より34%お得 · 月あたり¥317', cta:'プレミアムを始める', note:'いつでもキャンセル可能 · 安全なStripe決済' },
     en: { title:'LOCATE Premium', sub:'Deeper travel, more freedom', pf1:'Unlimited plan generation', pf1d:'Regenerate itineraries as many times as you like', pf2:'Multi-day plans (up to 7 days)', pf2d:'Detailed planning for longer trips', pf3:'Save & share itineraries', pf3d:'Share your favorite plans', pf4:'Map integration', pf4d:'Launch navigation instantly in Google Maps', pf5:'Offline access', pf5d:'View your itinerary without internet', p1name:'Monthly plan', p1per:'/ mo', p1desc:'Cancel anytime', p2name:'Annual plan', p2per:'/ yr', p2desc:'34% cheaper than monthly · ¥317/mo', cta:'Start Premium', note:'Cancel anytime · Secure Stripe payment' },
@@ -1358,7 +1329,6 @@ function setLang(l) {
   setT('plan1-name', p.p1name); setT('plan1-per', p.p1per); setT('plan1-desc', p.p1desc);
   setT('plan2-name', p.p2name); setT('plan2-per', p.p2per); setT('plan2-desc', p.p2desc);
   setT('premium-cta', p.cta); setT('premium-note', p.note);
-  // back button labels
   const backLabel = {ja:'戻る', en:'Back', zh:'返回', ko:'뒤로'}[l] || '戻る';
   const blHome = document.getElementById('back-label-home');
   const blQ = document.getElementById('back-label-q');
@@ -1366,28 +1336,22 @@ function setLang(l) {
   if(blQ) blQ.textContent = backLabel;
   const blP = document.getElementById('back-label-premium');
   if(blP) blP.textContent = backLabel;
-  // splash lang label
   const langLabel = {ja:'言語を選択', en:'Select Language', zh:'选择语言', ko:'언어 선택'}[l] || '言語を選択';
   const sll = document.getElementById('splash-lang-label');
   if(sll) sll.textContent = langLabel;
-  // splash free label
   const freeLabel = {ja:'無料で3回まで利用可能', en:'3 free uses available', zh:'免费使用3次', ko:'무료로 3번 이용 가능'}[l] || '無料で3回まで利用可能';
   const sfl = document.getElementById('splash-free-label');
   if(sfl) sfl.textContent = freeLabel;
   clearError();
   updateDisclaimerLang(l);
-  // home
   updateHomeUI();
-  // dest chips
   renderDestChips();
 }
 
 function updateHomeUI() {
   const t = T[lang];
   const greeting = document.getElementById('home-greeting');
-  if(greeting) {
-    greeting.textContent = t.greeting;
-  }
+  if(greeting) { greeting.textContent = t.greeting; }
   const sub = document.getElementById('home-sub');
   if(sub) sub.textContent = t.homeSub;
   const ld = document.getElementById('label-destination');
@@ -1519,7 +1483,6 @@ let confirmedLocation = '';
 async function confirmCity() {
   if(!currentCity) return;
 
-  // 広範囲地名チェック
   const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
   if(broadAreaPattern.test(currentCity.trim())) {
     const msg = {
@@ -1533,7 +1496,6 @@ async function confirmCity() {
     return;
   }
 
-  // 同名地名チェック（日本語のみ）
   const ambiguous = checkAmbiguous(currentCity.trim());
   if(ambiguous && lang === 'ja') {
     showDisambiguationPopup(ambiguous);
@@ -1548,7 +1510,6 @@ async function confirmCity() {
   const yesBtn = document.getElementById('city-confirm-yes');
   const noBtn = document.getElementById('city-confirm-no');
 
-  // i18n
   const confirmLabels = {
     ja: {label:'目的地の確認', loading:'地名を確認中...', confirm:'こちらで間違いないですか？', yes:'はい、進む →', no:'再度入力'},
     en: {label:'Confirm destination', loading:'Checking destination...', confirm:'Is this correct?', yes:'Yes, continue →', no:'Re-enter'},
@@ -1564,7 +1525,6 @@ async function confirmCity() {
   nameEl.textContent = cl.loading;
   descEl.textContent = '';
   document.getElementById('city-confirm-question').textContent = '';
-  // ボタンを隠して確認中を表示
   yesBtn.style.display = 'none';
   noBtn.style.display = 'none';
   overlay.style.display = 'flex';
@@ -1588,13 +1548,13 @@ async function confirmCity() {
     const j = raw.indexOf('{'), k = raw.lastIndexOf('}');
     if(j !== -1 && k !== -1) raw = raw.slice(j, k+1);
     const info = JSON.parse(raw);
-    const displayName = currentCity; // 元の入力値を維持
+    const displayName = currentCity;
     const displayLocation = (info.location || '').trim();
     const displayDesc = (info.desc || '').trim();
     nameEl.textContent = displayName + (displayLocation ? '　' + displayLocation : '');
     descEl.textContent = displayDesc;
     document.getElementById('city-confirm-question').textContent = cl.confirm;
-    confirmedCity = currentCity; // 常に元の入力値を使う
+    confirmedCity = currentCity;
     confirmedLocation = displayLocation;
   } catch(e) {
     confirmedCity = currentCity;
@@ -1603,13 +1563,12 @@ async function confirmCity() {
     document.getElementById('city-confirm-question').textContent = cl.confirm;
   }
 
-  // 情報取得後にボタンを表示
   yesBtn.style.display = '';
   noBtn.style.display = '';
   yesBtn.disabled = false;
 }
 
-let tripTiming = 'plan'; // 'plan' or 'now'
+let tripTiming = 'plan';
 
 function acceptCityConfirm() {
   document.getElementById('city-confirm-overlay').style.display = 'none';
@@ -1666,7 +1625,6 @@ function goToQuestions() {
   document.getElementById('generate-label').textContent = t.generateBtn;
   document.getElementById('q-error').style.display = 'none';
 
-  // Render questions
   const body = document.getElementById('q-body');
   body.innerHTML = t.questions.map(q => `
     <div class="q-block">
@@ -1721,7 +1679,6 @@ async function generatePlan() {
     </div>
   `).join('');
 
-  // Animate loading steps
   for(let i=0;i<t.loadSteps.length;i++) {
     await delay(500);
     if(i>0) document.getElementById(`ls${i-1}`).className='load-step done';
@@ -1738,9 +1695,7 @@ async function generatePlan() {
   try {
     const res = await fetch('/api/generate', {
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-      },
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ prompt })
     });
 
@@ -1757,9 +1712,7 @@ async function generatePlan() {
 
     const data = JSON.parse(responseText);
     let raw = data.content.map(c=>c.text||'').join('');
-    // マークダウンのコードブロックを確実に除去
     raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
-    // JSONの { } の範囲だけを抽出
     const jsonStart = raw.indexOf('{');
     const jsonEnd = raw.lastIndexOf('}');
     if(jsonStart !== -1 && jsonEnd !== -1) {
@@ -1802,7 +1755,6 @@ function renderResult(plan) {
   const t = T[lang];
   document.getElementById('result-city').textContent = currentCity;
 
-  // Badges（設問の順番通り：スタイル・予算・食事・メンバー・日数）
   const badges = document.getElementById('result-badges');
   const timingLabel = tripTiming === 'now'
     ? {ja:'📍 今すぐ', en:'📍 Now', zh:'📍 现在', ko:'📍 지금'}[lang] || '📍 今すぐ'
@@ -1819,7 +1771,6 @@ function renderResult(plan) {
   const body = document.getElementById('result-body');
   let html = '';
 
-  // Destination intro
   if(plan.destination_intro) {
     const di = plan.destination_intro;
     const introLabel = {ja:'📍 この目的地について', en:'📍 About this destination', zh:'📍 关于目的地', ko:'📍 목적지 소개'}[lang] || '📍 この目的地について';
@@ -1835,7 +1786,6 @@ function renderResult(plan) {
       + '</div>';
   }
 
-  // Concept
   if(plan.concept) {
     html += `<div class="result-section">
       <div class="result-section-title">${t.resultLabels.concept}</div>
@@ -1843,7 +1793,6 @@ function renderResult(plan) {
     </div>`;
   }
 
-  // Timeline
   if(plan.timeline?.length) {
     const noteStart = {ja:'⚠️ 表示時刻は現地での行動時間の目安です。出発・移動時間を加えてご計画ください。', en:'⚠️ Times shown are approximate activity times. Please account for travel time to each location.', zh:'⚠️ 显示时间为现场活动的参考时间，请加上出行和交通时间。', ko:'⚠️ 표시 시간은 현지 활동 기준입니다. 이동 시간을 추가로 고려해 주세요.'};
     const noteEnd = {ja:'🏠 最後の場所からの帰路・移動時間もお忘れなく。', en:"🏠 Don't forget to account for your return journey after the last stop.", zh:'🏠 别忘了最后一个地点的返程时间。', ko:'🏠 마지막 장소에서의 귀로 시간도 잊지 마세요.'};
@@ -1886,7 +1835,6 @@ function renderResult(plan) {
       + '</div>';
   }
 
-  // Restaurants
   if(plan.restaurants?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">${t.resultLabels.restaurants}</div>
@@ -1904,7 +1852,6 @@ function renderResult(plan) {
     </div>`;
   }
 
-  // Hotels
   if(plan.hotels?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">${t.resultLabels.hotels}</div>
@@ -1921,7 +1868,6 @@ function renderResult(plan) {
     </div>`;
   }
 
-  // Tips
   if(plan.tips?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">${t.resultLabels.tips}</div>
@@ -1936,7 +1882,6 @@ function renderResult(plan) {
     </div>`;
   }
 
-  // 免責
   const disclaimerMsg = disclaimerTexts[lang] || disclaimerTexts.ja;
   html += `<div style="padding:20px;text-align:center">
     <p style="font-size:10px;color:var(--text-dim);opacity:.6;line-height:1.7;white-space:pre-line" id="result-disclaimer-text">${disclaimerMsg}</p>
@@ -1951,8 +1896,6 @@ function renderResult(plan) {
   saveBtn.onclick = showComingSoon;
 
   showScreen('screen-result');
-
-
 }
 
 // ════════════════════════════════
@@ -1963,8 +1906,8 @@ let fontSizeIdx = parseInt(localStorage.getItem('locateFontIdx') || '0');
 
 function applyFontSize() {
   document.getElementById('app').style.zoom = FONT_SIZES[fontSizeIdx];
-  // SVGアイコン更新：最大サイズ時は縦線を非表示（マイナス表示）
-  const vLines = document.querySelectorAll('#zoom-v');
+  // ★修正②: id→classに変えたので querySelectorAll('.zoom-v') で取得
+  const vLines = document.querySelectorAll('.zoom-v');
   vLines.forEach(el => {
     el.style.display = fontSizeIdx >= FONT_SIZES.length - 1 ? 'none' : 'block';
   });
@@ -2078,72 +2021,6 @@ function checkAmbiguous(city) {
   return AMBIGUOUS_PLACES[city] || null;
 }
 
-// ════════════════════════════════
-// SHARE
-// ════════════════════════════════
-function showShareMenu() {
-  const labels = {
-    ja: { title:'シェア', copy:'URLをコピー', x:'Xでシェア', line:'LINEでシェア', cancel:'キャンセル' },
-    en: { title:'Share', copy:'Copy URL', x:'Share on X', line:'Share on LINE', cancel:'Cancel' },
-    zh: { title:'分享', copy:'复制链接', x:'分享到X', line:'分享到LINE', cancel:'取消' },
-    ko: { title:'공유', copy:'URL 복사', x:'X에서 공유', line:'LINE에서 공유', cancel:'취소' },
-  };
-  const l = labels[lang] || labels.ja;
-  document.getElementById('share-title').textContent = l.title;
-  document.getElementById('share-copy-label').textContent = l.copy;
-  document.getElementById('share-x-label').textContent = l.x;
-  document.getElementById('share-line-label').textContent = l.line;
-  document.getElementById('share-cancel-label').textContent = l.cancel;
-  const shareLabelEl = document.getElementById('result-share-label');
-  if(shareLabelEl) shareLabelEl.textContent = {ja:'この旅程をシェア', en:'Share this itinerary', zh:'分享此行程', ko:'일정 공유하기'}[lang] || 'この旅程をシェア';
-  document.getElementById('share-overlay').style.display = 'flex';
-}
-
-function hideShareMenu() {
-  document.getElementById('share-overlay').style.display = 'none';
-}
-
-function getShareText() {
-  const city = currentCity || '';
-  const msgs = {
-    ja: `LOCATEが${city}の旅程を提案してくれました！
-AI旅行ガイド LOCATE →`,
-    en: `LOCATE suggested a trip to ${city}!
-AI Travel Guide LOCATE →`,
-    zh: `LOCATE为我推荐了${city}的行程！
-AI旅行向导 LOCATE →`,
-    ko: `LOCATE가 ${city} 여행 일정을 제안해줬어요!
-AI 여행 가이드 LOCATE →`,
-  };
-  return msgs[lang] || msgs.ja;
-}
-
-function shareUrl() {
-  const url = 'https://tabi-guide.vercel.app';
-  if(navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(function() {
-      hideShareMenu();
-      const msg = {ja:'URLをコピーしました！', en:'URL copied!', zh:'链接已复制！', ko:'URL이 복사되었습니다！'}[lang] || 'URL copied!';
-      showToast(msg);
-    });
-  } else {
-    hideShareMenu();
-    showToast(url);
-  }
-}
-
-function shareX() {
-  const text = encodeURIComponent(getShareText() + ' https://tabi-guide.vercel.app');
-  window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
-  hideShareMenu();
-}
-
-function shareLine() {
-  const url = encodeURIComponent('https://tabi-guide.vercel.app');
-  const text = encodeURIComponent(getShareText());
-  window.open('https://line.me/R/msg/text/?' + text + '%0A' + url, '_blank');
-  hideShareMenu();
-}
 
 // ════════════════════════════════
 // TOAST
