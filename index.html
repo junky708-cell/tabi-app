@@ -909,7 +909,7 @@ html, body {
 let lang = 'ja';
 let currentCity = '';
 let answers = {};
-let freeUsage = 3;
+let freeUsage = localStorage.getItem('locateFreeUsage') !== null ? parseInt(localStorage.getItem('locateFreeUsage'), 10) : 3;
 let prevScreen = 'screen-home';
 
 // ════════════════════════════════
@@ -1731,6 +1731,7 @@ async function generatePlan() {
     });
 
     freeUsage = Math.max(0, freeUsage-1);
+    localStorage.setItem('locateFreeUsage', freeUsage);
     updateUsageDisplay();
     renderResult(plan);
 
