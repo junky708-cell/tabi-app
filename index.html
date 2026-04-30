@@ -736,7 +736,7 @@ html, body {
     </div>
     <div style="text-align:right;margin-top:4px"><span class="q-progress-text" id="q-progress-text">0 / 5</span></div>
     <div class="q-city display" id="q-city-name">京都</div>
-    <div style="margin-top:6px"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span></div>
+    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span><span id="q-prev-answers" style="display:flex;flex-wrap:wrap;gap:6px"></span></div>
     <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
   </div>
 
@@ -809,6 +809,21 @@ html, body {
     <div style="display:flex;gap:10px">
       <button id="warn-close" onclick="hideBackWarning()" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer">閉じる</button>
       <button id="warn-confirm" onclick="confirmGoBack()" style="flex:1;padding:14px;background:var(--accent);border:none;border-radius:12px;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">条件変更</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 変更なし確認ポップアップ ══ -->
+<div id="no-change-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%">
+    <div style="font-size:28px;text-align:center;margin-bottom:16px">🔄</div>
+    <div id="no-change-title" style="font-size:16px;font-weight:700;color:var(--text);text-align:center;margin-bottom:12px">条件は変更されていません</div>
+    <p id="no-change-body" style="font-size:13px;color:var(--text-dim);line-height:1.8;text-align:center;margin-bottom:24px">
+      前回と同じ条件で生成します。このまま続けますか？
+    </p>
+    <div style="display:flex;gap:10px">
+      <button id="no-change-cancel" onclick="hideNoChangePopup()" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer">戻る</button>
+      <button id="no-change-confirm" onclick="forceGenerate()" style="flex:1;padding:14px;background:var(--gold);border:none;border-radius:12px;color:#0f0e0c;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">生成する</button>
     </div>
   </div>
 </div>
@@ -911,6 +926,7 @@ let currentCity = '';
 let answers = {};
 let freeUsage = localStorage.getItem('locateFreeUsage') !== null ? parseInt(localStorage.getItem('locateFreeUsage'), 10) : 3;
 let prevScreen = 'screen-home';
+let previousAnswers = {}; // RESULTから戻ったときの前回の選択を保持
 
 // ════════════════════════════════
 // I18N
@@ -1605,7 +1621,11 @@ function cancelCityConfirm() {
 
 function goToQuestions() {
   if(!currentCity) return;
-  answers = {};
+
+  // RESULTから戻ってきた場合は前回の選択を引き継ぐ、新規の場合はリセット
+  const isReturning = Object.keys(previousAnswers).length > 0;
+  answers = isReturning ? Object.assign({}, previousAnswers) : {};
+
   clearError();
   const t = T[lang];
   document.getElementById('q-city-name').textContent = currentCity;
@@ -1616,7 +1636,6 @@ function goToQuestions() {
       ? ({ja:'📍 今すぐ', en:'📍 Now', zh:'📍 现在', ko:'📍 지금'}[lang] || '📍 今すぐ')
       : ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
   }
-  document.getElementById('generate-btn').disabled = true;
   document.getElementById('generate-label').textContent = t.generateBtn;
   document.getElementById('q-error').style.display = 'none';
 
@@ -1637,6 +1656,38 @@ function goToQuestions() {
     </div>
   `).join('');
 
+  // 前回の選択を画面に反映（ボタンをselected状態にする）
+  if(isReturning) {
+    Object.keys(answers).forEach(key => {
+      const btn = document.querySelector(`.q-opt[data-q="${key}"][data-v="${CSS.escape ? answers[key] : answers[key]}"]`);
+      // data-v属性で正確にマッチ
+      document.querySelectorAll(`.q-opt[data-q="${key}"]`).forEach(b => {
+        if(b.dataset.v === answers[key]) b.classList.add('selected');
+      });
+    });
+  }
+
+  // プログレスバーと生成ボタンの状態を更新
+  const keys = t.questions.map(q=>q.key);
+  const done = keys.filter(k=>answers[k]).length;
+  document.getElementById('q-progress-fill').style.width = `${(done/keys.length)*100}%`;
+  document.getElementById('q-progress-text').textContent = `${done} / ${keys.length}`;
+  document.getElementById('generate-btn').disabled = done < keys.length;
+
+  // 前回条件バッジを表示
+  const prevBadgeArea = document.getElementById('q-prev-answers');
+  if(prevBadgeArea) {
+    if(isReturning) {
+      const tagColors = ['tag-gold','tag-green','tag-blue','tag-purple','tag-orange'];
+      prevBadgeArea.innerHTML = keys.map((k,i) => answers[k]
+        ? `<span class="tag ${tagColors[i]}">${answers[k].split(/[・,（(]/)[0].trim()}</span>`
+        : ''
+      ).join('');
+    } else {
+      prevBadgeArea.innerHTML = '';
+    }
+  }
+
   showScreen('screen-questions');
 }
 
@@ -1656,7 +1707,48 @@ function selectOpt(btn) {
 // ════════════════════════════════
 // GENERATE
 // ════════════════════════════════
+function showNoChangePopup() {
+  const texts = {
+    ja: { title:'条件は変更されていません', body:'前回と同じ条件で生成します。このまま続けますか？', cancel:'戻る', confirm:'生成する' },
+    en: { title:'No changes made', body:'You\'re about to generate with the same conditions as last time. Continue?', cancel:'Back', confirm:'Generate' },
+    zh: { title:'条件未更改', body:'将使用与上次相同的条件生成。要继续吗？', cancel:'返回', confirm:'生成' },
+    ko: { title:'조건이 변경되지 않았습니다', body:'이전과 같은 조건으로 생성합니다. 계속하시겠어요？', cancel:'돌아가기', confirm:'생성하기' },
+  };
+  const t = texts[lang] || texts.ja;
+  document.getElementById('no-change-title').textContent = t.title;
+  document.getElementById('no-change-body').textContent = t.body;
+  document.getElementById('no-change-cancel').textContent = t.cancel;
+  document.getElementById('no-change-confirm').textContent = t.confirm;
+  document.getElementById('no-change-overlay').style.display = 'flex';
+}
+
+function hideNoChangePopup() {
+  document.getElementById('no-change-overlay').style.display = 'none';
+}
+
+function forceGenerate() {
+  hideNoChangePopup();
+  previousAnswers = {}; // リセットして再度同じ条件でも通過させる
+  doGenerate();
+}
+
 async function generatePlan() {
+  // RESULTから戻って何も変えていない場合はポップアップを出す
+  const keys = T[lang].questions.map(q=>q.key);
+  const allAnswered = keys.every(k => answers[k]);
+  if(allAnswered && Object.keys(previousAnswers).length > 0) {
+    const unchanged = keys.every(k => answers[k] === previousAnswers[k]);
+    if(unchanged) {
+      showNoChangePopup();
+      return;
+    }
+  }
+  // 条件が変わっていたらpreviousAnswersをリセット
+  previousAnswers = {};
+  await doGenerate();
+}
+
+async function doGenerate() {
   if(freeUsage <= 0) {
     showScreen('screen-premium');
     return;
@@ -2063,6 +2155,7 @@ function clearError() {
 
 function confirmGoBack() {
   hideBackWarning();
+  previousAnswers = Object.assign({}, answers); // 前回の選択を保存
   goToQuestions();
 }
 
