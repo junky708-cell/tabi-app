@@ -1934,10 +1934,7 @@ function renderResult(plan) {
       const mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + mapQuery;
       const mapLinkLabel = ({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る';
       const mapLink = '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ' + mapLinkLabel + '</a>';
-      const translateLabel = ({'ja':'現地翻訳', 'en':'Translate', 'zh':'现场翻译', 'ko':'현지 번역'})[lang] || '現地翻訳';
-      const translateText = encodeURIComponent((item.title||'') + '\n' + (item.desc||''));
-      const translateWebUrl = 'https://translate.google.com/?text=' + translateText + '&op=translate';
-      const translateLink = '<a href="' + translateWebUrl + '" onclick="openTranslateApp(event,' + JSON.stringify((item.title||'') + '\n' + (item.desc||'')) + ')" style="font-size:11px;color:var(--text-dim);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🌐 ' + translateLabel + '</a>';
+
       timelineHtml += '<div class="tl-item">'
         + '<div class="tl-left">'
         + '<div class="tl-time">' + cleanTime + '</div>'
@@ -1947,10 +1944,7 @@ function renderResult(plan) {
         + '<div class="tl-right">'
         + '<div class="tl-title">' + (item.title||'') + '</div>'
         + '<div class="tl-desc">' + (item.desc||'') + '</div>'
-        + '<div style="display:flex;gap:12px;flex-wrap:wrap">'
         + mapLink
-        + translateLink
-        + '</div>'
         + '</div>'
         + '</div>';
     });
@@ -1974,7 +1968,6 @@ function renderResult(plan) {
             ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
             <div style="display:flex;gap:12px;flex-wrap:wrap">
             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
-            <a href="https://translate.google.com/?text=${encodeURIComponent((r.name||'') + '\n' + (r.desc||''))}&op=translate" onclick="openTranslateApp(event,(r.name||'')+'\n'+(r.desc||''))" style="font-size:11px;color:var(--text-dim);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🌐 ${({'ja':'現地翻訳', 'en':'Translate', 'zh':'现场翻译', 'ko':'현지 번역'})[lang] || '現地翻訳'}</a>
           </div>
           </div>
         </div>
@@ -1994,7 +1987,6 @@ function renderResult(plan) {
           <div class="hotel-desc">${h.desc||''}</div>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
           <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
-          <a href="https://translate.google.com/?text=${encodeURIComponent((h.name||'') + '\n' + (h.desc||''))}&op=translate" onclick="openTranslateApp(event,(h.name||'')+'\n'+(h.desc||''))" style="font-size:11px;color:var(--text-dim);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🌐 ${({'ja':'現地翻訳', 'en':'Translate', 'zh':'现场翻译', 'ko':'현지 번역'})[lang] || '現地翻訳'}</a>
         </div>
         </div>
       `).join('')}
@@ -2158,38 +2150,6 @@ function checkAmbiguous(city) {
 // ════════════════════════════════
 // TOAST
 // ════════════════════════════════
-function openTranslateApp(e, text) {
-  e.preventDefault();
-  const encoded = encodeURIComponent(text);
-  const webUrl = 'https://translate.google.com/?text=' + encoded + '&op=translate';
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isAndroid = /android/i.test(navigator.userAgent);
-
-  if(isIos) {
-    // iOSはApp Storeへのフォールバック付き
-    const appUrl = 'googletranslate://?text=' + encoded;
-    const fallback = setTimeout(() => { window.open(webUrl, '_blank'); }, 1500);
-    window.location.href = appUrl;
-    // アプリが開いたらタイマーをキャンセル（visibilitychangeで検知）
-    document.addEventListener('visibilitychange', function handler() {
-      clearTimeout(fallback);
-      document.removeEventListener('visibilitychange', handler);
-    }, { once: true });
-  } else if(isAndroid) {
-    // AndroidはIntentスキームでアプリ起動、失敗したらウェブへ
-    const intentUrl = 'intent://translate.google.com/?text=' + encoded + '&op=translate#Intent;scheme=https;package=com.google.android.apps.translate;end';
-    try {
-      window.location.href = intentUrl;
-      setTimeout(() => { window.open(webUrl, '_blank'); }, 2000);
-    } catch(err) {
-      window.open(webUrl, '_blank');
-    }
-  } else {
-    // PC はウェブ版へ
-    window.open(webUrl, '_blank');
-  }
-}
-
 function showComingSoon() {
   const msg = {ja:'近日公開予定です！',en:'Coming soon!',zh:'即将推出！',ko:'곧 출시 예정입니다！'}[lang] || 'Coming soon!';
   showToast(msg);
