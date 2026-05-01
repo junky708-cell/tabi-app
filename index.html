@@ -710,10 +710,10 @@ html, body {
         <span style="font-size:13px;font-weight:600;color:var(--text)" id="departure-same-label">現地スタート</span>
         <span style="font-size:11px;color:var(--text-dim)" id="departure-same-sub">目的地から出発</span>
       </button>
-      <button class="btn btn-gold" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectDeparture('other')" id="departure-other-btn">
+      <button class="btn" style="flex:1;background:var(--gold-dim);border:1px solid var(--gold);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectDeparture('other')" id="departure-other-btn">
         <span style="font-size:22px">🏠</span>
-        <span style="font-size:13px;font-weight:600;color:#0f0e0c" id="departure-other-label">別の場所から</span>
-        <span style="font-size:11px;opacity:.8;color:#0f0e0c" id="departure-other-sub">出発地を入力</span>
+        <span style="font-size:13px;font-weight:600;color:var(--gold)" id="departure-other-label">別の場所から</span>
+        <span style="font-size:11px;color:var(--text-dim)" id="departure-other-sub">出発地を入力</span>
       </button>
     </div>
     <div id="departure-input-wrap" style="display:none;margin-top:4px">
@@ -1070,7 +1070,7 @@ ${now ? `【現在時刻】${now.time}（今すぐ出発。この時刻からス
 - 「2時間」「半日」の場合：timeline 3〜4件、restaurants 1〜2件、hotels 0件（短時間のため不要）
 - 「日帰り（1日）」の場合：timeline 6〜8件、restaurants 2〜3件、hotels 0件
 - 「1泊2日」以上の場合：timeline 各日4〜6件、restaurants 3〜4件、hotels 2〜3件
-tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。`,
+tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。出発地が指定されている場合は、帰路の移動時間も必ず考慮してスケジュールを組んでください。帰路の出発時刻もタイムラインの最後に明記してください。`,
     resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
   },
 
@@ -1159,7 +1159,7 @@ Output counts:
 - '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
 - 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
 - '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
-Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shrines should always be named specifically (e.g. "Kinkaku-ji", "Senso-ji"). For restaurants and hotels, use real names when confident they exist; if unsure, use descriptive phrases like "local ramen shop near the station". Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details. Do the same for each day in multi-day trips.`,
+Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shrines should always be named specifically (e.g. "Kinkaku-ji", "Senso-ji"). For restaurants and hotels, use real names when confident they exist; if unsure, use descriptive phrases like "local ramen shop near the station". Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details. Do the same for each day in multi-day trips. If a departure city is specified, always factor in the return journey — include the return departure time as the last item in the timeline.`,
     resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
   },
 
