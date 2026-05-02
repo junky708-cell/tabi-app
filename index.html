@@ -1098,7 +1098,32 @@ tipsは3件。【店名・施設名のルール】有名観光地・世界遺産
       {name:'Nara',en:'奈良',icon:'🦌',bg:'#1e2a1a'},
     ],
     promptTemplate: (city, a) => `You are an expert travel concierge for any destination worldwide.
-City: ${city},
+City: ${city}
+Style: ${a.style}
+Budget: ${a.budget}
+Food: ${a.food}
+Group: ${a.member}
+Duration: ${a.days}
+
+Return ONLY a JSON object, no other text:
+{
+  "destination_intro": {
+    "summary": "Brief overview (1 sentence only)",
+    "highlights": ["Key fact 1", "Key fact 2"]
+  },
+  "concept": "Trip concept (2-3 sentences)",
+  "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
+  "restaurants": [{"icon":"🍜","name":"Restaurant name","desc":"Description and recommendations","price":"Price range"}],
+  "hotels": [{"name":"Hotel name","desc":"Description and location","price":"Price per night"}],
+  "tips": ["Tip 1","Tip 2","Tip 3"]
+}
+Output counts:
+- '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
+- 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
+- '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
+Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shrines should always be named specifically. For restaurants and hotels, use real names when confident they exist; if unsure, use descriptive phrases. Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details.`,
+    resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
+  },
 
   zh: {
     splashText: 'AI为您规划专属旅程\n餐厅 · 住宿 · 景点一站式导览',
@@ -1160,25 +1185,25 @@ City: ${city},
       {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a) => `你是一位全球旅游专家。
-目的地：${city}
-风格：${a.style}
-预算：${a.budget}
-餐饮：${a.food}
-同行：${a.member}
-天数：${a.days}
+    promptTemplate: (city, a) => `You are a global travel expert. Respond ONLY in Simplified Chinese.
+Destination: ${city}
+Style: ${a.style}
+Budget: ${a.budget}
+Food: ${a.food}
+Group: ${a.member}
+Duration: ${a.days}
 
-仅返回以下JSON格式，不要包含其他文字：
+Return ONLY a JSON object in Chinese, no other text:
 {
   "destination_intro": {
-    "summary": "目的地简介（仅1句话）",
-    "highlights": ["特点1", "特点2"]
+    "summary": "1-sentence destination summary in Chinese",
+    "highlights": ["feature1 in Chinese", "feature2 in Chinese"]
   },
-  "concept": "旅行概念（2-3句话）",
-  "timeline": [{"time":"09:00","title":"地点/活动名称","desc":"详细说明（包含具体地点名称）"}],
-  "restaurants": [{"icon":"🍜","name":"餐厅名称","desc":"描述和推荐菜品","price":"价格范围"}],
-  "hotels": [{"name":"酒店名称","desc":"描述和位置","price":"每晚价格"}],
-  "tips": ["建议1","建议2","建议3"]
+  "concept": "trip concept in Chinese (2-3 sentences)",
+  "timeline": [{"time":"09:00","title":"place/activity name in Chinese","desc":"details in Chinese"}],
+  "restaurants": [{"icon":"${String.fromCodePoint(127836)}","name":"restaurant name","desc":"description in Chinese","price":"price range in Chinese"}],
+  "hotels": [{"name":"hotel name","desc":"description in Chinese","price":"price per night in Chinese"}],
+  "tips": ["tip1 in Chinese","tip2 in Chinese","tip3 in Chinese"]
 }`,
     resultLabels: { concept:'✦ 旅行概念', timeline:'🗓 行程安排', restaurants:'🍜 推荐餐厅', hotels:'🏨 推荐住宿', tips:'💡 旅行贴士' },
   },
@@ -1243,25 +1268,25 @@ City: ${city},
       {name:'홋카이도',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'나라',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a) => `당신은 전 세계 여행 전문 컨시어지입니다.
-목적지: ${city}
-여행 스타일: ${a.style}
-예산: ${a.budget}
-음식: ${a.food}
-동행: ${a.member}
-기간: ${a.days}
+    promptTemplate: (city, a) => `You are a global travel expert. Respond ONLY in Korean.
+Destination: ${city}
+Style: ${a.style}
+Budget: ${a.budget}
+Food: ${a.food}
+Group: ${a.member}
+Duration: ${a.days}
 
-다른 텍스트 없이 JSON만 반환해 주세요:
+Return ONLY a JSON object in Korean, no other text:
 {
   "destination_intro": {
-    "summary": "목적지 소개 (1문장)",
-    "highlights": ["특징1", "특징2"]
+    "summary": "1-sentence destination summary in Korean",
+    "highlights": ["feature1 in Korean", "feature2 in Korean"]
   },
-  "concept": "여행 콘셉트 (2-3문장)",
-  "timeline": [{"time":"09:00","title":"장소/활동명","desc":"구체적인 장소명 포함 상세 설명"}],
-  "restaurants": [{"icon":"🍜","name":"식당명","desc":"설명 및 추천 메뉴","price":"가격대"}],
-  "hotels": [{"name":"숙소명","desc":"설명 및 위치","price":"1박 가격"}],
-  "tips": ["팁1","팁2","팁3"]
+  "concept": "trip concept in Korean (2-3 sentences)",
+  "timeline": [{"time":"09:00","title":"place/activity in Korean","desc":"details in Korean"}],
+  "restaurants": [{"icon":"${String.fromCodePoint(127836)}","name":"restaurant name","desc":"description in Korean","price":"price range in Korean"}],
+  "hotels": [{"name":"hotel name","desc":"description in Korean","price":"price per night in Korean"}],
+  "tips": ["tip1 in Korean","tip2 in Korean","tip3 in Korean"]
 }`,
     resultLabels: { concept:'✦ 여행 콘셉트', timeline:'🗓 일정', restaurants:'🍜 추천 맛집', hotels:'🏨 추천 숙소', tips:'💡 여행 팁' },
   },
