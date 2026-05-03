@@ -719,7 +719,7 @@ html, body {
     </div>
     <div style="text-align:right;margin-top:4px"><span class="q-progress-text" id="q-progress-text">0 / 5</span></div>
     <div class="q-city display" id="q-city-name">京都</div>
-    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span><span id="q-prev-answers" style="display:contents"></span></div>
+    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span id="q-prev-answers" style="display:contents"></span></div>
     <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
   </div>
 
@@ -1599,10 +1599,6 @@ function goToQuestions() {
   const t = T[lang];
   document.getElementById('q-city-name').textContent = currentCity;
   document.getElementById('q-city-sub').textContent = t.qSub;
-  const qTimingBadge = document.getElementById('q-timing-badge');
-  if(qTimingBadge) {
-    qTimingBadge.textContent = ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
-  }
   document.getElementById('generate-label').textContent = t.generateBtn;
   document.getElementById('q-error').style.display = 'none';
 
