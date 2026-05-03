@@ -698,33 +698,20 @@ html, body {
   </div>
 </div>
 
-  <div class="q-body" id="q-body">
-    <!-- Dynamically rendered -->
-  </div>
 
-  <div class="q-footer">
-    <div id="q-error" style="display:none;margin-bottom:12px;padding:10px 14px;background:rgba(220,80,80,.1);border:1px solid rgba(220,80,80,.2);border-radius:8px;font-size:12px;color:#e07070;line-height:1.6"></div>
-    <button class="btn btn-gold" style="width:100%" id="generate-btn" onclick="generatePlan()" disabled>
-      <span id="generate-label">✨ 旅程を生成する</span>
-    </button>
-  </div>
-</div>
-
-<!-- ══ QUESTIONS ══ -->
 <div id="screen-questions" class="screen">
   <div class="q-header">
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-home')">← <span id="back-label-q">戻る</span></button>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
-      <div class="font-ctrl" style="justify-self:end">
-        <button class="font-ctrl-btn font-zoom-btn" onclick="changeFontSize()" title="文字サイズ変更">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
-            <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </button>
+      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" title="文字サイズ変更">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
+          <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
       </div>
     </div>
     <div class="q-progress-bar">
@@ -732,11 +719,13 @@ html, body {
     </div>
     <div style="text-align:right;margin-top:4px"><span class="q-progress-text" id="q-progress-text">0 / 5</span></div>
     <div class="q-city display" id="q-city-name">京都</div>
-    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span id="q-prev-answers" style="display:contents"></span></div>
+    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span><span id="q-prev-answers" style="display:contents"></span></div>
     <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
   </div>
 
-  <div class="q-body" id="q-body"></div>
+  <div class="q-body" id="q-body">
+    <!-- Dynamically rendered -->
+  </div>
 
   <div class="q-footer">
     <div id="q-error" style="display:none;margin-bottom:12px;padding:10px 14px;background:rgba(220,80,80,.1);border:1px solid rgba(220,80,80,.2);border-radius:8px;font-size:12px;color:#e07070;line-height:1.6"></div>
@@ -1002,7 +991,6 @@ const T = {
     ],
     promptTemplate: (city, a) => `あなたは経験豊富な旅行コンシェルジュです。
 【目的地】${city}
-
 【旅のスタイル】${a.style}
 【予算】${a.budget}
 【食事の好み】${a.food}
@@ -1033,7 +1021,7 @@ const T = {
 - 「2時間」「半日」の場合：timeline 3〜4件、restaurants 1〜2件、hotels 0件（短時間のため不要）
 - 「日帰り（1日）」の場合：timeline 6〜8件、restaurants 2〜3件、hotels 0件
 - 「1泊2日」以上の場合：timeline 各日4〜6件、restaurants 3〜4件、hotels 2〜3件
-tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。`,
+tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。【出発地が指定されている場合の必須ルール】「旅の時間（日数・時間）」とは、出発地を出発してから出発地に帰宅するまでの総時間を指す。①まず出発地から目的地への移動時間と、目的地から出発地への移動時間を計算する。②旅の時間からその往復移動時間を差し引いた時間が、目的地での③その④タイムラインの最初は「出発地を出発」から始め、最後は「出発地へ帰着」で締めること。帰宅地点は出発地と同じと仮定する。`,
     resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
   },
 
@@ -1098,7 +1086,32 @@ tipsは3件。【店名・施設名のルール】有名観光地・世界遺産
       {name:'Nara',en:'奈良',icon:'🦌',bg:'#1e2a1a'},
     ],
     promptTemplate: (city, a) => `You are an expert travel concierge for any destination worldwide.
-City: ${city},
+City: ${city}
+Style: ${a.style}
+Budget: ${a.budget}
+Food: ${a.food}
+Group: ${a.member}
+Duration: ${a.days}
+
+Return ONLY a JSON object, no other text:
+{
+  "destination_intro": {
+    "summary": "Brief overview (1 sentence only)",
+    "highlights": ["Key fact 1", "Key fact 2"]
+  },
+  "concept": "Trip concept (2-3 sentences)",
+  "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
+  "restaurants": [{"icon":"🍜","name":"Restaurant name","desc":"Description and recommendations","price":"Price range"}],
+  "hotels": [{"name":"Hotel name","desc":"Description and location","price":"Price per night"}],
+  "tips": ["Tip 1","Tip 2","Tip 3"]
+}
+Output counts:
+- '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
+- 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
+- '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
+Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shrines should always be named specifically (e.g. "Kinkaku-ji", "Senso-ji"). For restaurants and hotels, use real names when confident they exist; if unsure, use descriptive phrases like "local ramen shop near the station". Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details. Do the same for each day in multi-day trips. IMPORTANT RULE WHEN A DEPARTURE CITY IS SPECIFIED: The "duration" (e.g. 2 hours, day trip) means the ① First calculate the travel time from departure city to destination, and from destination back to departure city. ② Subtract that total round-trip travel time from the stated duration — the remainder is the actual time available at the destination. ③ Build the destination schedule using ONLY that remaining time. ④ The timeline MUST start with "Depart from [departure city]" and end with "Return to [departure city]". Assume the return destination is the same as the departure city.`,
+    resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
+  },
 
   zh: {
     splashText: 'AI为您规划专属旅程\n餐厅 · 住宿 · 景点一站式导览',
@@ -1566,9 +1579,6 @@ function acceptCityConfirm() {
   goToQuestions();
 }
 
-
-
-
 function cancelCityConfirm() {
   document.getElementById('city-confirm-overlay').style.display = 'none';
   confirmedCity = '';
@@ -1589,7 +1599,10 @@ function goToQuestions() {
   const t = T[lang];
   document.getElementById('q-city-name').textContent = currentCity;
   document.getElementById('q-city-sub').textContent = t.qSub;
-
+  const qTimingBadge = document.getElementById('q-timing-badge');
+  if(qTimingBadge) {
+    qTimingBadge.textContent = ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
+  }
   document.getElementById('generate-label').textContent = t.generateBtn;
   document.getElementById('q-error').style.display = 'none';
 
@@ -1741,7 +1754,10 @@ async function doGenerate() {
     document.getElementById(`ls${i}`).className='load-step active';
   }
 
+  const now = new Date();
+  const currentTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
   const cityWithLocation = confirmedLocation ? currentCity + '（' + confirmedLocation + '）' : currentCity;
+  const isDayTrip = answers.days && /2時間|半日|日帰り|2 hours|half day|day trip|当天|당일/.test(answers.days);
   const prompt = t.promptTemplate(cityWithLocation, answers);
 
   try {
@@ -1809,9 +1825,9 @@ function renderResult(plan) {
   document.getElementById('result-city').textContent = currentCity;
 
   const badges = document.getElementById('result-badges');
-
+  const timingLabel = ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
   badges.innerHTML = [
-
+    `<span class="tag tag-teal">${timingLabel}</span>`,
     answers.style   ? `<span class="tag tag-gold">${answers.style.split(/[・,（]/)[0].trim()}</span>` : '',
     answers.budget  ? `<span class="tag tag-green">${answers.budget.split(/[（]/)[0].trim()}</span>` : '',
     answers.food    ? `<span class="tag tag-blue">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
