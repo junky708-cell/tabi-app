@@ -1821,9 +1821,7 @@ function renderResult(plan) {
   document.getElementById('result-city').textContent = currentCity;
 
   const badges = document.getElementById('result-badges');
-  const timingLabel = ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
   badges.innerHTML = [
-    `<span class="tag tag-teal">${timingLabel}</span>`,
     answers.style   ? `<span class="tag tag-gold">${answers.style.split(/[・,（]/)[0].trim()}</span>` : '',
     answers.budget  ? `<span class="tag tag-green">${answers.budget.split(/[（]/)[0].trim()}</span>` : '',
     answers.food    ? `<span class="tag tag-blue">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
