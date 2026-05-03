@@ -698,67 +698,33 @@ html, body {
   </div>
 </div>
 
-<!-- ══ 出発地ポップアップ ══ -->
-<div id="departure-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
-  <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:380px">
-    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:12px" id="departure-label">出発地はどこですか？</div>
-    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px" id="departure-title">旅の出発地点を教えてください</div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:20px" id="departure-desc">移動時間を考慮したスケジュールを提案します。</div>
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectDeparture('same')" id="departure-same-btn">
-        <span style="font-size:22px">📍</span>
-        <span style="font-size:13px;font-weight:600;color:var(--text)" id="departure-same-label">現地スタート</span>
-        <span style="font-size:11px;color:var(--text-dim)" id="departure-same-sub">目的地から出発</span>
-      </button>
-      <button class="btn" style="flex:1;background:var(--gold-dim);border:1px solid var(--gold);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectDeparture('other')" id="departure-other-btn">
-        <span style="font-size:22px">🏠</span>
-        <span style="font-size:13px;font-weight:600;color:var(--gold)" id="departure-other-label">別の場所から</span>
-        <span style="font-size:11px;color:var(--text-dim)" id="departure-other-sub">出発地を入力</span>
-      </button>
-    </div>
-    <div id="departure-input-wrap" style="display:none;margin-top:4px">
-      <input type="text" class="input-field" id="departure-input"
-        placeholder="例：大阪、Osaka、Seoul..."
-        autocomplete="off" autocorrect="off" spellcheck="false"
-        style="margin-bottom:12px">
-      <button class="btn btn-gold" style="width:100%" onclick="confirmDeparture()" id="departure-confirm-btn">決定 →</button>
-    </div>
+  <div class="q-body" id="q-body">
+    <!-- Dynamically rendered -->
+  </div>
+
+  <div class="q-footer">
+    <div id="q-error" style="display:none;margin-bottom:12px;padding:10px 14px;background:rgba(220,80,80,.1);border:1px solid rgba(220,80,80,.2);border-radius:8px;font-size:12px;color:#e07070;line-height:1.6"></div>
+    <button class="btn btn-gold" style="width:100%" id="generate-btn" onclick="generatePlan()" disabled>
+      <span id="generate-label">✨ 旅程を生成する</span>
+    </button>
   </div>
 </div>
 
-<!-- ══ TIMING POPUP ══ -->
-<div id="timing-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
-  <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:380px">
-    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:12px" id="timing-label">この旅はいつ？</div>
-    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.5" id="timing-title">旅のタイミングを教えてください</div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.65;margin-bottom:20px" id="timing-desc">提案するスケジュールの時間軸が変わります。</div>
-    <div style="display:flex;gap:10px">
-      <button class="btn" style="flex:1;background:var(--bg);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectTiming('plan')" id="timing-plan-btn">
-        <span style="font-size:22px">🗓</span>
-        <span style="font-size:13px;font-weight:600;color:var(--text)" id="timing-plan-label">計画中</span>
-        <span style="font-size:11px;color:var(--text-dim)" id="timing-plan-sub">日時未定</span>
-      </button>
-      <button class="btn btn-gold" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px" onclick="selectTiming('now')" id="timing-now-btn">
-        <span style="font-size:22px">📍</span>
-        <span style="font-size:13px;font-weight:600" id="timing-now-label">今すぐ出発</span>
-        <span style="font-size:11px;opacity:.8" id="timing-now-sub">現在時刻から提案</span>
-      </button>
-    </div>
-  </div>
-</div>
+<!-- ══ QUESTIONS ══ -->
 <div id="screen-questions" class="screen">
   <div class="q-header">
     <div class="q-nav">
       <button class="q-back" onclick="showScreen('screen-home')">← <span id="back-label-q">戻る</span></button>
       <button class="btn btn-ghost" onclick="showScreen('screen-premium')" style="font-size:18px;padding:4px 8px;justify-self:center">👑</button>
-      <div class="font-ctrl" style="justify-self:end"><button class="font-ctrl-btn" onclick="changeFontSize()" title="文字サイズ変更">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
-          <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </button>
+      <div class="font-ctrl" style="justify-self:end">
+        <button class="font-ctrl-btn font-zoom-btn" onclick="changeFontSize()" title="文字サイズ変更">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="14" y1="14" x2="20" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line class="zoom-h" x1="6.5" y1="9" x2="11.5" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line class="zoom-v" x1="9" y1="6.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
     </div>
     <div class="q-progress-bar">
@@ -766,13 +732,11 @@ html, body {
     </div>
     <div style="text-align:right;margin-top:4px"><span class="q-progress-text" id="q-progress-text">0 / 5</span></div>
     <div class="q-city display" id="q-city-name">京都</div>
-    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span class="tag tag-teal" id="q-timing-badge">🗓 計画中</span><span id="q-prev-answers" style="display:contents"></span></div>
+    <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="q-badges-row"><span id="q-prev-answers" style="display:contents"></span></div>
     <div class="q-city-sub" id="q-city-sub">旅のスタイルを教えてください</div>
   </div>
 
-  <div class="q-body" id="q-body">
-    <!-- Dynamically rendered -->
-  </div>
+  <div class="q-body" id="q-body"></div>
 
   <div class="q-footer">
     <div id="q-error" style="display:none;margin-bottom:12px;padding:10px 14px;background:rgba(220,80,80,.1);border:1px solid rgba(220,80,80,.2);border-radius:8px;font-size:12px;color:#e07070;line-height:1.6"></div>
@@ -970,7 +934,6 @@ let answers = {};
 let freeUsage = localStorage.getItem('locateFreeUsage') !== null ? parseInt(localStorage.getItem('locateFreeUsage'), 10) : 3;
 let prevScreen = 'screen-home';
 let previousAnswers = {}; // RESULTから戻ったときの前回の選択を保持
-let departureCity = ''; // 出発地（空の場合は現地スタート）
 let previousCity = ''; // 前回の選択をした都市名
 
 // ════════════════════════════════
@@ -1037,9 +1000,9 @@ const T = {
       {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `あなたは経験豊富な旅行コンシェルジュです。
+    promptTemplate: (city, a) => `あなたは経験豊富な旅行コンシェルジュです。
 【目的地】${city}
-${now ? `【現在時刻】${now.time}（今すぐ出発。この時刻からスケジュールを組んでください。${now.sameDay ? '日帰り・短時間プランのため、当日中に収まるようにしてください。翌日に持ち越さないこと。' : '1泊以上のプランのため、この時刻を出発点として通常通り組んでください。'}）` + (departureCity ? '\n【出発地】' + departureCity + '（出発地から目的地までの移動時間を考慮してください）' : '') : '【旅のタイミング】将来の計画（朝8時〜9時頃の標準的な出発時間で組んでください）' + (departureCity ? '\n【出発地】' + departureCity + '（出発地から目的地までの移動時間を考慮し、スケジュールの最初に移動手段・所要時間を明記してください）' : '')}
+
 【旅のスタイル】${a.style}
 【予算】${a.budget}
 【食事の好み】${a.food}
@@ -1070,7 +1033,7 @@ ${now ? `【現在時刻】${now.time}（今すぐ出発。この時刻からス
 - 「2時間」「半日」の場合：timeline 3〜4件、restaurants 1〜2件、hotels 0件（短時間のため不要）
 - 「日帰り（1日）」の場合：timeline 6〜8件、restaurants 2〜3件、hotels 0件
 - 「1泊2日」以上の場合：timeline 各日4〜6件、restaurants 3〜4件、hotels 2〜3件
-tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。【出発地が指定されている場合の必須ルール】「旅の時間（日数・時間）」とは、出発地を出発してから出発地に帰宅するまでの総時間を指す。①まず出発地から目的地への移動時間と、目的地から出発地への移動時間を計算する。②旅の時間からその往復移動時間を差し引いた時間が、目的地での実質滞在時間となる。③その実質滞在時間内でのみ目的地のスケジュールを組む。④タイムラインの最初は「出発地を出発」から始め、最後は「出発地へ帰着」で締めること。帰宅地点は出発地と同じと仮定する。`,
+tipsは3件。【店名・施設名のルール】有名観光地・世界遺産・有名神社仏閣など広く知られた施設は積極的に実名で記載してください。飲食店・宿泊施設は実在が確認できるものは実名で、不確かな場合は「地元の蕎麦店」「駅前の食堂」など一般的な表現にしてください。架空の固有名詞は絶対に使わないこと。短時間の場合は徒歩圏内・近距離でまわれるプランにしてください。スケジュールの最初の項目は最寄り駅や出発地点から始め、交通手段を明記してください。多日程の場合は各日の最初も同様に起点を示してください。`,
     resultLabels: { concept:'✦ 旅のコンセプト', timeline:'🗓 スケジュール', restaurants:'🍜 おすすめ飲食店', hotels:'🏨 おすすめ宿泊先', tips:'💡 旅のポイント' },
   },
 
@@ -1134,34 +1097,8 @@ tipsは3件。【店名・施設名のルール】有名観光地・世界遺産
       {name:'Hokkaido',en:'北海道',icon:'🦀',bg:'#1a2230'},
       {name:'Nara',en:'奈良',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `You are an expert travel concierge for any destination worldwide.
-City: ${city}
-${now ? `Current time: ${now.time} (leaving now — start the schedule from this time. ${now.sameDay ? 'This is a day trip or short outing, so keep all activities within today — do not extend to the next day.' : 'This is an overnight trip, so start from this time and continue normally.'})` + (departureCity ? '\nDeparture city: ' + departureCity + ' (factor in travel time from departure city)' : '') : 'Timing: Planning ahead (use standard 8–9am departure time)' + (departureCity ? '\nDeparture city: ' + departureCity + ' (factor in travel time from departure city to destination; include transport method and duration as the first timeline item)' : '')}
-Style: ${a.style}
-Budget: ${a.budget}
-Food: ${a.food}
-Group: ${a.member}
-Duration: ${a.days}
-
-Return ONLY a JSON object, no other text:
-{
-  "destination_intro": {
-    "summary": "Brief overview (1 sentence only)",
-    "highlights": ["Key fact 1", "Key fact 2"]
-  },
-  "concept": "Trip concept (2-3 sentences)",
-  "timeline": [{"time":"09:00","title":"Place/Activity","desc":"Details with specific venue names"}],
-  "restaurants": [{"icon":"🍜","name":"Restaurant name","desc":"Description and recommendations","price":"Price range"}],
-  "hotels": [{"name":"Hotel name","desc":"Description and location","price":"Price per night"}],
-  "tips": ["Tip 1","Tip 2","Tip 3"]
-}
-Output counts:
-- '2 hours' or 'half day': timeline 3-4 items, restaurants 1-2, hotels 0
-- 'day trip': timeline 6-8 items, restaurants 2-3, hotels 0
-- '1 night' or more: timeline 4-6 per day, restaurants 3-4, hotels 2-3
-Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shrines should always be named specifically (e.g. "Kinkaku-ji", "Senso-ji"). For restaurants and hotels, use real names when confident they exist; if unsure, use descriptive phrases like "local ramen shop near the station". Never fabricate venue names. For short durations, keep all spots within walking distance. Start the first timeline item from the nearest station or departure point, including transport details. Do the same for each day in multi-day trips. IMPORTANT RULE WHEN A DEPARTURE CITY IS SPECIFIED: The "duration" (e.g. 2 hours, day trip) means the TOTAL time from leaving the departure city to returning home. ① First calculate the travel time from departure city to destination, and from destination back to departure city. ② Subtract that total round-trip travel time from the stated duration — the remainder is the actual time available at the destination. ③ Build the destination schedule using ONLY that remaining time. ④ The timeline MUST start with "Depart from [departure city]" and end with "Return to [departure city]". Assume the return destination is the same as the departure city.`,
-    resultLabels: { concept:'✦ Trip Concept', timeline:'🗓 Schedule', restaurants:'🍜 Recommended Restaurants', hotels:'🏨 Recommended Hotels', tips:'💡 Travel Tips' },
-  },
+    promptTemplate: (city, a) => `You are an expert travel concierge for any destination worldwide.
+City: ${city},
 
   zh: {
     splashText: 'AI为您规划专属旅程\n餐厅 · 住宿 · 景点一站式导览',
@@ -1223,9 +1160,8 @@ Tips: 3. VENUE NAMING RULES: Well-known attractions, landmarks, temples, and shr
       {name:'北海道',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'奈良',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `你是一位全球旅游专家。
+    promptTemplate: (city, a) => `你是一位全球旅游专家。
 目的地：${city}
-${now ? `当前时间：${now.time}（现在出发，请从此时间开始安排行程。${now.sameDay ? '这是当天行程，所有活动须在当天内完成，不得延续到第二天。' : '这是多日行程，从此时间出发正常安排即可。'}）` : '出行时间：计划中（请使用早上8-9点的标准出发时间）' + (departureCity ? '\n出发城市：' + departureCity + '（请考虑从出发城市到目的地的交通时间，并在行程第一项注明交通方式和所需时间）' : '')}
 风格：${a.style}
 预算：${a.budget}
 餐饮：${a.food}
@@ -1307,9 +1243,8 @@ ${now ? `当前时间：${now.time}（现在出发，请从此时间开始安排
       {name:'홋카이도',en:'Hokkaido',icon:'🦀',bg:'#1a2230'},
       {name:'나라',en:'Nara',icon:'🦌',bg:'#1e2a1a'},
     ],
-    promptTemplate: (city, a, now) => `당신은 전 세계 여행 전문 컨시어지입니다.
+    promptTemplate: (city, a) => `당신은 전 세계 여행 전문 컨시어지입니다.
 목적지: ${city}
-${now ? `현재 시각: ${now.time}（지금 출발 — 이 시간부터 일정 구성. ${now.sameDay ? '당일 일정이므로 모든 활동을 당일 내로 마무리할 것. 다음 날로 넘기지 말 것.' : '숙박 일정이므로 이 시간부터 정상적으로 구성할 것.'}）` : '여행 시기: 계획 중（오전 8-9시 표준 출발 시간으로 구성）' + (departureCity ? '\n출발 도시: ' + departureCity + '（출발 도시에서 목적지까지의 이동 시간을 고려하여, 첫 번째 일정 항목에 이동 수단과 소요 시간을 명시해 주세요）' : '')}
 여행 스타일: ${a.style}
 예산: ${a.budget}
 음식: ${a.food}
@@ -1624,85 +1559,15 @@ async function confirmCity() {
   yesBtn.disabled = false;
 }
 
-let tripTiming = 'plan';
 
 function acceptCityConfirm() {
   document.getElementById('city-confirm-overlay').style.display = 'none';
   if(confirmedCity) currentCity = confirmedCity;
-  showDeparturePopup();
-}
-
-function showDeparturePopup() {
-  departureCity = ''; // リセット
-  const labels = {
-    ja: { label:'出発地はどこですか？', title:'旅の出発地点を教えてください', desc:'移動時間を考慮したスケジュールを提案します。', sameLabel:'現地スタート', sameSub:'目的地から出発', otherLabel:'別の場所から', otherSub:'出発地を入力', placeholder:'例：大阪、Osaka、Seoul...', confirm:'決定 →' },
-    en: { label:'Where are you departing from?', title:'Tell us your starting point', desc:'We will factor in travel time to your destination.', sameLabel:'Start locally', sameSub:'Begin at the destination', otherLabel:'From elsewhere', otherSub:'Enter your origin city', placeholder:'e.g. Osaka, Seoul, Tokyo...', confirm:'Confirm →' },
-    zh: { label:'您从哪里出发？', title:'请告诉我们您的出发地', desc:'我们将把前往目的地的交通时间纳入行程。', sameLabel:'在目的地出发', sameSub:'从目的地开始', otherLabel:'从其他地方出发', otherSub:'请输入出发城市', placeholder:'例：大阪、首尔、东京...', confirm:'确认 →' },
-    ko: { label:'어디서 출발하시나요？', title:'출발지를 알려주세요', desc:'목적지까지의 이동 시간을 고려하여 일정을 구성합니다.', sameLabel:'현지 출발', sameSub:'목적지에서 시작', otherLabel:'다른 곳에서 출발', otherSub:'출발 도시 입력', placeholder:'예: 오사카, 도쿄, 서울...', confirm:'확인 →' },
-  };
-  const l = labels[lang] || labels.ja;
-  document.getElementById('departure-label').textContent = l.label;
-  document.getElementById('departure-title').textContent = l.title;
-  document.getElementById('departure-desc').textContent = l.desc;
-  document.getElementById('departure-same-label').textContent = l.sameLabel;
-  document.getElementById('departure-same-sub').textContent = l.sameSub;
-  document.getElementById('departure-other-label').textContent = l.otherLabel;
-  document.getElementById('departure-other-sub').textContent = l.otherSub;
-  document.getElementById('departure-input').placeholder = l.placeholder;
-  document.getElementById('departure-confirm-btn').textContent = l.confirm;
-  document.getElementById('departure-input-wrap').style.display = 'none';
-  document.getElementById('departure-input').value = '';
-  document.getElementById('departure-overlay').style.display = 'flex';
-}
-
-function selectDeparture(mode) {
-  if(mode === 'same') {
-    departureCity = '';
-    document.getElementById('departure-overlay').style.display = 'none';
-    showTimingPopup();
-  } else {
-    // 入力欄を表示
-    document.getElementById('departure-input-wrap').style.display = 'block';
-    // ボタンのスタイルを変更
-    document.getElementById('departure-same-btn').style.background = 'var(--bg)';
-    document.getElementById('departure-same-btn').style.border = '1px solid var(--border)';
-    document.getElementById('departure-other-btn').style.background = 'var(--gold-dim)';
-    document.getElementById('departure-other-btn').style.border = '1px solid var(--gold)';
-    document.getElementById('departure-input').focus();
-  }
-}
-
-function confirmDeparture() {
-  const val = document.getElementById('departure-input').value.trim();
-  if(!val) return;
-  departureCity = val;
-  document.getElementById('departure-overlay').style.display = 'none';
-  showTimingPopup();
-}
-
-function showTimingPopup() {
-  const labels = {
-    ja: { label:'この旅はいつ？', title:'旅のタイミングを教えてください', desc:'提案するスケジュールの時間軸が変わります。', planLabel:'計画中', planSub:'日時未定・標準的な時間軸', nowLabel:'今すぐ出発', nowSub:'現在時刻から提案' },
-    en: { label:'When is this trip?', title:'Tell us your travel timing', desc:'This changes how we schedule your itinerary.', planLabel:'Planning ahead', planSub:'Flexible dates', nowLabel:'Leaving now', nowSub:'Based on current time' },
-    zh: { label:'这次旅行是什么时候？', title:'请告诉我们您的出行时间', desc:'这将影响我们为您规划的行程时间轴。', planLabel:'计划中', planSub:'日期未定', nowLabel:'现在出发', nowSub:'根据当前时间推荐' },
-    ko: { label:'이 여행은 언제인가요？', title:'여행 시기를 알려주세요', desc:'일정 시간축이 달라집니다.', planLabel:'계획 중', planSub:'날짜 미정', nowLabel:'지금 출발', nowSub:'현재 시간 기준 추천' },
-  };
-  const l = labels[lang] || labels.ja;
-  document.getElementById('timing-label').textContent = l.label;
-  document.getElementById('timing-title').textContent = l.title;
-  document.getElementById('timing-desc').textContent = l.desc;
-  document.getElementById('timing-plan-label').textContent = l.planLabel;
-  document.getElementById('timing-plan-sub').textContent = l.planSub;
-  document.getElementById('timing-now-label').textContent = l.nowLabel;
-  document.getElementById('timing-now-sub').textContent = l.nowSub;
-  document.getElementById('timing-overlay').style.display = 'flex';
-}
-
-function selectTiming(mode) {
-  tripTiming = mode;
-  document.getElementById('timing-overlay').style.display = 'none';
   goToQuestions();
 }
+
+
+
 
 function cancelCityConfirm() {
   document.getElementById('city-confirm-overlay').style.display = 'none';
@@ -1724,12 +1589,7 @@ function goToQuestions() {
   const t = T[lang];
   document.getElementById('q-city-name').textContent = currentCity;
   document.getElementById('q-city-sub').textContent = t.qSub;
-  const qTimingBadge = document.getElementById('q-timing-badge');
-  if(qTimingBadge) {
-    qTimingBadge.textContent = tripTiming === 'now'
-      ? ({ja:'📍 今すぐ', en:'📍 Now', zh:'📍 现在', ko:'📍 지금'}[lang] || '📍 今すぐ')
-      : ({ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中');
-  }
+
   document.getElementById('generate-label').textContent = t.generateBtn;
   document.getElementById('q-error').style.display = 'none';
 
@@ -1881,12 +1741,8 @@ async function doGenerate() {
     document.getElementById(`ls${i}`).className='load-step active';
   }
 
-  const now = new Date();
-  const currentTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
   const cityWithLocation = confirmedLocation ? currentCity + '（' + confirmedLocation + '）' : currentCity;
-  const isDayTrip = answers.days && /2時間|半日|日帰り|2 hours|half day|day trip|当天|당일/.test(answers.days);
-  const timeContext = tripTiming === 'now' ? { time: currentTime, sameDay: isDayTrip } : null;
-  const prompt = t.promptTemplate(cityWithLocation, answers, timeContext);
+  const prompt = t.promptTemplate(cityWithLocation, answers);
 
   try {
     const res = await fetch('/api/generate', {
@@ -1953,11 +1809,9 @@ function renderResult(plan) {
   document.getElementById('result-city').textContent = currentCity;
 
   const badges = document.getElementById('result-badges');
-  const timingLabel = tripTiming === 'now'
-    ? {ja:'📍 今すぐ', en:'📍 Now', zh:'📍 现在', ko:'📍 지금'}[lang] || '📍 今すぐ'
-    : {ja:'🗓 計画中', en:'🗓 Planning', zh:'🗓 计划中', ko:'🗓 계획 중'}[lang] || '🗓 計画中';
+
   badges.innerHTML = [
-    `<span class="tag tag-teal">${timingLabel}</span>`,
+
     answers.style   ? `<span class="tag tag-gold">${answers.style.split(/[・,（]/)[0].trim()}</span>` : '',
     answers.budget  ? `<span class="tag tag-green">${answers.budget.split(/[（]/)[0].trim()}</span>` : '',
     answers.food    ? `<span class="tag tag-blue">${answers.food.split(/[・,（]/)[0].trim()}</span>` : '',
@@ -2139,7 +1993,7 @@ function selectDisambiguation(name, location) {
   confirmedCity = currentCity;
   confirmedLocation = location;
   document.getElementById('city-input').value = currentCity;
-  showTimingPopup();
+  goToQuestions();
 }
 
 // ════════════════════════════════
