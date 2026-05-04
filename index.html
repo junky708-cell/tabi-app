@@ -918,6 +918,18 @@ html, body {
 // STATE
 // ════════════════════════════════
 let lang = 'ja';
+
+// XSS対策：AIレスポンスをエスケープする関数
+function escapeHtml(str) {
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 let currentCity = '';
 let answers = {};
 let freeUsage = localStorage.getItem('locateFreeUsage') !== null ? parseInt(localStorage.getItem('locateFreeUsage'), 10) : 3;
@@ -1540,13 +1552,15 @@ async function confirmCity() {
       zh: `必须用中文回答。请只返回一个JSON对象，不要其他任何文字。关于地点"${currentCity}"，格式如下：{"name":"正式名称（例：曼彻斯特）","location":"所在地（例：英格兰，英国）","desc":"给旅行者的1-2句中文介绍。"} 不要Markdown。禁止使用英文。`,
       ko: `반드시 한국어로만 답하세요. "${currentCity}" 장소에 대해 JSON 객체만 반환하세요. 다른 텍스트 불가. 형식: {"name":"정식 명칭（예: 맨체스터）","location":"소재지（예: 잉글랜드, 영국）","desc":"여행자를 위한 1-2문장 한국어 설명."} 마크다운 불가. 영어 사용 불가.`,
     };
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 10000);
     const res = await fetch('/api/generate', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({prompt: promptMap[lang] || promptMap.ja})
-    });
+      body: JSON.stringify({prompt: promptMap[lang] || promptMap.ja}),
+      signal: ctrl.signal
+    }).finally(() => clearTimeout(tid));
     const data = await res.json();
-    console.log('confirm API raw response:', JSON.stringify(data).slice(0, 300));
     let raw = (data.content || []).map(c => c.text||'').join('');
     raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
     const j = raw.indexOf('{'), k = raw.lastIndexOf('}');
@@ -1757,11 +1771,16 @@ async function doGenerate() {
   const prompt = t.promptTemplate(cityWithLocation, answers);
 
   try {
+    // 30秒のタイムアウト設定
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    
     const res = await fetch('/api/generate', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ prompt })
-    });
+      body: JSON.stringify({ prompt }),
+      signal: controller.signal
+    }).finally(() => clearTimeout(timeoutId));
 
     if(!res.ok) {
       const httpErrMsg = {ja:`通信エラーが発生しました (HTTP ${res.status})。もう一度お試しください。`, en:`Connection error (HTTP ${res.status}). Please try again.`, zh:`连接错误 (HTTP ${res.status})，请重试。`, ko:`연결 오류 (HTTP ${res.status}). 다시 시도해 주세요.`};
@@ -1775,6 +1794,10 @@ async function doGenerate() {
     }
 
     const data = JSON.parse(responseText);
+    if(!data || !data.content || !Array.isArray(data.content)) {
+      const fmtErrMsg = {ja:'AIからの応答形式が不正でした。もう一度お試しください。', en:'Invalid response format from AI. Please try again.', zh:'AI响应格式不正确，请重试。', ko:'AI 응답 형식이 올바르지 않습니다. 다시 시도해 주세요.'};
+      throw new Error(fmtErrMsg[lang] || fmtErrMsg.en);
+    }
     let raw = data.content.map(c=>c.text||'').join('');
     raw = raw.replace(/^```[\w]*\s*/,'').replace(/\s*```\s*$/,'').trim();
     const jsonStart = raw.indexOf('{');
@@ -1803,8 +1826,20 @@ async function doGenerate() {
     showScreen('screen-questions');
     const errEl = document.getElementById('q-error');
     const errPrefix = {ja:'エラー: ', en:'Error: ', zh:'错误：', ko:'오류: '};
-    errEl.textContent = (errPrefix[lang] || errPrefix.ja) + e.message;
+    
+    let errorMessage = e.message;
+    // タイムアウトエラーの場合、わかりやすいメッセージに
+    if(e.name === 'AbortError') {
+      const timeoutMsg = {ja:'通信がタイムアウトしました（30秒）。もう一度お試しください。', en:'Request timed out (30s). Please try again.', zh:'请求超时（30秒），请重试。', ko:'요청 시간이 초과되었습니다 (30초). 다시 시도해 주세요.'};
+      errorMessage = timeoutMsg[lang] || timeoutMsg.en;
+    }
+    
+    // リトライ案内付きのメッセージ
+    const retryHint = {ja:'\n👉 「旅程を生成する」ボタンを再度押してリトライできます。', en:'\n👉 Press "Generate" again to retry.', zh:'\n👉 请再次按"生成"按钮以重试。', ko:'\n👉 "여정 생성" 버튼을 다시 눌러 재시도할 수 있습니다.'};
+    
+    errEl.textContent = (errPrefix[lang] || errPrefix.ja) + errorMessage + (retryHint[lang] || retryHint.en);
     errEl.style.display = 'block';
+    errEl.style.whiteSpace = 'pre-line';
   }
 }
 
@@ -1836,12 +1871,12 @@ function renderResult(plan) {
     const di = plan.destination_intro;
     const introLabel = {ja:'📍 この目的地について', en:'📍 About this destination', zh:'📍 关于目的地', ko:'📍 목적지 소개'}[lang] || '📍 この目的地について';
     const highlightsHtml = (di.highlights||[]).map(function(h) {
-      return '<div class="dest-intro-highlight"><div class="dest-intro-dot"></div><span>' + h + '</span></div>';
+      return '<div class="dest-intro-highlight"><div class="dest-intro-dot"></div><span>' + escapeHtml(h) + '</span></div>';
     }).join('');
     html += '<div class="result-section">'
       + '<div class="dest-intro">'
       + '<div class="dest-intro-label">' + introLabel + '</div>'
-      + '<div class="dest-intro-summary">' + (di.summary||'') + '</div>'
+      + '<div class="dest-intro-summary">' + escapeHtml(di.summary||'') + '</div>'
       + '<div class="dest-intro-highlights">' + highlightsHtml + '</div>'
       + '</div>'
       + '</div>';
@@ -1850,7 +1885,7 @@ function renderResult(plan) {
   if(plan.concept) {
     html += `<div class="result-section">
       <div class="result-section-title">${t.resultLabels.concept}</div>
-      <div class="result-content">${plan.concept}</div>
+      <div class="result-content">${escapeHtml(plan.concept)}</div>
     </div>`;
   }
 
@@ -1883,8 +1918,8 @@ function renderResult(plan) {
         + line
         + '</div>'
         + '<div class="tl-right">'
-        + '<div class="tl-title">' + (item.title||'') + '</div>'
-        + '<div class="tl-desc">' + (item.desc||'') + '</div>'
+        + '<div class="tl-title">' + escapeHtml(item.title||'') + '</div>'
+        + '<div class="tl-desc">' + escapeHtml(item.desc||'') + '</div>'
         + mapLink
         + '</div>'
         + '</div>';
@@ -1902,11 +1937,11 @@ function renderResult(plan) {
       <div class="result-section-title">${t.resultLabels.restaurants}</div>
       ${plan.restaurants.map(r => `
         <div class="rest-card">
-          <div class="rest-icon-wrap">${r.icon||'🍽️'}</div>
+          <div class="rest-icon-wrap">${escapeHtml(r.icon||'🍽️')}</div>
           <div class="rest-info">
-            <div class="rest-name">${r.name||''}</div>
-            <div class="rest-desc">${r.desc||''}</div>
-            ${r.price ? `<div class="rest-price">${r.price}</div>` : ''}
+            <div class="rest-name">${escapeHtml(r.name||'')}</div>
+            <div class="rest-desc">${escapeHtml(r.desc||'')}</div>
+            ${r.price ? `<div class="rest-price">${escapeHtml(r.price)}</div>` : ''}
             <div style="display:flex;gap:12px;flex-wrap:wrap">
             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:6px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
           </div>
@@ -1922,10 +1957,10 @@ function renderResult(plan) {
       ${plan.hotels.map(h => `
         <div class="hotel-card">
           <div class="hotel-header">
-            <div class="hotel-name">🏨 ${h.name||''}</div>
-            ${h.price ? `<div class="hotel-price">${h.price}</div>` : ''}
+            <div class="hotel-name">🏨 ${escapeHtml(h.name||'')}</div>
+            ${h.price ? `<div class="hotel-price">${escapeHtml(h.price)}</div>` : ''}
           </div>
-          <div class="hotel-desc">${h.desc||''}</div>
+          <div class="hotel-desc">${escapeHtml(h.desc||'')}</div>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
           <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((h.name||'') + ' ' + currentCity)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:8px;opacity:.85">🗺 ${({'ja':'地図で見る', 'en':'View on Maps', 'zh':'查看地图', 'ko':'지도 보기'})[lang] || '地図で見る'}</a>
         </div>
@@ -1941,7 +1976,7 @@ function renderResult(plan) {
         ${plan.tips.map((tip,i) => `
           <div class="tip-item">
             <div class="tip-num">${i+1}</div>
-            <div class="tip-text">${tip}</div>
+            <div class="tip-text">${escapeHtml(tip)}</div>
           </div>
         `).join('')}
       </div>
@@ -1988,13 +2023,29 @@ function changeFontSize() {
 function showDisambiguationPopup(candidates) {
   document.getElementById('disambig-city').textContent = currentCity;
   const optEl = document.getElementById('disambig-options');
-  optEl.innerHTML = candidates.map(c => `
-    <button class="btn" style="width:100%;background:var(--bg);border:1px solid var(--border);flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px"
-      onclick="selectDisambiguation('${c.name}', '${c.location}')">
-      <span style="font-size:14px;font-weight:600;color:var(--text)">${c.name}　<span style="font-size:12px;color:var(--gold)">${c.location}</span></span>
-      <span style="font-size:12px;color:var(--text-dim)">${c.hint}</span>
-    </button>
-  `).join('');
+  optEl.innerHTML = ''; // 一旦空に
+  candidates.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.style.cssText = 'width:100%;background:var(--bg);border:1px solid var(--border);flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px';
+    
+    const span1 = document.createElement('span');
+    span1.style.cssText = 'font-size:14px;font-weight:600;color:var(--text)';
+    span1.textContent = (c.name || '') + '　';
+    const span1b = document.createElement('span');
+    span1b.style.cssText = 'font-size:12px;color:var(--gold)';
+    span1b.textContent = c.location || '';
+    span1.appendChild(span1b);
+    
+    const span2 = document.createElement('span');
+    span2.style.cssText = 'font-size:12px;color:var(--text-dim)';
+    span2.textContent = c.hint || '';
+    
+    btn.appendChild(span1);
+    btn.appendChild(span2);
+    btn.addEventListener('click', () => selectDisambiguation(c.name, c.location));
+    optEl.appendChild(btn);
+  });
   document.getElementById('disambiguation-overlay').style.display = 'flex';
 }
 
