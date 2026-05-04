@@ -1496,7 +1496,7 @@ function updateUsageDisplay() {
 let confirmedCity = '';
 let confirmedLocation = '';
 
-async function confirmCity() {
+async function confirmCity(skipAmbiguousCheck) {
   if(!currentCity) return;
 
   const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
@@ -1512,10 +1512,12 @@ async function confirmCity() {
     return;
   }
 
-  const ambiguous = checkAmbiguous(currentCity.trim());
-  if(ambiguous && lang === 'ja') {
-    showDisambiguationPopup(ambiguous);
-    return;
+  if(!skipAmbiguousCheck) {
+    const ambiguous = checkAmbiguous(currentCity.trim());
+    if(ambiguous && lang === 'ja') {
+      showDisambiguationPopup(ambiguous);
+      return;
+    }
   }
 
   const t = T[lang];
@@ -2051,10 +2053,12 @@ function showDisambiguationPopup(candidates) {
 
 function selectDisambiguation(name, location) {
   document.getElementById('disambiguation-overlay').style.display = 'none';
-  confirmedCity = currentCity;
-  confirmedLocation = location;
-  document.getElementById('city-input').value = currentCity;
-  goToQuestions();
+  // 選択された地名（例：松山市）と所在地（例：愛媛県）を保存しておく
+  // confirmCity()で地名確認APIを呼び、詳細を表示してから「はい、進む」でQUESTIONSへ
+  currentCity = name;
+  document.getElementById('city-input').value = name;
+  confirmedLocation = location; // 地域情報を一旦保持（API失敗時のフォールバック用）
+  confirmCity(true); // skipAmbiguousCheck=true で同名チェックをスキップ
 }
 
 // ════════════════════════════════
