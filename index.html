@@ -1,4 +1,28 @@
 <!DOCTYPE html>
+<!--
+═══════════════════════════════════════════════════════════
+  LOCATE — AI Travel Guide
+  ファイル全体の目次（FILE INDEX）
+───────────────────────────────────────────────────────────
+  ▼ <head>           : メタ情報・PWA設定・フォント読み込み
+  ▼ <style>          : CSS（共通コンポーネント＋画面別スタイル）
+       - APP SHELL / TYPOGRAPHY / COMPONENTS（btn, tag等）
+       - SCREEN: SPLASH / HOME / QUESTIONS / LOADING / RESULT / PREMIUM
+       - TOAST / FREE USAGE COUNTER
+  ▼ <body>           : 各画面のHTML
+       - SPLASH → HOME → DISAMBIGUATION POPUP → CITY CONFIRM POPUP
+       - QUESTIONS → LOADING → RESULT
+       - POPUPS（戻る警告 / 変更なし確認 / 無料上限）
+       - PREMIUM → TOAST
+  ▼ <script>         : JavaScript
+       - STATE / I18N（4言語の文言）/ LANG（言語切替）
+       - SCREENS（画面遷移）/ DESTINATIONS / CITY INPUT
+       - USAGE（無料回数）/ QUESTIONS / GENERATE（AI呼び出し）
+       - RENDER RESULT / FONT SIZE / DISCLAIMER
+       - PWA INSTALL BANNER / DISAMBIGUATION（同名地名）
+       - TOAST / RESULT: BACK WARNING / INIT
+═══════════════════════════════════════════════════════════
+-->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -698,7 +722,7 @@ html, body {
   </div>
 </div>
 
-
+<!-- ══ QUESTIONS ══ -->
 <div id="screen-questions" class="screen">
   <div class="q-header">
     <div class="q-nav">
@@ -780,6 +804,10 @@ html, body {
   </div>
 </div>
 
+
+<!-- ════════════════════════════════
+     POPUPS（RESULT・QUESTIONS用）
+════════════════════════════════ -->
 
 <!-- ══ 戻る警告ポップアップ ══ -->
 <div id="back-warning-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px">
