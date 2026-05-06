@@ -18,8 +18,8 @@
        - STATE / I18N（4言語の文言）/ LANG（言語切替）
        - SCREENS（画面遷移）/ DESTINATIONS / CITY INPUT
        - USAGE（無料回数）/ QUESTIONS / GENERATE（AI呼び出し）
-       - RENDER RESULT / FONT SIZE / DISCLAIMER
-       - PWA INSTALL BANNER / DISAMBIGUATION（同名地名）
+       - RENDER RESULT / FONT SIZE / DISAMBIGUATION（同名地名）
+       - DISCLAIMER / PWA INSTALL BANNER
        - TOAST / RESULT: BACK WARNING / INIT
 ═══════════════════════════════════════════════════════════
 -->
@@ -2050,6 +2050,24 @@ function changeFontSize() {
   applyFontSize();
 }
 
+// ════════════════════════════════
+// DISAMBIGUATION（同名地名）
+// ════════════════════════════════
+const AMBIGUOUS_PLACES = {
+  '松山': [{name:'松山市', location:'愛媛県', hint:'道後温泉・松山城'}, {name:'松山市', location:'岩手県', hint:'岩手県中部の都市'}],
+  '長岡': [{name:'長岡市', location:'新潟県', hint:'花火大会で有名'}, {name:'長岡京市', location:'京都府', hint:'京都南部の都市'}],
+  '高松': [{name:'高松市', location:'香川県', hint:'讃岐うどんの聖地'}, {name:'高松市', location:'群馬県', hint:'群馬県内の地名'}],
+  '富山': [{name:'富山市', location:'富山県', hint:'黒部・立山'}, {name:'富山', location:'神奈川県', hint:'神奈川の地名'}],
+  '府中': [{name:'府中市', location:'東京都', hint:'大国魂神社・競馬場'}, {name:'府中市', location:'広島県', hint:'広島県東部の都市'}],
+  '伊達': [{name:'伊達市', location:'北海道', hint:'北海道南部の都市'}, {name:'伊達市', location:'福島県', hint:'福島県中通りの都市'}],
+  '三条': [{name:'三条市', location:'新潟県', hint:'金物の町'}, {name:'三条', location:'京都市', hint:'京都市内の地名'}],
+  '大和': [{name:'大和市', location:'神奈川県', hint:'神奈川県央の都市'}, {name:'大和高田市', location:'奈良県', hint:'奈良県北部の都市'}],
+};
+
+function checkAmbiguous(city) {
+  return AMBIGUOUS_PLACES[city] || null;
+}
+
 function showDisambiguationPopup(candidates) {
   document.getElementById('disambig-city').textContent = currentCity;
   const optEl = document.getElementById('disambig-options');
@@ -2150,24 +2168,6 @@ function initPwaBanner() {
 function dismissPwaBanner() {
   document.getElementById('pwa-banner').style.display = 'none';
   localStorage.setItem('pwaBannerDismissed', '1');
-}
-
-// ════════════════════════════════
-// DISAMBIGUATION（同名地名）
-// ════════════════════════════════
-const AMBIGUOUS_PLACES = {
-  '松山': [{name:'松山市', location:'愛媛県', hint:'道後温泉・松山城'}, {name:'松山市', location:'岩手県', hint:'岩手県中部の都市'}],
-  '長岡': [{name:'長岡市', location:'新潟県', hint:'花火大会で有名'}, {name:'長岡京市', location:'京都府', hint:'京都南部の都市'}],
-  '高松': [{name:'高松市', location:'香川県', hint:'讃岐うどんの聖地'}, {name:'高松市', location:'群馬県', hint:'群馬県内の地名'}],
-  '富山': [{name:'富山市', location:'富山県', hint:'黒部・立山'}, {name:'富山', location:'神奈川県', hint:'神奈川の地名'}],
-  '府中': [{name:'府中市', location:'東京都', hint:'大国魂神社・競馬場'}, {name:'府中市', location:'広島県', hint:'広島県東部の都市'}],
-  '伊達': [{name:'伊達市', location:'北海道', hint:'北海道南部の都市'}, {name:'伊達市', location:'福島県', hint:'福島県中通りの都市'}],
-  '三条': [{name:'三条市', location:'新潟県', hint:'金物の町'}, {name:'三条', location:'京都市', hint:'京都市内の地名'}],
-  '大和': [{name:'大和市', location:'神奈川県', hint:'神奈川県央の都市'}, {name:'大和高田市', location:'奈良県', hint:'奈良県北部の都市'}],
-};
-
-function checkAmbiguous(city) {
-  return AMBIGUOUS_PLACES[city] || null;
 }
 
 
