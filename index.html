@@ -1529,7 +1529,7 @@ let confirmedLocation = '';
 async function confirmCity(skipAmbiguousCheck) {
   if(!currentCity) return;
 
-  const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|北海道|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
+  const broadAreaPattern = /^(日本|全国|関東|関西|九州|四国|東北|中部|近畿|中国地方|アジア|ヨーロッパ|アメリカ|世界|japan|asia|europe|america|world|africa|oceania|中国|韓国|korea|china|france|germany|italy|spain|australia|canada|brazil|india|全域|全土)$/i;
   if(broadAreaPattern.test(currentCity.trim())) {
     const msg = {
       ja: '範囲が広すぎます。例：東京、京都、大阪、札幌など具体的な都市名を入力してください',
