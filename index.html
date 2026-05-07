@@ -18,8 +18,8 @@
        - STATE / I18N（4言語の文言）/ LANG（言語切替）
        - SCREENS（画面遷移）/ DESTINATIONS / CITY INPUT
        - USAGE（無料回数）/ QUESTIONS / GENERATE（AI呼び出し）
-       - RENDER RESULT / FONT SIZE / DISCLAIMER
-       - PWA INSTALL BANNER / DISAMBIGUATION（同名地名）
+       - RENDER RESULT / FONT SIZE / DISAMBIGUATION（同名地名）
+       - DISCLAIMER / PWA INSTALL BANNER
        - TOAST / RESULT: BACK WARNING / INIT
 ═══════════════════════════════════════════════════════════
 -->
@@ -1577,10 +1577,30 @@ async function confirmCity(skipAmbiguousCheck) {
 
   try {
     const promptMap = {
-      ja: `「${currentCity}」という場所について、必ず日本語でJSONオブジェクトのみを返してください。他のテキスト不可。形式：{"name":"日本語の正式名称（例：瀬戸市）","location":"所在地（例：愛知県）","desc":"旅行者向けの1〜2文の日本語説明。"} マークダウン不可。英語での回答不可。`,
-      en: `You must return ONLY a JSON object with no other text. For the place "${currentCity}", respond with exactly this format: {"name":"Manchester","location":"Greater Manchester, United Kingdom","desc":"One or two sentences about this destination for travelers."} Do not include any explanation or markdown.`,
-      zh: `必须用中文回答。请只返回一个JSON对象，不要其他任何文字。关于地点"${currentCity}"，格式如下：{"name":"正式名称（例：曼彻斯特）","location":"所在地（例：英格兰，英国）","desc":"给旅行者的1-2句中文介绍。"} 不要Markdown。禁止使用英文。`,
-      ko: `반드시 한국어로만 답하세요. "${currentCity}" 장소에 대해 JSON 객체만 반환하세요. 다른 텍스트 불가. 형식: {"name":"정식 명칭（예: 맨체스터）","location":"소재지（예: 잉글랜드, 영국）","desc":"여행자를 위한 1-2문장 한국어 설명."} 마크다운 불가. 영어 사용 불가.`,
+      ja: `「${currentCity}」という場所について、必ず日本語でJSONオブジェクトのみを返してください。他のテキスト不可。形式：{"name":"日本語の正式名称（例：松山市、京都市、岐阜県）","location":"所在地","desc":"旅行者向けの1〜2文の日本語説明。"}
+locationのルール：ユーザーの入力より一段広い行政区分を返してください。
+・入力が市区町村名や通称の場合 → 都道府県名のみ（例：愛媛県、京都府）
+・入力が都道府県名や海外の州・国名の場合 → 国名と地方名（例：日本・四国地方、日本・北海道）
+・入力に都道府県名と市区町村名の両方が含まれる場合 → 都道府県名のみ（例：兵庫県）
+マークダウン不可。英語での回答不可。`,
+      en: `You must return ONLY a JSON object with no other text. For the place "${currentCity}", respond with exactly this format: {"name":"official or common name in English (e.g., Manchester, Kyoto City, Gifu Prefecture)","location":"location info","desc":"One or two sentences about this destination for travelers."}
+Rule for location: Return the administrative region one level broader than the user input.
+- If input is a city/town/landmark name → return the state/prefecture/region only (e.g., Greater Manchester, Ehime Prefecture)
+- If input is a state/prefecture/country name → return country and broader region (e.g., United Kingdom · England, Japan · Shikoku region)
+- If input contains both prefecture and city → return prefecture only
+Do not include any explanation or markdown.`,
+      zh: `必须用中文回答。请只返回一个JSON对象，不要其他任何文字。关于地点"${currentCity}"，格式如下：{"name":"正式名称（例：曼彻斯特、京都市、岐阜县）","location":"所在地","desc":"给旅行者的1-2句中文介绍。"}
+location规则：返回比用户输入更广一级的行政区划。
+・输入为市/区/地标名称时 → 仅返回州/县/省（例：英格兰、爱媛县）
+・输入为州/省/国家名称时 → 返回国家和更广区域（例：英国・英格兰、日本・四国地方）
+・输入同时包含县名和市名时 → 仅返回县名
+不要Markdown。禁止使用英文。`,
+      ko: `반드시 한국어로만 답하세요. "${currentCity}" 장소에 대해 JSON 객체만 반환하세요. 다른 텍스트 불가. 형식: {"name":"정식 명칭（예: 맨체스터, 교토시, 기후현）","location":"소재지","desc":"여행자를 위한 1-2문장 한국어 설명."}
+location 규칙: 사용자 입력보다 한 단계 넓은 행정 구역을 반환하세요.
+・입력이 시/구/명소 이름인 경우 → 도/현만 반환 (예: 잉글랜드, 에히메현)
+・입력이 도/현/국가 이름인 경우 → 국가와 더 넓은 지역을 반환 (예: 영국・잉글랜드, 일본・시코쿠 지방)
+・입력에 도/현과 시/구가 모두 포함된 경우 → 도/현만 반환
+마크다운 불가. 영어 사용 불가.`,
     };
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 10000);
@@ -2050,6 +2070,24 @@ function changeFontSize() {
   applyFontSize();
 }
 
+// ════════════════════════════════
+// DISAMBIGUATION（同名地名）
+// ════════════════════════════════
+const AMBIGUOUS_PLACES = {
+  '松山': [{name:'松山市', location:'愛媛県', hint:'道後温泉・松山城'}, {name:'松山市', location:'岩手県', hint:'岩手県中部の都市'}],
+  '長岡': [{name:'長岡市', location:'新潟県', hint:'花火大会で有名'}, {name:'長岡京市', location:'京都府', hint:'京都南部の都市'}],
+  '高松': [{name:'高松市', location:'香川県', hint:'讃岐うどんの聖地'}, {name:'高松市', location:'群馬県', hint:'群馬県内の地名'}],
+  '富山': [{name:'富山市', location:'富山県', hint:'黒部・立山'}, {name:'富山', location:'神奈川県', hint:'神奈川の地名'}],
+  '府中': [{name:'府中市', location:'東京都', hint:'大国魂神社・競馬場'}, {name:'府中市', location:'広島県', hint:'広島県東部の都市'}],
+  '伊達': [{name:'伊達市', location:'北海道', hint:'北海道南部の都市'}, {name:'伊達市', location:'福島県', hint:'福島県中通りの都市'}],
+  '三条': [{name:'三条市', location:'新潟県', hint:'金物の町'}, {name:'三条', location:'京都市', hint:'京都市内の地名'}],
+  '大和': [{name:'大和市', location:'神奈川県', hint:'神奈川県央の都市'}, {name:'大和高田市', location:'奈良県', hint:'奈良県北部の都市'}],
+};
+
+function checkAmbiguous(city) {
+  return AMBIGUOUS_PLACES[city] || null;
+}
+
 function showDisambiguationPopup(candidates) {
   document.getElementById('disambig-city').textContent = currentCity;
   const optEl = document.getElementById('disambig-options');
@@ -2150,24 +2188,6 @@ function initPwaBanner() {
 function dismissPwaBanner() {
   document.getElementById('pwa-banner').style.display = 'none';
   localStorage.setItem('pwaBannerDismissed', '1');
-}
-
-// ════════════════════════════════
-// DISAMBIGUATION（同名地名）
-// ════════════════════════════════
-const AMBIGUOUS_PLACES = {
-  '松山': [{name:'松山市', location:'愛媛県', hint:'道後温泉・松山城'}, {name:'松山市', location:'岩手県', hint:'岩手県中部の都市'}],
-  '長岡': [{name:'長岡市', location:'新潟県', hint:'花火大会で有名'}, {name:'長岡京市', location:'京都府', hint:'京都南部の都市'}],
-  '高松': [{name:'高松市', location:'香川県', hint:'讃岐うどんの聖地'}, {name:'高松市', location:'群馬県', hint:'群馬県内の地名'}],
-  '富山': [{name:'富山市', location:'富山県', hint:'黒部・立山'}, {name:'富山', location:'神奈川県', hint:'神奈川の地名'}],
-  '府中': [{name:'府中市', location:'東京都', hint:'大国魂神社・競馬場'}, {name:'府中市', location:'広島県', hint:'広島県東部の都市'}],
-  '伊達': [{name:'伊達市', location:'北海道', hint:'北海道南部の都市'}, {name:'伊達市', location:'福島県', hint:'福島県中通りの都市'}],
-  '三条': [{name:'三条市', location:'新潟県', hint:'金物の町'}, {name:'三条', location:'京都市', hint:'京都市内の地名'}],
-  '大和': [{name:'大和市', location:'神奈川県', hint:'神奈川県央の都市'}, {name:'大和高田市', location:'奈良県', hint:'奈良県北部の都市'}],
-};
-
-function checkAmbiguous(city) {
-  return AMBIGUOUS_PLACES[city] || null;
 }
 
 
