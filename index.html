@@ -1823,9 +1823,9 @@ async function doGenerate() {
   const prompt = t.promptTemplate(cityWithLocation, answers);
 
   try {
-    // 30秒のタイムアウト設定
+    // 60秒のタイムアウト設定
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
     
     const res = await fetch('/api/generate', {
       method:'POST',
@@ -1882,7 +1882,7 @@ async function doGenerate() {
     let errorMessage = e.message;
     // タイムアウトエラーの場合、わかりやすいメッセージに
     if(e.name === 'AbortError') {
-      const timeoutMsg = {ja:'通信がタイムアウトしました（30秒）。もう一度お試しください。', en:'Request timed out (30s). Please try again.', zh:'请求超时（30秒），请重试。', ko:'요청 시간이 초과되었습니다 (30초). 다시 시도해 주세요.'};
+      const timeoutMsg = {ja:'通信がタイムアウトしました（60秒）。もう一度お試しください。', en:'Request timed out (60s). Please try again.', zh:'请求超时（60秒），请重试。', ko:'요청 시간이 초과되었습니다 (60초). 다시 시도해 주세요.'};
       errorMessage = timeoutMsg[lang] || timeoutMsg.en;
     }
     
