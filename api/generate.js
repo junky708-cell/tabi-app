@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 6000,
-        system: `You are TABI, an expert travel concierge with deep knowledge of destinations worldwide.
+        system: `You are LOCATE, an expert travel concierge with deep knowledge of destinations worldwide.
 
 CRITICAL RULES:
 - Return ONLY valid JSON. Absolutely NO markdown, NO code blocks (no \`\`\`json), NO explanations, NO extra text before or after the JSON.
