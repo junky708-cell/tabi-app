@@ -2089,6 +2089,12 @@ function changeFontSize() {
 // ════════════════════════════════
 // DISAMBIGUATION（同名地名）
 // ════════════════════════════════
+// 各候補のフィールド:
+//   name        : AI（生成プロンプト・確認API）に渡される地名。例: '岐阜県'
+//   displayName : ユーザーに見せる選択肢ラベル。省略時は name を使用。例: '岐阜県全域'
+//   location    : 所在地（行政区分）。例: '愛媛県' / '日本・中部地方'
+//   hint        : 短い説明。選択肢の補助情報。
+// 「市県同名」のような粒度違いの聞き返し用に、表示と AI 入力を分けたい場合に displayName を使う。
 const AMBIGUOUS_PLACES = {
   '松山': [{name:'松山市', location:'愛媛県', hint:'道後温泉・松山城'}, {name:'松山市', location:'岩手県', hint:'岩手県中部の都市'}],
   '長岡': [{name:'長岡市', location:'新潟県', hint:'花火大会で有名'}, {name:'長岡京市', location:'京都府', hint:'京都南部の都市'}],
@@ -2098,6 +2104,10 @@ const AMBIGUOUS_PLACES = {
   '伊達': [{name:'伊達市', location:'北海道', hint:'北海道南部の都市'}, {name:'伊達市', location:'福島県', hint:'福島県中通りの都市'}],
   '三条': [{name:'三条市', location:'新潟県', hint:'金物の町'}, {name:'三条', location:'京都市', hint:'京都市内の地名'}],
   '大和': [{name:'大和市', location:'神奈川県', hint:'神奈川県央の都市'}, {name:'大和高田市', location:'奈良県', hint:'奈良県北部の都市'}],
+  '岐阜': [
+    {name:'岐阜市', location:'岐阜県', hint:'岐阜城・長良川'},
+    {name:'岐阜県', displayName:'岐阜県全域', location:'日本・中部地方', hint:'高山・下呂・白川郷を含む県全体'}
+  ],
 };
 
 function checkAmbiguous(city) {
@@ -2115,7 +2125,7 @@ function showDisambiguationPopup(candidates) {
     
     const span1 = document.createElement('span');
     span1.style.cssText = 'font-size:14px;font-weight:600;color:var(--text)';
-    span1.textContent = (c.name || '') + '　';
+    span1.textContent = (c.displayName || c.name || '') + '　';
     const span1b = document.createElement('span');
     span1b.style.cssText = 'font-size:12px;color:var(--gold)';
     span1b.textContent = c.location || '';
